@@ -48,8 +48,8 @@ class Staff(db.Model):
 class StaffSkill(db.Model):
     __tablename__ = 'Staff_Skill'
 
-    staff_ID = db.Column(db.Integer, nullable=False)
-    skill_ID = db.Column(db.Integer, nullable=False)
+    staff_ID = db.Column(db.Integer, primary_key=True, nullable=False)
+    skill_ID = db.Column(db.Integer, primary_key=True, nullable=False)
 
     #db.PrimaryKeyConstraint('Staff_ID', 'Skill_ID'),
     
