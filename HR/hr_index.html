@@ -21,7 +21,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">CREATED ROLES</a>
+                        <a class="nav-link active" aria-current="page" href="#">CREATED POSTINGS</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">SKILLS</a>
@@ -40,19 +40,75 @@
     <div class="container text-center mt-5">
         <div class="row">
             <!-- FILTER -->
-            <div class="col-2">
-                <h5 style="font-weight: bold;">SEARCH FILTER</h5>
+            <div class="col-2" style = "text-align: left;">
+                <h4 style="font-weight: bold;" class="mb-3">SEARCH FILTER</h4>
+                <div class = "row" id="departmentFilter">
+                    <p style="font-weight: 500;" class="mb-2"> Department </p>
+                    <hr class="mx-2 w-75"/>
+                    <div class="w-75">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Finance" id="FinanceFilter">
+                            <label class="form-check-label" for="FinanceFilter">Finance</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Operations" id="OperationsFilter">
+                            <label class="form-check-label" for="OperationsFilter">Operations</label>
+                        </div>    
+                            
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="IT" id="ITFilter">
+                            <label class="form-check-label" for="ITFilter">Information Technology</label>
+                        </div> 
+                            
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Sales" id="SalesFilter">
+                            <label class="form-check-label" for="SalesFilter">Sales</label>
+                        </div> 
+                            
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="Data" id="DataFilter">
+                            <label class="form-check-label" for="DataFilter">Data</label>
+                        </div> 
+                    </div> 
+                </div>
+
+                <div class = "row" id="AnotherFilter">
+                    <p style="font-weight: 500;" class="my-2"> Another Filter </p>
+                    <hr class="mx-2 w-75"/>
+                    <div class="w-75">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="a" id="aFilter">
+                            <label class="form-check-label" for="aFilter">A</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="b" id="bFilter">
+                            <label class="form-check-label" for="bFilter">B</label>
+                        </div>    
+                            
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="c" id="cFilter">
+                            <label class="form-check-label" for="cFilter">C</label>
+                        </div> 
+                            
+                    </div> 
+                </div>
+
+
             </div>
             <div class="col-10">
                 <div class = "row">
-                    <div class="col-2 m-0">
-                        <a href="#" class="btn btn-dark w-100 m-2" style="color: greenyellow; font-weight: bold;">CREATE POSTING</a>
+                    <div class="col-5 m-0 col-sm-5 col-md-6 col-lg-3 col-xl-2">
+                        <a href="./create_role_listing.html" class="btn btn-dark w-100 m-2" style="color: greenyellow; font-weight: bold;">CREATE POSTING</a>
                     </div>
                     <!-- SEARCH BAR -->
-                    <div class="col-10 d-flex align-items-center">
+                    <div class="col-5 d-flex align-items-center col-sm-7 col-md-6 col-lg-9 col-xl-10">
                         <form class="form-inline d-flex w-100">
-                            <input class="form-control mr-2 flex-grow-1" type="search" placeholder="Search" aria-label="Search">
-                            <button class="btn btn-outline-success my-2 my-sm-0 p-2" type="submit">Search</button>
+                            <div class = "input-group">
+                                <input class="form-control mr-2 flex-grow-1" type="search" placeholder="Search" aria-label="Search">
+                                <button class="btn btn-outline-success my-2 my-sm-0 p-2" type="submit">Search</button>
+                                
+                            </div>
+                            
                         </form>
                     </div>
                     
@@ -64,32 +120,166 @@
 
                 <!-- APPLICANTS -->
                 <div class="row mt-3">
-                    <div class="row mt-3  ">
+                    <div class="row mt-3">
+                        <!-- Software Engineer Card -->
                         <div class="col-6 d-flex justify-content-center align-items-center">
-                            <div class="card rounded-4">
+                            <div class="card rounded-4" data-bs-toggle="modal" data-bs-target="#softwareEngineerModal">
                                 <div class="card-body text-left" style="text-align: left;">
                                     <h5 class="card-title">Software Engineer</h5>
                                     <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
                                     <div class="col" style="text-align: right;">
-                                        <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;">View Applicants</a>
+                                        <!-- Button to trigger applicants modal -->
+                                        <a href="#" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#softwareEngineerApplicantsModal" style="color: greenyellow; font-weight: bold;">View Applicants</a>
                                         <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;">Edit</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <!-- Software Engineer Modal -->
+                        <div class="modal fade" id="softwareEngineerModal" tabindex="-1" aria-labelledby="softwareEngineerModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="softwareEngineerModalLabel">Software Engineer</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>With supporting text below as a natural lead-in to additional content.</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Software Engineer Applicants Modal -->
+                        <div class="modal fade" id="softwareEngineerApplicantsModal" tabindex="-1" aria-labelledby="softwareEngineerApplicantsModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="softwareEngineerApplicantsModalLabel">Applicants for Software Engineer</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>List of applicants for the Software Engineer position.</p>
+                                        <div class="row">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col" class="col-1">#</th>
+                                                        <th scope="col" class="col-5">Name</th>
+                                                        <th scope="col" class="col-5">Email</th>
+                                                        <th scope="col" class="col-1"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="text-center align-middle">
+                                                    <tr>
+                                                        <th scope="row">1</th>
+                                                        <td>Mark</td>
+                                                        <td>Otto</td>
+                                                        <td> <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;"> > </a> </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">2</th>
+                                                        <td>Jacob</td>
+                                                        <td>Thornton</td>
+                                                        <td> <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;"> > </a> </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">3</th>
+                                                        <td>Larry</td>
+                                                        <td>the Bird</td>
+                                                        <td> <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;"> > </a> </td>
+                                                    </tr>
+                                                    
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                
+                        <!-- Data Analyst Card -->
                         <div class="col-6 d-flex justify-content-center align-items-center">
-                            <div class="card rounded-4">
+                            <div class="card rounded-4" data-bs-toggle="modal" data-bs-target="#dataAnalystModal">
                                 <div class="card-body text-left" style="text-align: left;">
                                     <h5 class="card-title">Data Analyst</h5>
                                     <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
                                     <div class="col" style="text-align: right;">
-                                        <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;">View Applicants</a>
+                                         <!-- Button to trigger applicants modal -->
+                                        <a href="#" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#dataAnalystApplicantsModal" style="color: greenyellow; font-weight: bold;">View Applicants</a>
                                         <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;">Edit</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                
+                        <!-- Data Analyst Modal -->
+                        <div class="modal fade" id="dataAnalystModal" tabindex="-1" aria-labelledby="dataAnalystModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="dataAnalystModalLabel">Data Analyst</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>With supporting text below as a natural lead-in to additional content.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Data Analyst Applicants Modal -->
+                        <div class="modal fade" id="dataAnalystApplicantsModal" tabindex="-1" aria-labelledby="dataAnalystApplicantsModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="dataAnalystApplicantsModalLabel">Applicants for Data Analyst</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>List of applicants for the Data Analyst position.</p>
+                                        <div class="row">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col" class="col-1">#</th>
+                                                        <th scope="col" class="col-5">Name</th>
+                                                        <th scope="col" class="col-5">Email</th>
+                                                        <th scope="col" class="col-1"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="text-center align-middle">
+                                                    <tr>
+                                                        <th scope="row">1</th>
+                                                        <td>Mark</td>
+                                                        <td>Otto</td>
+                                                        <td> <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;"> > </a> </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">2</th>
+                                                        <td>Jacob</td>
+                                                        <td>Thornton</td>
+                                                        <td> <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;"> > </a> </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">3</th>
+                                                        <td>Larry</td>
+                                                        <td>the Bird</td>
+                                                        <td> <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;"> > </a> </td>
+                                                    </tr>
+                                                    
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                
                     </div>
                 </div>
             </div>
