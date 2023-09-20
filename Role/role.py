@@ -71,12 +71,12 @@ class RoleSkill(db.Model):
 def create_role():
     data = request.get_json()
 
-    role_ID = data.get('role_ID')
+    # role_ID = data.get('role_ID')
     role_name = data.get('role_name')
     role_description = data.get('role_description')
     deadline = data.get('deadline')
 
-    new_role = RoleSkill(role_ID=role_ID, role_name=role_name, role_description=role_description, deadline=deadline)
+    new_role = Role(role_name=role_name, role_description=role_description, deadline=deadline)
 
     try:
         db.session.add(new_role)
@@ -95,6 +95,20 @@ def create_role():
             "data": new_role.json()
         }
     ), 201
+
+@app.route("/roles", methods=['GET'])
+def get_all_roles():
+    # fetch all roles from the database
+    roles = Role.query.all()
+    if roles:
+        return jsonify({
+            "code": 200,
+            "data": [role.json() for role in roles]
+        })
+    return jsonify({
+        "code": 404,
+        "message": "No roles found."
+    })
 
 @app.route("/update_role/<int:role_ID>", methods=['PUT'])
 def update_role(role_ID):
@@ -121,6 +135,33 @@ def update_role(role_ID):
         }
     ), 404
 
+# This is to create a new skill
+@app.route('/skill', methods=['POST'])
+def create_skill():
+    data = request.get_json()
+    skill_name = data.get('skill_name')
+
+    new_skill = Skill(skill_name = skill_name)
+
+    try:
+        db.session.add(new_skill)
+        db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while adding new skill : " + str(e)
+            }
+        ), 500
+
+    return jsonify(
+        {
+            "code": 201,
+            "data": new_skill.json()
+        }
+    ), 201
+
+# This is to find all the skills given specific role id
 @app.route("/role_skill/<int:role_id>", methods=['GET'])
 def get_skills_by_role(role_id):
     role_skills = RoleSkill.query.filter_by(role_ID=role_id).all()
