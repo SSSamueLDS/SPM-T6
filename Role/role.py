@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey, ForeignKeyConstraint, PrimaryKeyConstraint
 from flask_cors import CORS
@@ -9,7 +9,7 @@ import json
 from os import environ
 
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates', static_folder='static')
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or "mysql+mysqlconnector://admin:HelloWorld@db-spm.czpo8yl1nyay.us-east-1.rds.amazonaws.com:3306/spm1"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -67,34 +67,39 @@ class RoleSkill(db.Model):
         }
         return dto
 
-@app.route("/create_role", methods=['POST'])
+@app.route("/create_role", methods=['GET','POST'])
 def create_role():
-    data = request.get_json()
+    if request.method == 'POST':
+        data = request.get_json()
 
-    # role_ID = data.get('role_ID')
-    role_name = data.get('role_name')
-    role_description = data.get('role_description')
-    deadline = data.get('deadline')
+        role_name = data.get('role_name')
+        role_description = data.get('role_description')
+        deadline = data.get('deadline')
 
-    new_role = Role(role_name=role_name, role_description=role_description, deadline=deadline)
+        new_role = Role(role_name=role_name, role_description=role_description, deadline=deadline)
 
-    try:
-        db.session.add(new_role)
-        db.session.commit()
-    except Exception as e:
+        try:
+            db.session.add(new_role)
+            db.session.commit()
+        except Exception as e:
+            return jsonify(
+                {
+                    "code": 500,
+                    "message": "An error occurred while adding new role : " + str(e)
+                }
+            ), 500
+
         return jsonify(
             {
-                "code": 500,
-                "message": "An error occurred while adding new role : " + str(e)
+                "code": 201,
+                "data": new_role.json()
             }
-        ), 500
+        ), 201
 
-    return jsonify(
-        {
-            "code": 201,
-            "data": new_role.json()
-        }
-    ), 201
+    else: # This handles the GET request to display the form
+        last_role = Role.query.order_by(Role.id.desc()).first()
+        next_role_id = last_role.id + 1 if last_role else 1
+        return render_template('role_listing_page.html', next_role_id=next_role_id)
 
 @app.route("/roles", methods=['GET'])
 def get_all_roles():
@@ -251,6 +256,10 @@ def update_role_skill(role_id):
         }
     ), 201
 
+
+@app.route('/role-listing')
+def role_listing():
+    return render_template('role_listing.html')
 
 if __name__ == '__main__':
     with app.app_context():
