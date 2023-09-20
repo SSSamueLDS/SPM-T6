@@ -67,9 +67,17 @@ class RoleSkill(db.Model):
         }
         return dto
 
-@app.route("/create_role", methods=['GET','POST'])
+@app.route("/create_role_form", methods=['GET'])
+def display_role_form():
+    last_role = Role.query.order_by(Role.id.desc()).first()
+    print(last_role)
+    next_role_id = last_role.id + 1 if last_role else 1
+    return render_template('role_listing_page.html', next_role_id=next_role_id)
+
+
+@app.route("/create_role", methods=['POST'])
 def create_role():
-    if request.method == 'POST':
+    
         data = request.get_json()
 
         role_name = data.get('role_name')
@@ -95,11 +103,6 @@ def create_role():
                 "data": new_role.json()
             }
         ), 201
-
-    else: # This handles the GET request to display the form
-        last_role = Role.query.order_by(Role.id.desc()).first()
-        next_role_id = last_role.id + 1 if last_role else 1
-        return render_template('role_listing_page.html', next_role_id=next_role_id)
 
 @app.route("/roles", methods=['GET'])
 def get_all_roles():

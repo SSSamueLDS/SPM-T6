@@ -1,8 +1,9 @@
 // This is to handle for create role funtion 
 
 $(document).ready(function(){
-    $("#submitButton").click(function(){
-
+    $("#submitButton").click(function(event){
+        console.log("Button clicked")
+        event.preventDefault();
         let roleData = {
             role_name: $("#role_name").val(),
             role_description: $("#role_description").val(),
