@@ -1,6 +1,7 @@
 import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import ForeignKey, ForeignKeyConstraint, PrimaryKeyConstraint
 from flask_cors import CORS
 
 from datetime import datetime
@@ -46,20 +47,23 @@ class Skill(db.Model):
             'skill_name': self.skill_name,
         }
         return dto
-
+    
 class RoleSkill(db.Model):
     __tablename__ = 'Role_Skill'
 
-    role_ID = db.Column(db.Integer, nullable=False)
-    skill_ID = db.Column(db.Integer, nullable=False)
+    role_ID = db.Column(db.Integer, ForeignKey('Role.Role_ID'), primary_key=True)
+    skill_ID = db.Column(db.Integer, ForeignKey('Skill.Skill_ID'), primary_key=True)
 
-    # db.PrimaryKeyConstraint('Role_ID', 'Skill_ID'),
-    
+    __table_args__ = (
+        PrimaryKeyConstraint('role_ID', 'skill_ID'),
+        ForeignKeyConstraint(['role_ID'], ['Role.Role_ID']),
+        ForeignKeyConstraint(['skill_ID'], ['Skill.Skill_ID']),
+    )
 
     def json(self):
         dto = {
             'role_ID': self.role_ID,
-            'skill_ID': self.skill_ID,
+            'skill_ID': self.skill_ID
         }
         return dto
 
@@ -116,6 +120,95 @@ def update_role(role_ID):
             "message": "Role not found."
         }
     ), 404
+
+@app.route("/role_skill/<int:role_id>", methods=['GET'])
+def get_skills_by_role(role_id):
+    role_skills = RoleSkill.query.filter_by(role_ID=role_id).all()
+    if role_skills:
+        return jsonify({
+            "code": 200,
+            "data": [role_skill.json() for role_skill in role_skills]
+        })
+    return jsonify({
+        "code": 404,
+        "message": "No skills found for the given role ID."
+    }), 404
+    
+@app.route("/role_skill", methods=['POST'])
+def create_role_skill():
+    data = request.get_json()
+    print('this is the data', data)
+    # plan to loop through the selected skills and for each skills selected, add new entry to the database
+    role_id = data.get('role_ID')
+    skill_ids = data.get('skill_IDs')
+    new_entries = []
+
+    for skill_id in skill_ids:
+        new_role_skill = RoleSkill(role_ID = role_id, skill_ID = skill_id)
+        try:
+            db.session.add(new_role_skill)
+            db.session.commit()
+            print('new entry commited')
+        except Exception as e:
+            print(e)
+            return jsonify(
+                {
+                    "code": 500,
+                    "message": "An error occurred while adding new role skill" + str(e)
+                }
+            ), 500
+        
+        print(json.dumps(new_role_skill.json(), default=str)) # convert a JSON object to a string and print
+        new_entries.append(new_role_skill.json())
+        print()
+
+    return jsonify(
+        {
+            "code": 201,
+            "data": new_entries
+        }
+    ), 201
+
+@app.route("/role_skill/<int:role_id>", methods=['PUT'])
+def update_role_skill(role_id):
+    data = request.get_json()
+    print('this is the data', data)
+    
+    # Delete all existing role-skill mappings for the given role
+    try:
+        RoleSkill.query.filter_by(role_ID=role_id).delete()
+        db.session.commit()
+    except Exception as e:
+        return jsonify({"code": 500, "message": f"An error occurred while deleting old role skills: {str(e)}"}), 500
+
+    # Add new role-skill mappings
+    skill_ids = data.get('skill_IDs')
+    new_entries = []
+    for skill_id in skill_ids:
+        new_role_skill = RoleSkill(role_ID = role_id, skill_ID = skill_id)
+        try:
+            db.session.add(new_role_skill)
+            db.session.commit()
+            print('new entry commited')
+        except Exception as e:
+            print(e)
+            return jsonify(
+                {
+                    "code": 500,
+                    "message": "An error occurred while adding new role skill" + str(e)
+                }
+            ), 500
+        
+        print(json.dumps(new_role_skill.json(), default=str)) # convert a JSON object to a string and print
+        new_entries.append(new_role_skill.json())
+        print()
+
+    return jsonify(
+        {
+            "code": 201,
+            "data": new_entries
+        }
+    ), 201
 
 
 if __name__ == '__main__':
