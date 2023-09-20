@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from sqlalchemy import ForeignKey, ForeignKeyConstraint, PrimaryKeyConstraint
 
 from datetime import datetime
 import json
@@ -28,8 +29,12 @@ class Staff(db.Model):
     access_rights = db.Column(db.Integer)
     staff_roleID = db.Column(db.Integer) 
     
-    #CONSTRAINT FK_Roles FOREIGN KEY (Access_Rights) REFERENCES System_Role(SystemRole_ID),
-    #CONSTRAINT FK_Role FOREIGN KEY (Staff_RoleID) REFERENCES `Role`(Role_ID)
+    #CONSTRAINT FK_Roles FOREIGN KEY (access_rights) REFERENCES System_Role(SystemRole_ID),
+    #CONSTRAINT FK_Role FOREIGN KEY (staff_roleID) REFERENCES `Role`(role_ID)  whats staff_roleID?
+    __table_args__ = (
+        ForeignKeyConstraint(['access_rights'], ['System_Role.systemrole_ID']),
+        ForeignKeyConstraint(['staff_roleID'], )
+    )
 
     def json(self):
         
@@ -50,9 +55,11 @@ class StaffSkill(db.Model):
 
     staff_ID = db.Column(db.Integer, primary_key=True, nullable=False)
     skill_ID = db.Column(db.Integer, primary_key=True, nullable=False)
-
-    #db.PrimaryKeyConstraint('Staff_ID', 'Skill_ID'),
-    
+    __table_args__ = (
+        PrimaryKeyConstraint('staff_ID', 'skill_ID'),
+        ForeignKeyConstraint(['staff_ID'], ['Staff.staff_ID']),
+        ForeignKeyConstraint(['skill_ID'], ['Skill.skill_ID']),
+    )
     def json(self):
         dto = {
             'staff_ID': self.staff_ID,

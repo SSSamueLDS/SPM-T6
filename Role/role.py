@@ -51,13 +51,13 @@ class Skill(db.Model):
 class RoleSkill(db.Model):
     __tablename__ = 'Role_Skill'
 
-    role_ID = db.Column(db.Integer, ForeignKey('Role.Role_ID'), primary_key=True)
-    skill_ID = db.Column(db.Integer, ForeignKey('Skill.Skill_ID'), primary_key=True)
+    role_ID = db.Column(db.Integer, ForeignKey('Role.role_ID'), primary_key=True)
+    skill_ID = db.Column(db.Integer, ForeignKey('Skill.skill_ID'), primary_key=True)
 
     __table_args__ = (
         PrimaryKeyConstraint('role_ID', 'skill_ID'),
-        ForeignKeyConstraint(['role_ID'], ['Role.Role_ID']),
-        ForeignKeyConstraint(['skill_ID'], ['Skill.Skill_ID']),
+        ForeignKeyConstraint(['role_ID'], ['Role.role_ID']),
+        ForeignKeyConstraint(['skill_ID'], ['Skill.skill_ID']),
     )
 
     def json(self):
