@@ -43,6 +43,41 @@ def get_all_skills():
         "message": "No skills found."
     })
 
+@app.route("/add_skill", methods=['POST'])
+def add_skill():
+    #find if skill exists in database
+    try:
+        data = request.get_json()
+        print(data)
+        skill_name = data['skill_name']
+        # capitalise first letter of every word in skill name
+        skill_name = skill_name.title()
+        skill = Skill.query.filter_by(skill_name=skill_name).first()
+        if skill:
+            return jsonify({
+                "code": 201,
+                "data": {
+                    "skill_name": skill_name
+                },
+                "message": "Skill already exists."
+            }), 201
+        else:
+            skill = Skill(skill_name=skill_name)
+            db.session.add(skill)
+            db.session.commit()
+            return jsonify({
+                "code": 200,
+                "data": {
+                "skill_name": skill_name
+                },
+                "message": "Skill added successfully."
+            }), 200
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Connection failure with the database."
+        }), 500
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
