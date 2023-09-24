@@ -45,9 +45,9 @@
         <div class="row">
             <!-- FILTER -->
             <div class="col-2" style = "text-align: left;">
-                <h4 style="font-weight: bold;" class="mb-3">SEARCH FILTER</h4>
+                <h4 style="font-weight: bold;" class="mb-3">FILTER BY</h4>
                 <div class = "row" id="departmentFilter">
-                    <p style="font-weight: 500;" class="mb-2"> Department </p>
+                    <p style="font-weight: 500;" class="mb-2"> Skill Type </p>
                     <hr class="mx-2 w-75"/>
                     <div class="w-75">
                         <div class="form-check">
@@ -55,8 +55,8 @@
                             <label class="form-check-label" for="FinanceFilter">Finance</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="Operations" id="OperationsFilter">
-                            <label class="form-check-label" for="OperationsFilter">Operations</label>
+                            <input class="form-check-input" type="checkbox" value="Programming" id="ProgrammingFilter">
+                            <label class="form-check-label" for="ProgrammingFilter">Programming</label>
                         </div>    
                             
                         <div class="form-check">
@@ -75,33 +75,12 @@
                         </div> 
                     </div> 
                 </div>
-
-                <div class = "row" id="AnotherFilter">
-                    <p style="font-weight: 500;" class="my-2"> Another Filter </p>
-                    <hr class="mx-2 w-75"/>
-                    <div class="w-75">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="a" id="aFilter">
-                            <label class="form-check-label" for="aFilter">A</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="b" id="bFilter">
-                            <label class="form-check-label" for="bFilter">B</label>
-                        </div>    
-                            
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="c" id="cFilter">
-                            <label class="form-check-label" for="cFilter">C</label>
-                        </div> 
-                            
-                    </div> 
-                </div>
             </div>
             <div class="col-10">
                 <div class = "row">
                     <!-- Create New Skill Button, do later -->
                     <div class="col-5 m-0 col-sm-5 col-md-6 col-lg-3 col-xl-2">
-                        <a href="./create_role_listing.html" class="btn btn-dark w-100 m-2" style="color: greenyellow; font-weight: bold;">CREATE POSTING</a>
+                        <a href="add_skill.html" class="btn btn-dark w-100 m-2" style="color: greenyellow; font-weight: bold;">ADD NEW SKILL</a>
                     </div>
                     <!-- SEARCH BAR -->
                     <div class="col-5 d-flex align-items-center col-sm-7 col-md-6 col-lg-9 col-xl-10">
@@ -124,7 +103,8 @@
                           Sort By
                         </button>
                         <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" @click="sort_alphabetically">Alphabetically (A to Z)</a></li>
+                            <li><a class="dropdown-item" @click="sort_by_ID">ID</a></li>
+                            <li><a class="dropdown-item" @click="sort_alphabetically">Alphabetically (A to Z)</a></li>
                         </ul>
                     </div>
                 </div>

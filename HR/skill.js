@@ -14,6 +14,12 @@ const app = Vue.createApp({
         sort_alphabetically(){
             this.skills = this.skills.sort((a,b) => (a.skill_name > b.skill_name) ? 1 : ((b.skill_name > a.skill_name) ? -1 : 0));
             this.grouped_skills = this.group_skills();
+            this.current_page = 1;
+        },
+        sort_by_ID(){
+            this.skills = this.skills.sort((a,b) => (a.skill_ID > b.skill_ID) ? 1 : ((b.skill_ID > a.skill_ID ? -1 : 0)));
+            this.grouped_skills = this.group_skills();
+            this.current_page = 1;
         },
         //group skills in groups of 10, for display purposes
         //remainder in the last group
