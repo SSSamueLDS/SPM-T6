@@ -26,15 +26,15 @@ class Staff(db.Model):
     dept = db.Column(db.String(50), nullable=False)
     country = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(50), nullable=False)
-    access_rights = db.Column(db.Integer)
-    staff_roleID = db.Column(db.Integer) 
+    access_rights = db.Column(db.Integer, ForeignKey('System_Role.SystemRole_ID'))
+    staff_roleID = db.Column(db.Integer, ForeignKey('Role.Role_ID')) 
     
     #CONSTRAINT FK_Roles FOREIGN KEY (access_rights) REFERENCES System_Role(SystemRole_ID),
     #CONSTRAINT FK_Role FOREIGN KEY (staff_roleID) REFERENCES `Role`(role_ID)  whats staff_roleID?
-    __table_args__ = (
-        ForeignKeyConstraint(['access_rights'], ['System_Role.systemrole_ID']),
-        ForeignKeyConstraint(['staff_roleID'], )
-    )
+    # __table_args__ = (
+    #     ForeignKeyConstraint(['access_rights'], ['System_Role.systemrole_ID']),
+    #     ForeignKeyConstraint(['staff_roleID'], )
+    # )
 
     def json(self):
         
@@ -55,6 +55,7 @@ class StaffSkill(db.Model):
 
     staff_ID = db.Column(db.Integer, primary_key=True, nullable=False)
     skill_ID = db.Column(db.Integer, primary_key=True, nullable=False)
+    proficiency = db.Column(db.Enum('Beginner','Intermediate','Advance','Expert'), nullable=True)
     __table_args__ = (
         PrimaryKeyConstraint('staff_ID', 'skill_ID'),
         ForeignKeyConstraint(['staff_ID'], ['Staff.staff_ID']),
