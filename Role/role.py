@@ -262,7 +262,7 @@ def update_role_skill(role_id):
 
 @app.route('/role-listing')
 def role_listing():
-    return render_template('role_listing.html')
+    return render_template('create_role_listing.html')
 
 if __name__ == '__main__':
     with app.app_context():
