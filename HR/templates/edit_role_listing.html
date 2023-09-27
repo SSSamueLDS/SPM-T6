@@ -50,7 +50,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h3>Edit A Role</h3>
-                        <h6>Role ID {{ role.role_ID }}</h6>
+                        <h6>Role ID : {{role.role_ID}}</h6>
                     </div>
 
                     <div class="card-body">
@@ -58,19 +58,19 @@
                             <div class="row mb-3">
                                 <label for="role_name" class="col-sm-3" col-from-label>Role Title</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="role_name" required>
+                                    <input type="text" class="form-control" id="role_name" v-model="role.role_name" required>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <label for="role_description" class="col-sm-3" col-from-label>Description</label>
                                 <div class="col-sm-9">
-                                    <textarea class="form-control" id="role_description" rows="3" required></textarea>
+                                    <textarea class="form-control" id="role_description" rows="3" v-model="role.role_description" required></textarea>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <label for="deadline" class="col-sm-3" col-from-label>Application Deadline</label>
                                 <div class="col-sm-9">
-                                    <input type="date" class="form-control" id="deadline" required>
+                                    <input type="date" class="form-control" id="deadline" v-model="role.deadline" required>
                                 </div>
                             </div>
                 
@@ -78,7 +78,7 @@
                             <div class="row mb-3">
                                 <div style="text-align: right;">
                                     <a href="/HR/select_skills.html" id="selectSkillButton" class="btn btn-outline-dark">Select Skill</a>
-                                    <button type="button" class="btn btn-dark" id="submitButton" style="color: greenyellow; font-weight: bold;">Submit</button>                
+                                    <button type="button" class="btn btn-dark" @click="updateRole" id="submitButton" style="color: greenyellow; font-weight: bold;">Submit</button>               
                                 </div>
                             </div>
                 
@@ -95,39 +95,48 @@ integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0
     const app = Vue.createApp({
         data() {
             return {
-                roles: []
-            }
+                role: {
+                    
+                    role_name: '',
+                    role_description: '',
+                    deadline: ''
+                },
+                roleID: null,
+            };
         },
         methods: {
-            logRoleAndId(role, id) {
-                console.log('Role:', role);
-                console.log('ID:', id);
-            },
-            processRoleName(roleName) {
-                // Remove all occurrences of '#' from roleName
-                return roleName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s/g, '_');
+            updateRole() {
+                axios.put(`http://127.0.0.1:5002/update_role/${this.roleID}`, this.role)
+                    .then(response => {
+                        alert('Role updated successfully!');
+                    })
+                    .catch(error => {
+                        alert('Failed to update the role. Please try again.');
+                    });
             }
         },
         created() {
-            axios.get('http://127.0.0.1:5002/roles') 
-            //change url above to get role specific to HR user
-            
-                .then(response => {
-                    this.roles = response.data.data;
-                    this.roles.forEach(role => {
-                        role.role_tag = this.processRoleName(role.role_name);
+            const urlParams = new URLSearchParams(window.location.search);
+            this.roleID = urlParams.get('role_id');
+    
+            if (this.roleID) {
+                axios.get(`http://127.0.0.1:5002/roles/${this.roleID}`)
+                    .then(response => {
+                        this.role = response.data;
+                    })
+                    .catch(error => {
+                        console.error('Failed to fetch the role data:', error);
                     });
-                    console.log('this.roles:', this.roles);x
-
-                });
-
-                
+            } else {
+                console.error('No role_id provided');
+            }
         }
     });
-
+    
     app.mount('#app');
-
-</script>
+    </script>
+    <!-- ... rest of your code ... -->
+    
 
 <!-- Add your custom script after other scripts -->
 <!-- <script src="{{ url_for('static', filename='role.js') }}"></script> -->

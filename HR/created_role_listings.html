@@ -144,7 +144,7 @@
                                             <!-- Button to trigger applicants modal -->
                                             <a href="#" class="btn btn-dark" data-bs-toggle="modal" v-bind:data-bs-target="'#' + role.role_tag + 'ApplicantsModal'" style="color: greenyellow; font-weight: bold;">View Applicants</a>
 
-                                            <a href="" class="btn btn-dark" style="color: greenyellow; font-weight: bold;">Edit</a>
+                                            <a href="'/templates/edit_role_listing.html?role_id=' + role.role_ID" class="btn btn-dark" style="color: greenyellow; font-weight: bold;">Edit</a>
                                         </div>
                                     </div>
                                 </div>
@@ -246,6 +246,8 @@
                     // Remove all occurrences of '#' from roleName
                     return roleName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s/g, '_');
                 }
+                
+
             },
             created() {
                 axios.get('http://127.0.0.1:5002/roles') 
@@ -266,30 +268,7 @@
     
         app.mount('#app');  // This replaces the el: '#app' from Vue 2
 
-        const app2 = Vue.createApp({
-            data() {
-                return {
-                    application: []
-                }
-            },
-            methods: {
-                logRoleAndId(application, id) {
-                    console.log('Application:', application);
-                    console.log('ID:', id);
-                }
-            },
-            created() {
-                axios.get('http://127.0.0.1:5002/roles') 
-                //change url above to get application details
-                
-                    .then(response => {
-                        this.application = response.data.data;
-                        console.log('this.application:', this.application);x
-
-                    });
-            }
-        });
-        app.mount('#app2');
+        
 
 
     </script>
