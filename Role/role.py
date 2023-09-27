@@ -30,8 +30,8 @@ class Role(db.Model):
             'role_ID': self.role_ID,
             'role_name': self.role_name,
             'role_description': self.role_description,
-            'deadline': self.deadline.strftime('%Y-%m-%d')
-            
+            'deadline': self.deadline.strftime('%Y-%m-%d') if self.deadline is not None else None
+
         }
         return dto
 

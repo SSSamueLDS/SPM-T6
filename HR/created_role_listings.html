@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <!-- Vue CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
     <title>The Job Seeker</title>
 </head>
 
@@ -119,163 +124,74 @@
                 </div>
 
                 <!-- APPLICANTS -->
-                <div class="row mt-3">
-                    <div class="row mt-3">
-                        <!-- Software Engineer Card -->
-                        <div class="col-6 d-flex justify-content-center align-items-center">
-                            <div class="card rounded-4" data-bs-toggle="modal" data-bs-target="#softwareEngineerModal">
-                                <div class="card-body text-left" style="text-align: left;">
-                                    <h5 class="card-title">Software Engineer</h5>
-                                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                                    <div class="col" style="text-align: right;">
-                                        <!-- Button to trigger applicants modal -->
-                                        <a href="#" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#softwareEngineerApplicantsModal" style="color: greenyellow; font-weight: bold;">View Applicants</a>
-                                        <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;">Edit</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                
-                        <!-- Software Engineer Modal -->
-                        <div class="modal fade" id="softwareEngineerModal" tabindex="-1" aria-labelledby="softwareEngineerModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="softwareEngineerModalLabel">Software Engineer</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>With supporting text below as a natural lead-in to additional content.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Software Engineer Applicants Modal -->
-                        <div class="modal fade" id="softwareEngineerApplicantsModal" tabindex="-1" aria-labelledby="softwareEngineerApplicantsModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="softwareEngineerApplicantsModalLabel">Applicants for Software Engineer</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>List of applicants for the Software Engineer position.</p>
-                                        <div class="row">
-                                            <table class="table">
-                                                <thead>
-                                                    <tr>
-                                                        <th scope="col" class="col-1">#</th>
-                                                        <th scope="col" class="col-5">Name</th>
-                                                        <th scope="col" class="col-5">Email</th>
-                                                        <th scope="col" class="col-1"></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="text-center align-middle">
-                                                    <tr>
-                                                        <th scope="row">1</th>
-                                                        <td>Mark</td>
-                                                        <td>Otto</td>
-                                                        <td> <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;"> > </a> </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row">2</th>
-                                                        <td>Jacob</td>
-                                                        <td>Thornton</td>
-                                                        <td> <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;"> > </a> </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row">3</th>
-                                                        <td>Larry</td>
-                                                        <td>the Bird</td>
-                                                        <td> <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;"> > </a> </td>
-                                                    </tr>
-                                                    
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="row mt-3" id="app"  >
+                   
+                    <div class="row mt-3" >
                         
-                
-                        <!-- Data Analyst Card -->
-                        <div class="col-6 d-flex justify-content-center align-items-center">
-                            <div class="card rounded-4" data-bs-toggle="modal" data-bs-target="#dataAnalystModal">
-                                <div class="card-body text-left" style="text-align: left;">
-                                    <h5 class="card-title">Data Analyst</h5>
-                                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                                    <div class="col" style="text-align: right;">
-                                         <!-- Button to trigger applicants modal -->
-                                        <a href="#" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#dataAnalystApplicantsModal" style="color: greenyellow; font-weight: bold;">View Applicants</a>
-                                        <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;">Edit</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                
-                        <!-- Data Analyst Modal -->
-                        <div class="modal fade" id="dataAnalystModal" tabindex="-1" aria-labelledby="dataAnalystModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="dataAnalystModalLabel">Data Analyst</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>With supporting text below as a natural lead-in to additional content.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <div v-for="(role,id) in roles" :key="id" class="row mt-3">                   
+                            <div class="mx-2 justify-content-center align-items-center">
+                                <div class="card rounded-4" v-bind:data-bs-target="'#' + role.role_tag + 'ApplicantsModal'">
+                                    <div class="card-body text-left" style="text-align: left;">
+                                        <h5 class="card-title">{{ role.role_name }}</h5>
+                                        <p class="card-text">{{ role.role_description }}</p>
+                                        <div class="col" style="text-align: right;">
+                                            <!-- Button to trigger applicants modal -->
+                                            <a href="#" class="btn btn-dark" data-bs-toggle="modal" v-bind:data-bs-target="'#' + role.role_tag + 'ApplicantsModal'" style="color: greenyellow; font-weight: bold;">View Applicants</a>
 
-                        <!-- Data Analyst Applicants Modal -->
-                        <div class="modal fade" id="dataAnalystApplicantsModal" tabindex="-1" aria-labelledby="dataAnalystApplicantsModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="dataAnalystApplicantsModalLabel">Applicants for Data Analyst</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>List of applicants for the Data Analyst position.</p>
-                                        <div class="row">
-                                            <table class="table">
-                                                <thead>
-                                                    <tr>
-                                                        <th scope="col" class="col-1">#</th>
-                                                        <th scope="col" class="col-5">Name</th>
-                                                        <th scope="col" class="col-5">Email</th>
-                                                        <th scope="col" class="col-1"></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="text-center align-middle">
-                                                    <tr>
-                                                        <th scope="row">1</th>
-                                                        <td>Mark</td>
-                                                        <td>Otto</td>
-                                                        <td> <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;"> > </a> </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row">2</th>
-                                                        <td>Jacob</td>
-                                                        <td>Thornton</td>
-                                                        <td> <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;"> > </a> </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row">3</th>
-                                                        <td>Larry</td>
-                                                        <td>the Bird</td>
-                                                        <td> <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;"> > </a> </td>
-                                                    </tr>
-                                                    
-                                                </tbody>
-                                            </table>
+                                            <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;">Edit</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        
+                            <!-- Role-specific Applicants Modal -->
+                            <div class="modal fade" v-bind:id="role.role_tag + 'ApplicantsModal'" tabindex="-1" v-bind:aria-labelledby="role.role_tag + 'ApplicantsModalLabel'" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" v-bind:id="role.role_tag + 'ApplicantsModalLabel'"> Applicants for {{ role.role_name }} </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>List of applicants for the {{ role.role_name }} position.</p>
+                                            
+                                            <div class="row">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col" class="col-1">#</th>
+                                                            <th scope="col" class="col-5">Name</th>
+                                                            <th scope="col" class="col-5">Email</th>
+                                                            <th scope="col" class="col-1"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="text-center align-middle">
+                                                        <tr>
+                                                            <th scope="row">1</th>
+                                                            <td>Mark</td>
+                                                            <td>Otto</td>
+                                                            <td> <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;"> > </a> </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row">2</th>
+                                                            <td>Jacob</td>
+                                                            <td>Thornton</td>
+                                                            <td> <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;"> > </a> </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row">3</th>
+                                                            <td>Larry</td>
+                                                            <td>the Bird</td>
+                                                            <td> <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;"> > </a> </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
 
 
@@ -287,8 +203,47 @@
     </div>
 
     <!-- SCRIPTS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    roles: []
+                }
+            },
+            methods: {
+                logRoleAndId(role, id) {
+                    console.log('Role:', role);
+                    console.log('ID:', id);
+                },
+                processRoleName(roleName) {
+                    // Remove all occurrences of '#' from roleName
+                    return roleName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s/g, '_');
+                }
+            },
+            created() {
+                axios.get('http://127.0.0.1:5002/roles') 
+                //change port above to get role specific to HR user
+                
+                    .then(response => {
+                        this.roles = response.data.data;
+                        this.roles.forEach(role => {
+                            role.role_tag = this.processRoleName(role.role_name);
+                        });
+                        console.log('this.roles:', this.roles);x
+
+                    });
+
+                    
+            }
+        });
+    
+        app.mount('#app');  // This replaces the el: '#app' from Vue 2
+    </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
+
 </body>
 
 </html>
