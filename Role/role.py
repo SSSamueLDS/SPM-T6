@@ -118,6 +118,20 @@ def get_all_roles():
         "message": "No roles found."
     })
 
+@app.route("/roles/<int:role_ID>", methods=['GET'])
+def get_role(role_ID):
+    # fetch role by ID
+    role = Role.query.filter_by(role_ID=role_ID).first()
+    if role:
+        return jsonify({
+            "code": 200,
+            "data": role.json()
+        })
+    return jsonify({
+        "code": 404,
+        "message": "No role with ID " + role_ID +  "found."
+    })
+
 @app.route("/update_role/<int:role_ID>", methods=['PUT'])
 def update_role(role_ID):
     role = Role.query.filter_by(role_ID=role_ID).first()
