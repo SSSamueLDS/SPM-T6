@@ -7,6 +7,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <title>The Job Seeker</title>
+    <!-- Vue CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 </head>
@@ -23,7 +27,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">CREATED POSTINGS</a>
+                        <a class="nav-link" href="../created_role_listings.html">CREATED POSTINGS</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">SKILLS</a>
@@ -45,8 +49,8 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h3>Create A Role</h3>
-                        <h6>Role ID {{next_role_id}}</h6>
+                        <h3>Edit A Role</h3>
+                        <h6>Role ID {{ role.role_ID }}</h6>
                     </div>
 
                     <div class="card-body">
@@ -86,6 +90,44 @@
 <!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
 integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                roles: []
+            }
+        },
+        methods: {
+            logRoleAndId(role, id) {
+                console.log('Role:', role);
+                console.log('ID:', id);
+            },
+            processRoleName(roleName) {
+                // Remove all occurrences of '#' from roleName
+                return roleName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s/g, '_');
+            }
+        },
+        created() {
+            axios.get('http://127.0.0.1:5002/roles') 
+            //change url above to get role specific to HR user
+            
+                .then(response => {
+                    this.roles = response.data.data;
+                    this.roles.forEach(role => {
+                        role.role_tag = this.processRoleName(role.role_name);
+                    });
+                    console.log('this.roles:', this.roles);x
+
+                });
+
+                
+        }
+    });
+
+    app.mount('#app');
+
+</script>
 
 <!-- Add your custom script after other scripts -->
 <!-- <script src="{{ url_for('static', filename='role.js') }}"></script> -->

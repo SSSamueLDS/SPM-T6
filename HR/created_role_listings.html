@@ -139,11 +139,12 @@
                                     <div class="card-body text-left" style="text-align: left;">
                                         <h5 class="card-title">{{ role.role_name }}</h5>
                                         <p class="card-text">{{ role.role_description }}</p>
+                                        <p class="card-text"><small class="text-muted"> Deadline: {{ role.deadline }}</small></p>
                                         <div class="col" style="text-align: right;">
                                             <!-- Button to trigger applicants modal -->
                                             <a href="#" class="btn btn-dark" data-bs-toggle="modal" v-bind:data-bs-target="'#' + role.role_tag + 'ApplicantsModal'" style="color: greenyellow; font-weight: bold;">View Applicants</a>
 
-                                            <a href="#" class="btn btn-dark" style="color: greenyellow; font-weight: bold;">Edit</a>
+                                            <a href="" class="btn btn-dark" style="color: greenyellow; font-weight: bold;">Edit</a>
                                         </div>
                                     </div>
                                 </div>
@@ -157,11 +158,13 @@
                                             <h5 class="modal-title" id="role.role_tag">{{ role.role_name }}</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
-                                        <div class="modal-body">
-                                            <p style="text-align: left;">Department: Information Technology</p>
-                                            <p style="text-align: left;">Application Deadline: {{ role.deadline }}</p>
-                                            <p style="text-align: left; font-weight: bold">About the role</p>
-                                            <p style="text-align: left;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eget felis lectus. Curabitur facilisis dictum elit a ultricies. Suspendisse a vestibulum nisl. Donec eget consequat enim, eu faucibus ligula. Nulla hendrerit vitae ante quis viverra. Fusce nec purus lacinia, molestie lectus non, rhoncus justo. Duis arcu velit, fermentum nec ante vitae, tincidunt elementum lectus. Sed et justo fringilla, vulputate turpis sit amet, aliquam nisl. Cras mauris leo, tempor ut leo sed, efficitur blandit felis.</p>
+                                        <div class="modal-body" style="text-align: left;">
+                                            <!-- <p style="text-align: left;">Department: Information Technology</p> -->
+                                            <p style="font-weight: bold">Application Deadline: {{ role.deadline }}</p>
+                                            <p> Required Skills: </p>
+                                            <p style="font-weight: bold">About the role</p>
+                                            <p>{{ role.role_description }}</p>
+
                                         </div>
                                     </div>
                                 </div>
