@@ -69,18 +69,21 @@
                                 <label for="role_name" class="col-sm-3" col-from-label>Role Title</label>
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" id="role_name" v-model="role.role_name" required>
+                                    <small class="text-danger" v-text="errors.role_name"></small>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <label for="role_description" class="col-sm-3" col-from-label>Description</label>
                                 <div class="col-sm-9">
                                     <textarea class="form-control" id="role_description" rows="3" v-model="role.role_description" required></textarea>
+                                    <small class="text-danger" v-text="errors.role_description"></small>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <label for="deadline" class="col-sm-3" col-from-label>Application Deadline</label>
                                 <div class="col-sm-9">
-                                    <input type="date" class="form-control" id="deadline" v-model="role.deadline" required>
+                                    <input type="date" class="form-control" id="deadline" v-model="role.deadline">
+                                    <small class="text-danger" v-text="errors.deadline"></small>
                                 </div>
                             </div>
                 
@@ -113,20 +116,62 @@
                     deadline: ''
                 },
                 role_ID: null,
+                errors: {
+                    role_name:'',
+                    role_description: '',
+                    deadline: ''
+                }
             };
         },
         methods: {
+            validateForm(){
+                let isValid = true;
+
+                // Reset errors
+                this.errors = {
+                    role_name: '',
+                    role_description: '',
+                    deadline: ''
+                };
+
+                // Validate role name
+                if (!this.role.role_name) {
+                    this.errors.role_name = 'Role name is required';
+                    isValid = false;
+                }
+
+                // Validate role description
+                if (!this.role.role_description) {
+                    this.errors.role_description = 'Role description is required';
+                    isValid = false;
+                }
+
+                // Validate deadline
+                if (!this.role.deadline) {
+                    this.errors.deadline = 'Deadline is required';
+                    isValid = false;
+                }
+
+                return isValid;
+
+
+            },
+    
             updateRole() {
-                axios.put(`http://127.0.0.1:5002/update_role/${this.role_ID}`, this.role)
+                if (this.validateForm()){
+                    axios.put(`http://127.0.0.1:5002/update_role/${this.role_ID}`, this.role)
                     .then(response => {
                         alert('Role updated successfully!');
                         window.location.href = '/HR/created_role_listings.html'
+                        console.log(response.data())
                     })
                     .catch(error => {
                         alert('Failed to update the role. Please try again.');
                     });
-            }
-        },
+                }
+            }, 
+
+        }, 
         created() {
             const urlParams = new URLSearchParams(window.location.search);
             this.role_ID = urlParams.get('role_id');
