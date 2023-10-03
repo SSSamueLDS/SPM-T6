@@ -20,6 +20,11 @@ const routes = [
   {
     path: "/posting",
     name: "CreatedPosting",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "../views/CreatedPostingView.vue"
+      );
+    },
   },
   {
     path: "/skills",
