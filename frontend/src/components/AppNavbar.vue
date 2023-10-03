@@ -16,18 +16,26 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#"
-              >CREATED POSTING</a
-            >
+            <router-link to="/posting">
+              <a class="nav-link" aria-current="page" href="#"
+                >CREATED POSTING</a
+              >
+            </router-link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">SKILLS</a>
+            <router-link to="/skills">
+              <a class="nav-link" aria-current="page" href="#">SKILLS</a>
+            </router-link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">EMPLOYEES</a>
+            <router-link to="/employees">
+              <a class="nav-link" aria-current="page" href="#">EMPLOYEES</a>
+            </router-link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">LOGOUT</a>
+            <router-link to="/logout">
+              <a class="nav-link" aria-current="page" href="#">LOGOUT</a>
+            </router-link>
           </li>
         </ul>
       </div>
