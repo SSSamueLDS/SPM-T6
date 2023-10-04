@@ -73,9 +73,9 @@
                   >
                   <button
                     type="button"
-                    class="btn btn-dark"
+                    class="btn btn-warning"
                     id="submitButton"
-                    style="color: white; font-weight: bold"
+                    style="color: black; font-weight: bold"
                   >
                     Submit
                   </button>
