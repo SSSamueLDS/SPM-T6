@@ -66,7 +66,7 @@
                     class="form-control"
                     id="deadline"
                   />
-                  <div v-if="v$.deadline.$error" class="text-danger">
+                  <div v-if="v$.deadline.$invalid" class="text-danger">
                     <span v-if="!v$.deadline.required">Date is required.</span>
                     <span v-if="!v$.deadline.afterToday"
                       >Date must be after today.</span
@@ -128,40 +128,36 @@ export default {
       role_name: "",
       role_description: "",
       deadline: null,
+      formSubmitted: false, // Add this
     };
   },
   methods: {
     async onSubmit() {
+      this.formSubmitted = true; // Set this to true when form is submitted
       if (this.mode === "create") {
         // Logic for creating a new role
-        this.v$.$validate(); // Notice the change here
+        this.v$.$validate();
 
-        if (
-          this.v$.role_name.$invalid || // And here
-          this.v$.role_description.$invalid || // And here
-          this.v$.deadline.$invalid // And here
-        ) {
-          alert("Please correct the errors before submitting.");
-          return;
-        }
+        if (!this.v$.$pending && !this.v$.$error) {
+          // If there's no validation error and no validation is pending
+          try {
+            const response = await axios.post(
+              "http://localhost:5002/create_role",
+              {
+                role_name: this.role_name,
+                role_description: this.role_description,
+                deadline: this.deadline,
+              }
+            );
 
-        try {
-          const response = await axios.post(
-            "http://localhost:5002/create_role",
-            {
-              role_name: this.role_name,
-              role_description: this.role_description,
-              deadline: this.deadline,
+            if (response.data.code === 201) {
+              alert("Role added successfully!");
+            } else {
+              alert(response.data.message);
             }
-          );
-
-          if (response.data.code === 201) {
-            alert("Role added successfully!");
-          } else {
-            alert(response.data.message);
+          } catch (error) {
+            console.error("Error adding role:", error);
           }
-        } catch (error) {
-          console.error("Error adding role:", error);
         }
       } else if (this.mode === "edit") {
         // Logic for editing an existing role
