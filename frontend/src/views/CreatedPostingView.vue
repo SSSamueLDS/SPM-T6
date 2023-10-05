@@ -1,18 +1,18 @@
 <template>
   <div class="PostingView">
-    <!-- <h1>This is an about page</h1> -->
-    <CreateRole />
+    <RoleForm mode="create" />
+    <!-- <RoleForm mode="edit" /> -->
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import CreateRole from "@/components/CreateRole.vue";
+import RoleForm from "@/components/RoleForm.vue";
 
 export default {
   name: "PostingView",
   components: {
-    CreateRole,
+    RoleForm,
   },
 };
 </script>

@@ -6,7 +6,9 @@
 
         <div class="card">
           <div class="card-header custom-header">
-            <h4 class="no-margin" style="font-weight: bold">Add A Role</h4>
+            <h4 class="no-margin" style="font-weight: bold">
+              {{ mode === "edit" ? "Edit A Role" : "Add A Role" }}
+            </h4>
             <!-- <h2 style="color: white">Add A Role</h2> -->
           </div>
 
@@ -91,7 +93,13 @@
 
 <script>
 export default {
-  name: "CreateRole",
+  name: "RoleForm",
+  props: {
+    mode: {
+      type: String,
+      default: "create",
+    },
+  },
 };
 </script>
 
