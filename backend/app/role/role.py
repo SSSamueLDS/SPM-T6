@@ -124,10 +124,16 @@ def get_all_roles():
 def get_role(role_ID):
     # fetch role by ID
     role = Role.query.filter_by(role_ID=role_ID).first()
+    print(role)
+    skill_ids = get_skill_ids_by_role(role_ID)
+    print(skill_ids)
     if role:
         return jsonify({
             "code": 200,
-            "data": role.json()
+            "data": {
+                **role.json(),
+                "skill_IDs": skill_ids
+            }
         })
     return jsonify({
         "code": 404,
@@ -247,6 +253,21 @@ def create_role_skill():
             "data": new_entries
         }
     ), 201
+
+def get_skill_ids_by_role(role_id):
+    try:
+        role_skills = RoleSkill.query.filter_by(role_ID=role_id).all()
+        skills = [role_skill.skill_ID for role_skill in role_skills]
+        if role_skills:
+            return skills
+        return []
+
+    except Exception as e:
+        app.logger.error(f"Error occurred: {e}")
+        return jsonify({
+            "code": 500,
+            "message": "Internal Server Error"
+        }), 500
 
 def create_role_skill(skill_ids, role_id):
     for skill_id in skill_ids:
