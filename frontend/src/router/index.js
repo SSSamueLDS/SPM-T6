@@ -27,6 +27,15 @@ const routes = [
     },
   },
   {
+    path: "/edit-posting",
+    name: "EditPosting",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "../views/EditPostingView.vue"
+      );
+    },
+  },
+  {
     path: "/skills",
     name: "skills",
   },
