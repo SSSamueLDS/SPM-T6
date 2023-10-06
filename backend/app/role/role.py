@@ -79,6 +79,7 @@ def display_role_form():
 def create_role():
     
         data = request.get_json()
+        print(data)
 
         role_name = data.get('role_name')
         role_description = data.get('role_description')
@@ -89,6 +90,7 @@ def create_role():
         try:
             db.session.add(new_role)
             db.session.commit()
+            create_role_skill(data.get('role_skill'), new_role.role_ID)
         except Exception as e:
             return jsonify(
                 {
@@ -141,6 +143,8 @@ def update_role(role_ID):
         role.role_description = data.get('role_description')
         role.deadline = data.get('deadline')
         db.session.commit()
+        update_role_skill(skill_ids=data.get('role_skill'), role_id=role_ID)
+
         return jsonify(
             {
                 "code": 200,
@@ -186,16 +190,28 @@ def create_skill():
 # This is to find all the skills given specific role id
 @app.route("/role_skill/<int:role_id>", methods=['GET'])
 def get_skills_by_role(role_id):
-    role_skills = RoleSkill.query.filter_by(role_ID=role_id).all()
-    if role_skills:
+    try:
+        role_skills = RoleSkill.query.filter_by(role_ID=role_id).all()
+        skills = [role_skill.skill_ID for role_skill in role_skills]
+        if role_skills:
+            return jsonify({
+                "code": 200,
+                "data": {
+                    "role_ID": role_id,
+                    "skill_IDs": skills
+                }
+            })
         return jsonify({
-            "code": 200,
-            "data": [role_skill.json() for role_skill in role_skills]
-        })
-    return jsonify({
-        "code": 404,
-        "message": "No skills found for the given role ID."
-    }), 404
+            "code": 404,
+            "message": "No skills found for the given role ID."
+        }), 404
+
+    except Exception as e:
+        app.logger.error(f"Error occurred: {e}")
+        return jsonify({
+            "code": 500,
+            "message": "Internal Server Error"
+        }), 500
     
 @app.route("/role_skill", methods=['POST'])
 def create_role_skill():
@@ -232,21 +248,7 @@ def create_role_skill():
         }
     ), 201
 
-@app.route("/role_skill/<int:role_id>", methods=['PUT'])
-def update_role_skill(role_id):
-    data = request.get_json()
-    print('this is the data', data)
-    
-    # Delete all existing role-skill mappings for the given role
-    try:
-        RoleSkill.query.filter_by(role_ID=role_id).delete()
-        db.session.commit()
-    except Exception as e:
-        return jsonify({"code": 500, "message": f"An error occurred while deleting old role skills: {str(e)}"}), 500
-
-    # Add new role-skill mappings
-    skill_ids = data.get('skill_IDs')
-    new_entries = []
+def create_role_skill(skill_ids, role_id):
     for skill_id in skill_ids:
         new_role_skill = RoleSkill(role_ID = role_id, skill_ID = skill_id)
         try:
@@ -263,13 +265,53 @@ def update_role_skill(role_id):
             ), 500
         
         print(json.dumps(new_role_skill.json(), default=str)) # convert a JSON object to a string and print
-        new_entries.append(new_role_skill.json())
         print()
 
     return jsonify(
         {
             "code": 201,
-            "data": new_entries
+            "data": {
+                "role_id": role_id,
+                "skill_ids": skill_ids 
+            }
+        }
+    ), 201
+
+
+def update_role_skill(skill_ids, role_id):
+    # Delete all existing role-skill mappings for the given role
+    try:
+        RoleSkill.query.filter_by(role_ID=role_id).delete()
+        db.session.commit()
+    except Exception as e:
+        return jsonify({"code": 500, "message": f"An error occurred while deleting old role skills: {str(e)}"}), 500
+
+    # Add new role-skill mappings
+    for skill_id in skill_ids:
+        new_role_skill = RoleSkill(role_ID = role_id, skill_ID = skill_id)
+        try:
+            db.session.add(new_role_skill)
+            db.session.commit()
+            print('new entry commited')
+        except Exception as e:
+            print(e)
+            return jsonify(
+                {
+                    "code": 500,
+                    "message": "An error occurred while adding new role skill" + str(e)
+                }
+            ), 500
+        
+        print(json.dumps(new_role_skill.json(), default=str)) # convert a JSON object to a string and print
+        print()
+
+    return jsonify(
+        {
+            "code": 201,
+            "data": {
+                "role_id": role_id,
+                "skill_ids": skill_ids 
+            }
         }
     ), 201
 
