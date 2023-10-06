@@ -71,9 +71,10 @@
                   </div>
                 </div>
               </div>
+
               <div class="row mb-3">
                 <label
-                  for="deadline"
+                  for="select_skill"
                   class="col-sm-3 shifted-label"
                   col-from-label
                   >Role Skills</label>
@@ -85,6 +86,7 @@
                     trackBy="name"
                     :searchable="true"
                     mode="tags"
+                    id="select_skill"
                   />
                 </div>
               </div>

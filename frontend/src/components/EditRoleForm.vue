@@ -73,16 +73,28 @@
                 </div>
               </div>
 
+              <div class="row mb-3">
+                <label
+                  for="select_skill"
+                  class="col-sm-3 shifted-label"
+                  col-from-label
+                  >Role Skills</label>
+                <div class="col-sm-9">
+                  <Multiselect
+                    v-model="selected_skills"
+                    :options="skills"
+                    label="name"
+                    trackBy="name"
+                    :searchable="true"
+                    mode="tags"
+                    id="select_skill"
+                  />
+                </div>
+              </div>
+
               <!-- submit button -->
               <div class="row mb-3">
                 <div style="text-align: right">
-                  <a
-                    href="/HR/select_skills.html"
-                    id="selectSkillButton"
-                    class="btn btn-outline-dark"
-                    style="margin-right: 10px"
-                    >Select Skill</a
-                  >
                   <button
                     type="submit"
                     class="btn btn-warning"
@@ -105,6 +117,7 @@
 import axios from "axios";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
+import Multiselect from '@vueform/multiselect';
 
 const isFutureDate = (value) => {
   if (!value) return true;
@@ -122,30 +135,47 @@ export default {
       required: true,
     },
   },
+  components: {
+      Multiselect,
+  },
   data() {
     return {
       role_name: "",
       role_description: "",
       deadline: null,
       formSubmitted: false,
+      skills: null,
+      selected_skills: null
     };
   },
   methods: {
-    async fetchRoleData() {
-      try {
-        const response = await axios.get(
-          `http://localhost:5002/roles/${this.role_ID}`
-        );
-        if (response.data && response.data.code === 200) {
-          this.role_name = response.data.data.role_name;
-          this.role_description = response.data.data.role_description;
-          this.deadline = response.data.data.deadline;
-        } else {
-          console.error("Error fetching role data:", response.data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching role data:", error);
-      }
+    fetchRoleData() {
+      axios.get(`http://127.0.0.1:5002/roles/${this.role_ID}`)
+        .then(response => {
+          if (response.data && response.data.code === 200) {
+            this.role_name = response.data.data.role_name;
+            this.role_description = response.data.data.role_description;
+            this.deadline = response.data.data.deadline;
+            this.selected_skills = response.data.data.skill_IDs
+          } else {
+            console.error("Error fetching role data:", response.data.message);
+          }
+        })
+        .catch(error => {
+            console.error('Failed to fetch the role data:', error);
+        });
+      axios.get('http://127.0.0.1:5003/skills')
+        .then(response => {
+            this.skills = response.data.data.map(item => {
+              return {
+                value: item.skill_ID,
+                name: item.skill_name
+              }
+            })
+        })
+        .catch(error => {
+            console.error('Failed to fetch the role data:', error);
+        });
     },
     async onSubmit() {
       this.formSubmitted = true;
@@ -153,20 +183,20 @@ export default {
 
       if (!this.v$.$pending && !this.v$.$error) {
         try {
-          const response = await axios.put(
-            `http://localhost:5002/update_role/${this.role_ID}`,
+          axios.put(`http://127.0.0.1:5002/update_role/${this.role_ID}`, 
             {
               role_name: this.role_name,
               role_description: this.role_description,
               deadline: this.deadline,
-            }
-          );
-
-          if (response.data.code === 200) {
-            alert("Role updated successfully!");
-          } else {
-            alert(response.data.message);
-          }
+              role_skill: this.selected_skills
+            }).then(response => {
+                alert('Role updated successfully!');
+                console.log(response)
+            })
+            .catch(error => {
+                alert('Failed to update the role. Please try again.');
+                console.log(error)
+            });
         } catch (error) {
           console.error("Error updating role:", error);
           alert("There was an error updating the role. Please try again.");
@@ -211,3 +241,4 @@ export default {
   padding-left: 15px;
 }
 </style>
+<style src="@vueform/multiselect/themes/default.css"></style>
