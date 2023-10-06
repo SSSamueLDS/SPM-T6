@@ -60,31 +60,38 @@
                   >Application Deadline</label
                 >
                 <div class="col-sm-9">
-                  <input
-                    v-model="deadline"
+                  <input v-model="deadline"
                     type="date"
                     class="form-control"
                     id="deadline"
                   />
                   <div v-if="v$.deadline.$invalid" class="text-danger">
                     <span v-if="!v$.deadline.required">Date is required.</span>
-                    <span v-if="!v$.deadline.afterToday"
-                      >Date must be after today.</span
-                    >
+                    <span v-if="!v$.deadline.afterToday">Date must be after today.</span>
                   </div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label
+                  for="deadline"
+                  class="col-sm-3 shifted-label"
+                  col-from-label
+                  >Role Skills</label>
+                <div class="col-sm-9">
+                  <Multiselect
+                    v-model="selected_skills"
+                    :options="skills"
+                    label="name"
+                    trackBy="name"
+                    :searchable="true"
+                    mode="tags"
+                  />
                 </div>
               </div>
 
               <!-- submit button -->
               <div class="row mb-3">
                 <div style="text-align: right">
-                  <a
-                    href="/HR/select_skills.html"
-                    id="selectSkillButton"
-                    class="btn btn-outline-dark"
-                    style="margin-right: 10px"
-                    >Select Skill</a
-                  >
                   <button
                     type="submit"
                     class="btn btn-warning"
@@ -107,6 +114,7 @@
 import axios from "axios";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
+import Multiselect from '@vueform/multiselect';
 
 const isFutureDate = (value) => {
   if (!value) return true;
@@ -123,12 +131,17 @@ export default {
       default: "create",
     },
   },
+  components: {
+      Multiselect,
+  },
   data() {
     return {
       role_name: "",
       role_description: "",
       deadline: null,
       formSubmitted: false, // Add this
+      skills: null,
+      selected_skills: null
     };
   },
   methods: {
@@ -147,6 +160,7 @@ export default {
                 role_name: this.role_name,
                 role_description: this.role_description,
                 deadline: this.deadline,
+                role_skill: this.selected_skills
               }
             );
 
@@ -167,6 +181,21 @@ export default {
   setup() {
     const v$ = useVuelidate();
     return { v$ };
+  },
+  created() {
+    // get all skills
+    axios.get('http://127.0.0.1:5003/skills')
+        .then(response => {
+            this.skills = response.data.data.map(item => {
+              return {
+                value: item.skill_ID,
+                name: item.skill_name
+              }
+            })
+        })
+        .catch(error => {
+            console.error('Failed to fetch the role data:', error);
+        });
   },
 
   validations: {
@@ -199,3 +228,4 @@ export default {
   padding-left: 15px;
 }
 </style>
+<style src="@vueform/multiselect/themes/default.css"></style>
