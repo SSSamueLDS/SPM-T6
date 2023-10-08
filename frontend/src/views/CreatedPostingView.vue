@@ -1,8 +1,6 @@
 <template>
-  <div class="PostingView">
-    <!-- Include your AppNavbar component here -->
-    <AppNavbar />
 
+  <div class="PostingView">
     <div class="container text-center mt-5">
       <div class="row">
         <!-- FILTER -->
@@ -28,7 +26,7 @@
           <div class="row">
             <div class="col-5 m-0 col-sm-5 col-md-6 col-lg-3 col-xl-2">
               <a
-                href="/CreatePosting"
+                href="/create-posting"
                 class="btn btn-dark w-100 m-2"
                 style="color: greenyellow; font-weight: bold"
                 >CREATE POSTING</a
