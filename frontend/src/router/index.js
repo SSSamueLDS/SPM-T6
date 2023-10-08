@@ -19,10 +19,19 @@ const routes = [
   },
   {
     path: "/posting",
-    name: "CreatedPosting",
+    name: "CreatedPostings",
     component: function () {
       return import(
         /* webpackChunkName: "about" */ "../views/CreatedPostingView.vue"
+      );
+    },
+  },
+  {
+    path: "/create-posting",
+    name: "CreatePosting",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "../views/CreatePosting.vue"
       );
     },
   },
