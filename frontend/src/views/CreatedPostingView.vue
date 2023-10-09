@@ -61,7 +61,7 @@
           </div>
 
           <!-- APPLICANTS -->
-          <div class="row mt-3" id="app">
+          <div class="row mt-3">
             <!-- Vue.js role listings go here -->
             <div v-for="(role, id) in roles" :key="id" class="row mt-3">
               <div class="mx-2 justify-content-center align-items-center">
@@ -130,7 +130,7 @@
                       <p style="font-weight: bold">
                         Application Deadline: {{ role.deadline }}
                       </p>
-                      <p>Required Skills:</p>
+                      <p>Required Skills: {{ role.skill_names.join(', ') }}</p>
                       <p style="font-weight: bold">About the role</p>
                       <p>{{ role.role_description }}</p>
                     </div>
@@ -205,12 +205,40 @@ export default {
   data() {
     return {
       roles: [],
+      role_skills: null,
+      skill_lookup: null
     };
   },
   methods: {
     processRoleName(roleName) {
       // Remove all occurrences of '#' from roleName
       return roleName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
+    },
+    fetchData() {
+      // First, fetch the skills lookup data
+      axios.get("http://127.0.0.1:5003/skills")
+        .then((response) => {
+          this.skillLookup = response.data.data.reduce((acc, skill) => {
+            acc[skill.skill_ID] = skill.skill_name;
+            return acc;
+          }, {});
+          return axios.get("http://127.0.0.1:5002/role_skill");
+        })
+        .then((response) => {
+          this.role_skills = response.data.data;
+          return axios.get("http://127.0.0.1:5002/roles");
+        })
+        .then((response) => {
+          this.roles = response.data.data;
+          this.roles.forEach((role) => {
+            role.role_tag = this.processRoleName(role.role_name);
+            let skillIdsForRole = this.role_skills?.[role.role_ID] || [];
+            role.skill_names = skillIdsForRole.map(id => this.skillLookup[id] || 'Unknown Skill');
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
     },
     fetchRoles() {
       // Replace with your API endpoint to fetch role listings
@@ -228,7 +256,7 @@ export default {
     },
   },
   created() {
-    this.fetchRoles();
+    this.fetchData();
   },
 };
 </script>
