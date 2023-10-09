@@ -273,6 +273,25 @@ def update_role_skill(role_id):
         }
     ), 201
 
+@app.route('/role_skill', methods =['GET'])
+def get_all_role_skill():
+    role_skills = RoleSkill.query.all()
+    role_skill_map = {}
+    
+    for rs in role_skills:
+        if rs.role_ID not in role_skill_map:
+            role_skill_map[rs.role_ID] = []
+        role_skill_map[rs.role_ID].append(rs.skill_ID)
+    
+    #result = [{'role_id': role_id, 'skill_ids': skill_ids} for role_id, skill_ids in role_skill_map.items()]
+    
+    return jsonify(
+        {
+            "code": 201,
+            "data": role_skill_map
+        }
+    ), 201
+
 
 @app.route('/role-listing')
 def role_listing():
