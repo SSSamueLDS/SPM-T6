@@ -1,5 +1,4 @@
 <template>
-
   <div class="PostingView">
     <div class="container text-center mt-5">
       <div class="row">
