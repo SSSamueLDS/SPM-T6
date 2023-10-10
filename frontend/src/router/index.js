@@ -33,6 +33,25 @@ const routes = [
       return import(
         /* webpackChunkName: "about" */ "../views/CreatePosting.vue"
       );
+      },
+    },
+  {
+    path: "/browse-skill",
+
+    name: "BrowseSkill",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "../views/SkillBrowserView.vue"
+      );
+    },
+  },
+  {
+    path: "/edit-posting",
+    name: "EditPosting",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "../views/EditPostingView.vue"
+      );
     },
   },
   {

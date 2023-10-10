@@ -6,9 +6,7 @@
 
         <div class="card">
           <div class="card-header custom-header">
-            <h4 class="no-margin" style="font-weight: bold">
-              {{ mode === "edit" ? "Edit A Role" : "Add A Role" }}
-            </h4>
+            <h4 class="no-margin" style="font-weight: bold">Edit a Role</h4>
             <!-- <h2 style="color: white">Add A Role</h2> -->
           </div>
 
@@ -60,14 +58,17 @@
                   >Application Deadline</label
                 >
                 <div class="col-sm-9">
-                  <input v-model="deadline"
+                  <input
+                    v-model="deadline"
                     type="date"
                     class="form-control"
                     id="deadline"
                   />
                   <div v-if="v$.deadline.$invalid" class="text-danger">
                     <span v-if="!v$.deadline.required">Date is required.</span>
-                    <span v-if="!v$.deadline.afterToday">Date must be after today.</span>
+                    <span v-if="!v$.deadline.afterToday"
+                      >Date must be after today.</span
+                    >
                   </div>
                 </div>
               </div>
@@ -128,9 +129,10 @@ const isFutureDate = (value) => {
 export default {
   name: "RoleForm",
   props: {
-    mode: {
-      type: String,
-      default: "create",
+    role_ID: {
+      // Added prop for role_ID
+      type: Number,
+      required: true,
     },
   },
   components: {
@@ -141,52 +143,28 @@ export default {
       role_name: "",
       role_description: "",
       deadline: null,
-      formSubmitted: false, // Add this
+      formSubmitted: false,
       skills: null,
       selected_skills: null
     };
   },
   methods: {
-    async onSubmit() {
-      this.formSubmitted = true; // Set this to true when form is submitted
-      if (this.mode === "create") {
-        // Logic for creating a new role
-        this.v$.$validate();
-
-        if (!this.v$.$pending && !this.v$.$error) {
-          // If there's no validation error and no validation is pending
-          try {
-            const response = await axios.post(
-              "http://localhost:5002/create_role",
-              {
-                role_name: this.role_name,
-                role_description: this.role_description,
-                deadline: this.deadline,
-                role_skill: this.selected_skills
-              }
-            );
-
-            if (response.data.code === 201) {
-              alert("Role added successfully!");
-            } else {
-              alert(response.data.message);
-            }
-          } catch (error) {
-            console.error("Error adding role:", error);
+    fetchRoleData() {
+      axios.get(`http://127.0.0.1:5002/roles/${this.role_ID}`)
+        .then(response => {
+          if (response.data && response.data.code === 200) {
+            this.role_name = response.data.data.role_name;
+            this.role_description = response.data.data.role_description;
+            this.deadline = response.data.data.deadline;
+            this.selected_skills = response.data.data.skill_IDs
+          } else {
+            console.error("Error fetching role data:", response.data.message);
           }
-        }
-      } else if (this.mode === "edit") {
-        // Logic for editing an existing role
-      }
-    },
-  },
-  setup() {
-    const v$ = useVuelidate();
-    return { v$ };
-  },
-  created() {
-    // get all skills
-    axios.get('http://127.0.0.1:5003/skills')
+        })
+        .catch(error => {
+            console.error('Failed to fetch the role data:', error);
+        });
+      axios.get('http://127.0.0.1:5003/skills')
         .then(response => {
             this.skills = response.data.data.map(item => {
               return {
@@ -198,8 +176,41 @@ export default {
         .catch(error => {
             console.error('Failed to fetch the role data:', error);
         });
-  },
+    },
+    async onSubmit() {
+      this.formSubmitted = true;
+      this.v$.$validate();
 
+      if (!this.v$.$pending && !this.v$.$error) {
+        try {
+          axios.put(`http://127.0.0.1:5002/update_role/${this.role_ID}`, 
+            {
+              role_name: this.role_name,
+              role_description: this.role_description,
+              deadline: this.deadline,
+              role_skill: this.selected_skills
+            }).then(response => {
+                alert('Role updated successfully!');
+                console.log(response)
+            })
+            .catch(error => {
+                alert('Failed to update the role. Please try again.');
+                console.log(error)
+            });
+        } catch (error) {
+          console.error("Error updating role:", error);
+          alert("There was an error updating the role. Please try again.");
+        }
+      }
+    },
+  },
+  mounted() {
+    this.fetchRoleData();
+  },
+  setup() {
+    const v$ = useVuelidate();
+    return { v$ };
+  },
   validations: {
     role_name: {
       required: required,
