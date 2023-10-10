@@ -35,4 +35,4 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     print("This is flask for " + os.path.basename(__file__) + "staff")
-    app.run(host='0.0.0.0', port=5002, debug=True)
+    app.run(host='0.0.0.0', port=5007, debug=True)
