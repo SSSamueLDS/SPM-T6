@@ -18,7 +18,7 @@
         3. Created Listing Page: 
             - Retrieve all listings
             - Retrieve all listing skill
-            - Get all skills form Vuex
+            - Get all skills from Vuex
             - Get all dept for filter purposes from Vuex
             - Retrieve all Applications, display the applicant name and add button to view their skills, linking with the staff id
         
@@ -32,7 +32,7 @@
             - Get all role from Vuex
             - Get all dept from Vuex
             - Retrieve listing details + skills
-            - Upon submit, call edit listing function (similar to edit listing)
+            - Upon submit, call edit listing function (similar to current edit role)
         
         6. Staff skill page:
             - Retrieve selected staff
