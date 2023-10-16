@@ -10,7 +10,7 @@ from os import environ
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or "mysql+mysqlconnector://admin:HelloWorld@db-spm.czpo8yl1nyay.us-east-1.rds.amazonaws.com:3306/spm2"
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or "mysql+mysqlconnector://admin:HelloWorld@db-spm.czpo8yl1nyay.us-east-1.rds.amazonaws.com:3306/spm3"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -33,8 +33,18 @@ def get_all_staffs():
 
 @app.route("/staffs/dept", methods=['GET'])
 def get_all_depts():
-    #fetch all unique departments from the staff table
-    return None
+    # fetch all unique departments from the staff table
+    depts = db.session.query(Staff.dept).distinct().all()
+    if depts:
+        depts_list = [dept[0] for dept in depts]
+        return jsonify({
+            "code": 200,
+            "data": depts_list
+        })
+    return jsonify({
+        "code": 404,
+        "message": "No departments found."
+    })
 
 if __name__ == '__main__':
     with app.app_context():

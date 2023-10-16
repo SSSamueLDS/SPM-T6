@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from models import db, Skill, listing, Listing, ListingSkill
+from models import db, Skill, Listing, ListingSkill
 
 from datetime import datetime
 import json
@@ -10,7 +10,7 @@ from os import environ
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or "mysql+mysqlconnector://admin:HelloWorld@db-spm.czpo8yl1nyay.us-east-1.rds.amazonaws.com:3306/spm2"
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or "mysql+mysqlconnector://admin:HelloWorld@db-spm.czpo8yl1nyay.us-east-1.rds.amazonaws.com:3306/spm3"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -53,7 +53,7 @@ def create_listing():
 @app.route("/listings", methods=['GET'])
 def get_all_listings():
     # fetch all listings from the database
-    listings = listing.query.all()
+    listings = Listing.query.all()
     if listings:
         return jsonify({
             "code": 200,
