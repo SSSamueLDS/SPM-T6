@@ -19,7 +19,7 @@ const routes = [
   },
   {
     path: "/posting",
-    name: "CreatedPosting",
+    name: "CreatedPostings",
     component: function () {
       return import(
         /* webpackChunkName: "about" */ "../views/CreatedPostingView.vue"
@@ -27,7 +27,26 @@ const routes = [
     },
   },
   {
+    path: "/apply-role",
+    name: "ApplyRole",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "../views/ApplyRoleView.vue"
+      );
+    },
+  },
+  {
+    path: "/create-posting",
+    name: "CreatePosting",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "../views/CreatePosting.vue"
+      );
+      },
+    },
+  {
     path: "/browse-skill",
+
     name: "BrowseSkill",
     component: function () {
       return import(
@@ -36,13 +55,14 @@ const routes = [
     },
   },
   {
-    path: "/edit-posting",
+    path: "/edit-posting/:roleID",
     name: "EditPosting",
     component: function () {
       return import(
         /* webpackChunkName: "about" */ "../views/EditPostingView.vue"
       );
     },
+    props: true
   },
   {
     path: "/skills",
