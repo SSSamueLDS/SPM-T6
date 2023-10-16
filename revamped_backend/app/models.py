@@ -138,7 +138,6 @@ class Application(db.Model):
     staff_name = db.Column('Staff_Name', db.String(100))
     listing_id = db.Column('Listing_ID', db.Integer, ForeignKey('Listing.Listing_ID'), nullable=False)
     date_applied = db.Column('Date_Applied', db.Date, nullable=False)
-    status = db.Column('Status', db.Enum('Pending', 'Accepted', 'Rejected', 'Under Review', 'Withdrawn'), nullable=False)
 
     def json(self):
         dto = {
@@ -147,6 +146,5 @@ class Application(db.Model):
             'staff_name': self.staff_name,
             'listing_id': self.listing_id,
             'date_applied': self.date_applied.strftime('%Y-%m-%d'),  # Format date as string
-            'status': self.status,
         }
         return dto
