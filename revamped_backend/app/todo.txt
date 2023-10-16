@@ -1,0 +1,64 @@
+1. Check if models.py is in sync with database schema (especially role, listing, listing_skill, application table)
+2. Check if we still need status field in Application table
+3. Page data needed requirement breakdown:
+    1. Whole App (Purpose is to reduce amount of querying data everytime user changes page, use Vuex): 
+        - Retrieve logged in staff
+        - logged in staff access role
+        - logged in staff skills
+        - all skills
+        - all roles (for fast loading in the edit and create listing page)
+        - all unique departments (we can pull this from staff table)
+        - Logout button, clear cookies and redirect back to login screen 
+
+    2. Login Page: 
+        - Retrieve all staff (for dropdown function, select staff id that we want to log in as)
+        - Upon submit, call Login function
+
+    HR VIEWS: 
+        3. Created Listing Page: 
+            - Retrieve all listings
+            - Retrieve all listing skill
+            - Get all skills form Vuex
+            - Get all dept for filter purposes from Vuex
+            - Retrieve all Applications, display the applicant name and add button to view their skills, linking with the staff id
+        
+        4. Create Listing Page:
+            - Get all role from Vuex
+            - Get selected role skill
+            - Get all dept from Vuex 
+            - Upon submit, call create new listing function (similar to create role now)
+
+        5. Edit Listing Page:
+            - Get all role from Vuex
+            - Get all dept from Vuex
+            - Retrieve listing details + skills
+            - Upon submit, call edit listing function (similar to edit listing)
+        
+        6. Staff skill page:
+            - Retrieve selected staff
+            - Retrieve selected staff skill
+            - Get all skills from Vuex
+
+        7. Search Staff page:
+            - Retrieve all staff, display in similar way as created listing
+            - Get dept from Vuex, for filtering purposes
+            - Upon clicking the staff card, gets redirected to Staff skill page(like no. 6)
+        
+    MANAGER VIEWS: 
+        8. Search Staff page:
+            - Same as No. 7
+
+        9. Created listing page:
+            - Same like No. 3 but cannot create and edit role
+
+    STAFF VIEWS:
+        10. Created Listing page:
+            - Same like No. 3 but have apply button instead
+            - Get staff skill from Vuex
+            - Get listing skill from Vuex 
+            - Get all skill from Vuex
+            - Don't forget to incorporate role skill match 
+            - Upon clicking apply, trigger apply function 
+
+    
+
