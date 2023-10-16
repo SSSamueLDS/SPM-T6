@@ -23,6 +23,7 @@ class Role(db.Model):
     role_ID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     role_name = db.Column(db.String(50), nullable=False)
     role_description = db.Column(db.String(255))
+    department = db.Column(db.String(50))
     deadline = db.Column(db.Date)
     
     def json(self):
@@ -30,6 +31,7 @@ class Role(db.Model):
             'role_ID': self.role_ID,
             'role_name': self.role_name,
             'role_description': self.role_description,
+            'department': self.department,
             'deadline': self.deadline.strftime('%Y-%m-%d') if self.deadline is not None else None
 
         }
@@ -83,9 +85,10 @@ def create_role():
 
         role_name = data.get('role_name')
         role_description = data.get('role_description')
+        department = data.get('department')
         deadline = data.get('deadline')
 
-        new_role = Role(role_name=role_name, role_description=role_description, deadline=deadline)
+        new_role = Role(role_name=role_name, role_description=role_description, deadline=deadline, department=department)
 
         try:
             db.session.add(new_role)

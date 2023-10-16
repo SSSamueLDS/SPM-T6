@@ -7,7 +7,7 @@
         <div class="card">
           <div class="card-header custom-header">
             <h4 class="no-margin" style="font-weight: bold">
-              {{ mode === "edit" ? "Edit A Role" : "Add A Role" }}
+              {{ mode === "edit" ? "Edit A Role" : "Create A Role" }}
             </h4>
             <!-- <h2 style="color: white">Add A Role</h2> -->
           </div>
@@ -33,6 +33,7 @@
                   </div>
                 </div>
               </div>
+
               <div class="row mb-3">
                 <label
                   for="role_description"
@@ -52,6 +53,27 @@
                   </div>
                 </div>
               </div>
+
+              <div class="row mb-3">
+                <label
+                  for="role_department"
+                  class="col-sm-3 shifted-label"
+                  col-from-label
+                  >Department</label
+                >
+                <div class="col-sm-9">
+                  <input
+                    v-model="role_department"
+                    type="text"
+                    class="form-control"
+                    id="role_name"
+                  />
+                  <div v-if="v$.role_name.$error" class="text-danger">
+                    Role department is required
+                  </div>
+                </div>
+              </div>
+
               <div class="row mb-3">
                 <label
                   for="deadline"
@@ -140,6 +162,7 @@ export default {
     return {
       role_name: "",
       role_description: "",
+      role_department: "",
       deadline: null,
       formSubmitted: false, // Add this
       skills: null,

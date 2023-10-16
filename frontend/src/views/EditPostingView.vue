@@ -1,6 +1,6 @@
 <template>
   <div class="EditPostingView">
-    <EditRoleForm :role_ID="24" />
+    <EditRoleForm :role_ID=Number(roleID) />
   </div>
 </template>
 
@@ -13,5 +13,6 @@ export default {
   components: {
     EditRoleForm,
   },
+  props: ['roleID']
 };
 </script>

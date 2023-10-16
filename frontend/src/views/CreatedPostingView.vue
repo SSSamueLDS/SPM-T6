@@ -20,6 +20,7 @@
               <!-- Another set of checkbox filters go here -->
             </div>
           </div>
+      
         </div>
         <div class="col-10">
           <div class="row">
@@ -93,12 +94,21 @@
                         style="color: greenyellow; font-weight: bold"
                         >View Applicants</a
                       >
-                      <a
+                      <!-- <a
                         :href="`edit_role_listing.html?role_id=${role.role_ID}`"
                         class="btn btn-dark"
                         style="color: greenyellow; font-weight: bold"
                         >Edit</a
+                      > -->
+                      <router-link
+                        :to="{ name: 'EditPosting', params: { roleID: role.role_ID } }"
+                        class="btn btn-dark"
+                        style="{ color: 'greenyellow', 'font-weight': 'bold' }"
+
                       >
+                        Edit
+                      </router-link>
+
                     </div>
                   </div>
                 </div>
