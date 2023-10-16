@@ -12,43 +12,44 @@
             <!-- <h2 style="color: white">Add A Role</h2> -->
           </div>
 
+          <!-- <div v-for="role of all_roles" :key="role.role_id">
+            {{ role }}
+          </div> -->
           <div class="card-body">
             <form @submit.prevent="onSubmit">
               <div class="row mb-3">
                 <label
-                  for="role_name"
+                  for="listing_name"
                   class="col-sm-3 shifted-label"
                   col-from-label
                   >Role Title</label
                 >
                 <div class="col-sm-9">
-                  <input
-                    v-model="role_name"
-                    type="text"
-                    class="form-control"
-                    id="role_name"
-                  />
-                  <div v-if="v$.role_name.$error" class="text-danger">
-                    Role name is required.
+                  <select id="listing_name" class="form-select" aria-label="Default select example" @change="prefillForm" v-model="selected_role">
+                    <option selected disabled>Select role</option>
+                    <option :value="role.role_id" v-for="role of all_roles" :key="role.role_id">{{role.role_name}}</option>
+                  </select>
+                  <div v-if="v$.listing_name.$error" class="text-danger">
+                    Role listing name is required.
                   </div>
                 </div>
               </div>
 
               <div class="row mb-3">
                 <label
-                  for="role_description"
+                  for="listing_description"
                   class="col-sm-3 shifted-label"
                   col-from-label
                   >Description</label
                 >
                 <div class="col-sm-9">
                   <textarea
-                    v-model="role_description"
+                    v-model="listing_description"
                     class="form-control"
-                    id="role_description"
+                    id="listing_description"
                     rows="3"
                   ></textarea>
-                  <div v-if="v$.role_description.$error" class="text-danger">
+                  <div v-if="v$.listing_description.$error" class="text-danger">
                     Description is required.
                   </div>
                 </div>
@@ -56,21 +57,19 @@
 
               <div class="row mb-3">
                 <label
-                  for="role_department"
+                  for="listing_department"
                   class="col-sm-3 shifted-label"
                   col-from-label
                   >Department</label
                 >
                 <div class="col-sm-9">
-                  <input
-                    v-model="role_department"
-                    type="text"
-                    class="form-control"
-                    id="role_name"
-                  />
-                  <div v-if="v$.role_name.$error" class="text-danger">
+                  <select id="listing_department" class="form-select" aria-label="Department select" v-model="listing_department">
+                    <option selected disabled>Select Department</option>
+                    <option v-for="dept of all_dept" :key="dept" :value="dept">{{dept}}</option>
+                  </select>
+                  <!-- <div v-if="v$.listing_department.$error" class="text-danger">
                     Role department is required
-                  </div>
+                  </div> -->
                 </div>
               </div>
 
@@ -103,7 +102,7 @@
                 <div class="col-sm-9">
                   <Multiselect
                     v-model="selected_skills"
-                    :options="skills"
+                    :options="all_skills"
                     label="name"
                     trackBy="name"
                     :searchable="true"
@@ -160,14 +159,29 @@ export default {
   },
   data() {
     return {
-      role_name: "",
-      role_description: "",
-      role_department: "",
+      selected_role: null,
+      listing_name: "",
+      listing_description: "",
+      listing_department: "",
       deadline: null,
       formSubmitted: false, // Add this
-      skills: null,
       selected_skills: null
     };
+  },
+  computed: {
+    all_skills() {
+      return this.$store.state.all_skills.map(item => {
+              return {
+                value: item.skill_id,
+                name: item.skill_name
+              }})
+    },
+    all_roles() {
+      return this.$store.state.all_roles;
+    },
+    all_dept() {
+      return this.$store.state.all_dept;
+    }
   },
   methods: {
     async onSubmit() {
@@ -180,12 +194,14 @@ export default {
           // If there's no validation error and no validation is pending
           try {
             const response = await axios.post(
-              "http://localhost:5002/create_role",
+              "http://localhost:5002/create_listing",
               {
-                role_name: this.role_name,
-                role_description: this.role_description,
+                listing_name: this.listing_name,
+                listing_description: this.listing_description,
                 deadline: this.deadline,
-                role_skill: this.selected_skills
+                dept: this.listing_department,
+                listing_skill: this.selected_skills,
+                hr_id: 160008
               }
             );
 
@@ -202,6 +218,18 @@ export default {
         // Logic for editing an existing role
       }
     },
+    prefillForm() {
+      console.log(this.selected_role)
+      var selectedRole = this.all_roles[this.selected_role - 1];
+      this.listing_name = selectedRole.role_name;
+      this.listing_description = selectedRole.role_description;
+      axios.get(`http://127.0.0.1:5005/role_skill/${this.selected_role}`)
+      .then((response) => {
+        this.selected_skills = response.data.data.skill_ids;
+      }).catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+    }
   },
   setup() {
     const v$ = useVuelidate();
@@ -221,13 +249,14 @@ export default {
         .catch(error => {
             console.error('Failed to fetch the role data:', error);
         });
+    console.log(this.all_dept, this.all_roles)
   },
 
   validations: {
-    role_name: {
+    listing_name: {
       required: required,
     },
-    role_description: {
+    listing_description: {
       required: required,
     },
     deadline: {
