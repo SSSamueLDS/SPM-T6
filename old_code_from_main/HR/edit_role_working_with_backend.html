@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.korzh.com/metroui/v4/css/metro-all.min.css">
+    <title>The Job Seeker</title>
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <!-- Vue CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+</head>
+
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" style="color: #7FFFD4;" href="#">THE JOB SEEKER</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../created_role_listings.html">CREATED POSTINGS</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">SKILLS</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">EMPLOYEES</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">LOGOUT</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5" id = "app">
+        <div class="row justify-content-center">
+            <div class="col-md-10"> <!-- Restrict width to 8 columns on medium devices -->
+                {{role_skill}}
+                {{skills}}
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Edit A Role</h3>
+                        <h6>Role ID : {{role.role_ID}}</h6>
+                    </div>
+
+                    <div class="card-body">
+                        <form>
+                            <div class="row mb-3">
+                                <label for="role_name" class="col-sm-3" col-from-label>Role Title</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="role_name" v-model="role.role_name" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="role_description" class="col-sm-3" col-from-label>Description</label>
+                                <div class="col-sm-9">
+                                    <textarea class="form-control" id="role_description" rows="3" v-model="role.role_description" required></textarea>
+                                </div>
+                            </div>
+                            <div class="row mb-3"> 
+                                <label for="role_name" class="col-sm-3" col-from-label>Select Skills</label>
+                                <div class="col-sm-9">
+                                    <div class="form-check" v-for="skill of skills">
+                                        <input class="form-check-input" type="checkbox" :value="skill.skill_ID" :id="skill.skill_ID" v-model="role_skill">
+                                        <label class="form-check-label" :for="skill.skill_ID">
+                                          {{skill.skill_name}}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="deadline" class="col-sm-3" col-from-label>Application Deadline</label>
+                                <div class="col-sm-9">
+                                    <input type="date" class="form-control" id="deadline" v-model="role.deadline" required>
+                                </div>
+                            </div>
+                            
+                            
+                
+                            <!-- submit button -->
+                            <div class="row mb-3">
+                                <div style="text-align: right;">
+                                    <button type="button" class="btn btn-dark" @click="updateRole" id="submitButton" style="color: greenyellow; font-weight: bold;">Submit</button>               
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                role: {
+                    role_name: '',
+                    role_description: '',
+                    deadline: '',
+                },
+                role_skill : [],
+                skills : [],
+                role_ID: null,
+            };
+        },
+        methods: {
+            updateRole() {
+                axios.put(`http://127.0.0.1:5002/update_role/${this.role_ID}`, {...this.role, "role_skill": this.role_skill})
+                    .then(response => {
+                        alert('Role updated successfully!');
+                        window.location.href = '/HR/created_role_listings.html'
+                    })
+                    .catch(error => {
+                        alert('Failed to update the role. Please try again.');
+                    });
+            },
+        },
+        async created() {
+            const urlParams = new URLSearchParams(window.location.search);
+            this.role_ID = urlParams.get('role_id');
+            console.log(this.role_ID);
+    
+            if (this.role_ID) {
+                // get role desc
+                axios.get(`http://127.0.0.1:5002/roles/${this.role_ID}`)
+                    .then(response => {
+                        console.log(response.data.data);
+                        this.role = response.data.data;
+                    })
+                    .catch(error => {
+                        console.error('Failed to fetch the role data:', error);
+                    });
+
+                // get list of skill ids
+                axios.get(`http://127.0.0.1:5002/role_skill/${this.role_ID}`)
+                    .then(response => {
+                        console.log("Role_skill data ");
+                        console.log(response.data.data.skill_IDs);
+                        this.role_skill = response.data.data.skill_IDs
+                    })
+                    .catch(error => {
+                        console.error('Failed to fetch the role data:', error);
+                    });
+
+                // get all skills
+                axios.get('http://127.0.0.1:5003/skills')
+                    .then(response => {
+                        this.skills = response.data.data;
+                        console.log(this.skills);
+                    })
+                    .catch(error => {
+                        console.error('Failed to fetch the role data:', error);
+                    });
+            } else {
+                console.error('No role_id provided');
+            }
+        }
+    });
+
+    app.mount('#app');
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+     integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+<script src="https://cdn.korzh.com/metroui/v4/js/metro.min.js"></script>
+
+
+</body>
+
+</html>
