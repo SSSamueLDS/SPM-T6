@@ -1,7 +1,7 @@
 import pandas as pd
 from sqlalchemy import create_engine, text
 
-DATABASE_URI = "mysql+mysqlconnector://admin:HelloWorld@db-spm.czpo8yl1nyay.us-east-1.rds.amazonaws.com:3306/spm2"
+DATABASE_URI = "mysql+mysqlconnector://admin:HelloWorld@db-spm.czpo8yl1nyay.us-east-1.rds.amazonaws.com:3306/spm3"
 engine = create_engine(DATABASE_URI)
 connection = engine.connect()
 
@@ -27,8 +27,6 @@ skill_df_with_ids = pd.DataFrame(result_skill.fetchall(), columns=result_skill.k
 role_skill_df = role_skill_df.merge(role_df_with_ids, on='Role_Name', how='left')
 role_skill_df = role_skill_df.merge(skill_df_with_ids, on='Skill_Name', how='left')
 role_skill_df = role_skill_df[['Role_ID', 'Skill_ID']]
-# nan_rows = role_skill_df[role_skill_df['Role_ID'].isna() | role_skill_df['Skill_ID'].isna()]
-# print(nan_rows)
 role_skill_df.to_sql('Role_Skill', con=engine, if_exists='append', index=False)
 
 staff_skill_df = staff_skill_df.merge(staff_df, on="Staff_ID", how="left")
