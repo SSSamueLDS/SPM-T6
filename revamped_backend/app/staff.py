@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from models import db, Staff
+from models import db, Staff, StaffSkill, Skill
 
 from datetime import datetime
 import json
@@ -35,6 +35,25 @@ def get_all_staffs():
 def get_all_depts():
     #fetch all unique departments from the staff table
     return None
+
+@app.route("/staffs/skills/<int:staff_id>", methods=['GET'])
+def get_staff_skills(staff_id):
+    
+    staff_skill= StaffSkill.query.filter_by(staff_id=staff_id).all()
+    skill_list=[]
+    for staff in staff_skill:
+        skill_list.append(staff.skill_id)
+    skill_names=[]
+    for skill in skill_list:
+        skill=Skill.query.filter_by(skill_id=skill).first()
+        skill_names.append(skill.skill_name)
+    return jsonify({
+        "code": 200,
+        "data": skill_names
+    })
+
+
+
 
 if __name__ == '__main__':
     with app.app_context():
