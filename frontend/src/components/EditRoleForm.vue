@@ -6,7 +6,7 @@
 
         <div class="card">
           <div class="card-header custom-header">
-            <h4 class="no-margin" style="font-weight: bold">Edit a Role</h4>
+            <h4 class="no-margin" style="font-weight: bold">Edit Role Listing</h4>
             <!-- <h2 style="color: white">Add A Role</h2> -->
           </div>
 
@@ -14,42 +14,60 @@
             <form @submit.prevent="onSubmit">
               <div class="row mb-3">
                 <label
-                  for="role_name"
+                  for="listing_name"
                   class="col-sm-3 shifted-label"
                   col-from-label
                   >Role Title</label
                 >
                 <div class="col-sm-9">
-                  <input
-                    v-model="role_name"
-                    type="text"
-                    class="form-control"
-                    id="role_name"
-                  />
-                  <div v-if="v$.role_name.$error" class="text-danger">
-                    Role name is required.
+                  <select id="listing_name" class="form-select" aria-label="Default select example" @change="prefillForm" v-model="selected_role">
+                    <option disabled>Select role</option>
+                    <option :value="role" v-for="role of all_roles" :key="role.role_id">{{role.role_name}}</option>
+                  </select>
+                  <div v-if="v$.listing_name.$error" class="text-danger">
+                    Role listing name is required.
                   </div>
                 </div>
               </div>
+
               <div class="row mb-3">
                 <label
-                  for="role_description"
+                  for="listing_description"
                   class="col-sm-3 shifted-label"
                   col-from-label
                   >Description</label
                 >
                 <div class="col-sm-9">
                   <textarea
-                    v-model="role_description"
+                    v-model="listing_description"
                     class="form-control"
-                    id="role_description"
+                    id="listing_description"
                     rows="3"
                   ></textarea>
-                  <div v-if="v$.role_description.$error" class="text-danger">
+                  <div v-if="v$.listing_description.$error" class="text-danger">
                     Description is required.
                   </div>
                 </div>
               </div>
+
+              <div class="row mb-3">
+                <label
+                  for="listing_department"
+                  class="col-sm-3 shifted-label"
+                  col-from-label
+                  >Department</label
+                >
+                <div class="col-sm-9">
+                  <select id="listing_department" class="form-select" aria-label="Department select" v-model="listing_department">
+                    <option selected disabled>Select Department</option>
+                    <option v-for="dept of all_dept" :key="dept" :value="dept">{{dept}}</option>
+                  </select>
+                  <!-- <div v-if="v$.listing_department.$error" class="text-danger">
+                    Role department is required
+                  </div> -->
+                </div>
+              </div>
+
               <div class="row mb-3">
                 <label
                   for="deadline"
@@ -66,9 +84,7 @@
                   />
                   <div v-if="v$.deadline.$invalid" class="text-danger">
                     <span v-if="!v$.deadline.required">Date is required.</span>
-                    <span v-if="!v$.deadline.afterToday"
-                      >Date must be after today.</span
-                    >
+                    <span v-if="!v$.deadline.afterToday">Date must be after today.</span>
                   </div>
                 </div>
               </div>
@@ -82,7 +98,7 @@
                 <div class="col-sm-9">
                   <Multiselect
                     v-model="selected_skills"
-                    :options="skills"
+                    :options="all_skills"
                     label="name"
                     trackBy="name"
                     :searchable="true"
@@ -140,23 +156,42 @@ export default {
   },
   data() {
     return {
-      role_name: "",
-      role_description: "",
+      selected_role: null,
+      listing_name: "",
+      listing_description: "",
+      listing_department: "",
       deadline: null,
       formSubmitted: false,
-      skills: null,
       selected_skills: null
     };
   },
+  computed: {
+    all_skills() {
+      return this.$store.state.all_skills.map(item => {
+              return {
+                value: item.skill_id,
+                name: item.skill_name
+              }})
+    },
+    all_roles() {
+      return this.$store.state.all_roles;
+    },
+    all_dept() {
+      return this.$store.state.all_dept;
+    }
+  },
   methods: {
     fetchRoleData() {
-      axios.get(`http://127.0.0.1:5002/roles/${this.role_ID}`)
+      axios.get(`http://127.0.0.1:5002/listings/${this.role_ID}`)
         .then(response => {
+          console.log(response.data.data);
           if (response.data && response.data.code === 200) {
-            this.role_name = response.data.data.role_name;
-            this.role_description = response.data.data.role_description;
+            this.listing_name = response.data.data.listing_name;
+            this.listing_description = response.data.data.listing_description;
             this.deadline = response.data.data.deadline;
-            this.selected_skills = response.data.data.skill_IDs
+            this.listing_department = response.data.data.dept;
+            this.selected_skills = response.data.data.skill_ids;
+            this.selected_role = this.all_roles.find(role => role.role_name === this.listing_name);
           } else {
             console.error("Error fetching role data:", response.data.message);
           }
@@ -164,18 +199,17 @@ export default {
         .catch(error => {
             console.error('Failed to fetch the role data:', error);
         });
-      axios.get('http://127.0.0.1:5003/skills')
-        .then(response => {
-            this.skills = response.data.data.map(item => {
-              return {
-                value: item.skill_ID,
-                name: item.skill_name
-              }
-            })
-        })
-        .catch(error => {
-            console.error('Failed to fetch the role data:', error);
-        });
+    },
+    prefillForm() {
+      console.log(this.selected_role);
+      this.listing_name = this.selected_role.role_name;
+      this.listing_description = this.selected_role.role_description;
+      axios.get(`http://127.0.0.1:5005/role_skill/${this.selected_role.role_id}`)
+      .then((response) => {
+        this.selected_skills = response.data.data.skill_ids;
+      }).catch((error) => {
+        console.error("Error fetching data:", error);
+      });
     },
     async onSubmit() {
       this.formSubmitted = true;
@@ -183,12 +217,13 @@ export default {
 
       if (!this.v$.$pending && !this.v$.$error) {
         try {
-          axios.put(`http://127.0.0.1:5002/update_role/${this.role_ID}`, 
+          axios.put(`http://127.0.0.1:5002/update_listing/${this.role_ID}`, 
             {
-              role_name: this.role_name,
-              role_description: this.role_description,
+              listing_name: this.listing_name,
+              listing_description: this.listing_description,
               deadline: this.deadline,
-              role_skill: this.selected_skills
+              dept: this.listing_department,
+              listing_skill: this.selected_skills
             }).then(response => {
                 alert('Role updated successfully!');
                 console.log(response)
@@ -212,10 +247,10 @@ export default {
     return { v$ };
   },
   validations: {
-    role_name: {
+    listing_name: {
       required: required,
     },
-    role_description: {
+    listing_description: {
       required: required,
     },
     deadline: {

@@ -67,7 +67,7 @@ def get_all_listings():
 @app.route("/listings/<int:listing_id>", methods=['GET'])
 def get_listing(listing_id):
     # fetch listing by id
-    listing = listing.query.filter_by(listing_id=listing_id).first()
+    listing = Listing.query.filter_by(listing_id=listing_id).first()
     print(listing)
     skill_ids = get_skill_ids_by_listing(listing_id)
     print(skill_ids)
@@ -86,56 +86,45 @@ def get_listing(listing_id):
 
 @app.route("/update_listing/<int:listing_id>", methods=['PUT'])
 def update_listing(listing_id):
-    listing = listing.query.filter_by(listing_id=listing_id).first()
-    if listing:
-        data = request.get_json()
-        listing.listing_name = data.get('listing_name')
-        listing.listing_description = data.get('listing_description')
-        listing.deadline = data.get('deadline')
-        db.session.commit()
-        update_listing_skill(skill_ids=data.get('listing_skill'), listing_id=listing_id)
-
+    listing = Listing.query.filter_by(listing_id=listing_id).first()
+    if not listing:
         return jsonify(
             {
-                "code": 200,
-                "data": listing.json()
+                "code": 404,
+                "data": {"listing_id": listing_id},
+                "message": "listing not found."
             }
-        )
-    return jsonify(
-        {
-            "code": 404,
-            "data": {
-                "listing_id": listing_id
-            },
-            "message": "listing not found."
-        }
-    ), 404
+        ), 404
 
-# This is to create a new skill
-@app.route('/skill', methods=['POST'])
-def create_skill():
     data = request.get_json()
-    skill_name = data.get('skill_name')
-
-    new_skill = Skill(skill_name = skill_name)
+    listing.listing_name = data.get('listing_name')
+    listing.listing_description = data.get('listing_description')
+    listing.dept = data.get('dept')
+    listing.deadline = data.get('deadline')
 
     try:
-        db.session.add(new_skill)
+        ListingSkill.query.filter_by(listing_id=listing_id).delete()
+
+        new_listing_skills = [ListingSkill(listing_id=listing_id, skill_id=skill_id) for skill_id in data.get('listing_skill')]
+        db.session.bulk_save_objects(new_listing_skills)
+        
         db.session.commit()
+
     except Exception as e:
+        db.session.rollback()
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred while adding new skill : " + str(e)
+                "message": "An error occurred while updating the listing and its skills: " + str(e)
             }
         ), 500
 
     return jsonify(
         {
-            "code": 201,
-            "data": new_skill.json()
+            "code": 200,
+            "data": listing.json()
         }
-    ), 201
+    )
 
 # This is to find all the skills given specific listing id
 @app.route("/listing_skill/<int:listing_id>", methods=['GET'])
@@ -196,23 +185,22 @@ def get_skill_ids_by_listing(listing_id):
         }), 500
 
 def create_listing_skill(skill_ids, listing_id):
+    listing_skills = []
     for skill_id in skill_ids:
-        new_listing_skill = ListingSkill(listing_id = listing_id, skill_id = skill_id)
-        try:
-            db.session.add(new_listing_skill)
-            db.session.commit()
-            print('new entry commited')
-        except Exception as e:
-            print(e)
-            return jsonify(
-                {
-                    "code": 500,
-                    "message": "An error occurred while adding new listing skill" + str(e)
-                }
-            ), 500
-        
-        print(json.dumps(new_listing_skill.json(), default=str)) # convert a JSON object to a string and print
-        print()
+        new_listing_skill = ListingSkill(listing_id=listing_id, skill_id=skill_id)
+        listing_skills.append(new_listing_skill)
+
+    try:
+        db.session.bulk_save_objects(listing_skills)
+        db.session.commit()
+    except Exception as e:
+        print(e)
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while adding new listing skills: " + str(e)
+            }
+        ), 500
 
     return jsonify(
         {

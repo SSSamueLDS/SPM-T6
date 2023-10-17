@@ -7,14 +7,11 @@
         <div class="card">
           <div class="card-header custom-header">
             <h4 class="no-margin" style="font-weight: bold">
-              {{ mode === "edit" ? "Edit A Role" : "Create A Role" }}
+              Create a Role Listing
             </h4>
             <!-- <h2 style="color: white">Add A Role</h2> -->
           </div>
 
-          <!-- <div v-for="role of all_roles" :key="role.role_id">
-            {{ role }}
-          </div> -->
           <div class="card-body">
             <form @submit.prevent="onSubmit">
               <div class="row mb-3">
@@ -81,7 +78,8 @@
                   >Application Deadline</label
                 >
                 <div class="col-sm-9">
-                  <input v-model="deadline"
+                  <input 
+                    v-model="deadline"
                     type="date"
                     class="form-control"
                     id="deadline"
