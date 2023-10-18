@@ -5,7 +5,8 @@ export default createStore({
     state: {
         all_skills: [],
         all_dept: [],
-        all_roles: []
+        all_roles: [],
+        all_listing: [],
     },
     mutations: {
         setAllSkills(state, data) {
@@ -16,6 +17,9 @@ export default createStore({
         },
         setAllRoles(state, data) {
             state.all_roles = data;
+        },
+        setAllListing(state, data) {
+            state.all_listing = data;
         },
     },
     actions: {
@@ -30,6 +34,11 @@ export default createStore({
         async fetchAllRoles({ commit }) {
             const response = await axios.get('http://127.0.0.1:5005/roles');
             commit('setAllRoles', response.data.data);
-        }
+        },
+        async fetchAllListing({ commit }) {
+            const response = await axios.get('http://127.0.0.1:5002/listings');
+            commit('setAllListing', response.data.data);
+        },
+
     }
 });

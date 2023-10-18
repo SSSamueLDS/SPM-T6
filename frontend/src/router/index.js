@@ -75,6 +75,16 @@ const routes = [
     },
   },
   {
+    path: "/apply-role",
+
+    name: "ApplyRole",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "../views/ApplyRoleView.vue"
+      );
+    },
+  },
+  {
     path: "/skills",
     name: "skills",
   },

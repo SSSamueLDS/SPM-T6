@@ -20,7 +20,6 @@
               <!-- Another set of checkbox filters go here -->
             </div>
           </div>
-      
         </div>
         <div class="col-10">
           <div class="row">
@@ -100,15 +99,14 @@
                         style="color: greenyellow; font-weight: bold"
                         >Edit</a
                       > -->
-                      <router-link
+                      <!-- <router-link
                         :to="{ name: 'EditPosting', params: { roleID: role.role_ID } }"
                         class="btn btn-dark"
                         style="{ color: 'greenyellow', 'font-weight': 'bold' }"
 
                       >
                         Edit
-                      </router-link>
-
+                      </router-link> -->
                     </div>
                   </div>
                 </div>
@@ -140,7 +138,7 @@
                       <p style="font-weight: bold">
                         Application Deadline: {{ role.deadline }}
                       </p>
-                      <p>Required Skills: {{ role.skill_names.join(', ') }}</p>
+                      <p>Required Skills: {{ role.skill_names.join(", ") }}</p>
                       <p style="font-weight: bold">About the role</p>
                       <p>{{ role.role_description }}</p>
                     </div>
@@ -216,7 +214,7 @@ export default {
     return {
       roles: [],
       role_skills: null,
-      skill_lookup: null
+      skill_lookup: null,
     };
   },
   methods: {
@@ -226,24 +224,27 @@ export default {
     },
     fetchData() {
       // First, fetch the skills lookup data
-      axios.get("http://127.0.0.1:5003/skills")
+      axios
+        .get("http://127.0.0.1:5003/skills")
         .then((response) => {
           this.skillLookup = response.data.data.reduce((acc, skill) => {
             acc[skill.skill_ID] = skill.skill_name;
             return acc;
           }, {});
-          return axios.get("http://127.0.0.1:5002/role_skill");
+          return axios.get("http://127.0.0.1:5005/role_skill");
         })
         .then((response) => {
           this.role_skills = response.data.data;
-          return axios.get("http://127.0.0.1:5002/roles");
+          return axios.get("http://127.0.0.1:5005/roles");
         })
         .then((response) => {
           this.roles = response.data.data;
           this.roles.forEach((role) => {
             role.role_tag = this.processRoleName(role.role_name);
             let skillIdsForRole = this.role_skills?.[role.role_ID] || [];
-            role.skill_names = skillIdsForRole.map(id => this.skillLookup[id] || 'Unknown Skill');
+            role.skill_names = skillIdsForRole.map(
+              (id) => this.skillLookup[id] || "Unknown Skill",
+            );
           });
         })
         .catch((error) => {
@@ -251,14 +252,20 @@ export default {
         });
     },
     fetchRoles() {
+      console.log("Fetching roles...");
+
       // Replace with your API endpoint to fetch role listings
       axios
-        .get("http://127.0.0.1:5002/roles") // Change the URL to your API endpoint
+        .get("http://127.0.0.1:5005/roles") // Change the URL to your API endpoint
         .then((response) => {
+          console.log("Response from API:", response);
+
           this.roles = response.data.data;
           this.roles.forEach((role) => {
             role.role_tag = this.processRoleName(role.role_name);
           });
+
+          console.log("Roles after processing:", this.roles);
         })
         .catch((error) => {
           console.error("Error fetching roles:", error);
