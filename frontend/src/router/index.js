@@ -55,6 +55,16 @@ const routes = [
     },
   },
   {
+    path: "/view-applicant-skill",
+
+    name: "ViewApplicantSkill",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "../views/ApplicantSkillView.vue"
+      );
+    },
+  },
+  {
     path: "/edit-posting/:roleID",
     name: "EditPosting",
     component: function () {
