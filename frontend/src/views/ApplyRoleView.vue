@@ -84,7 +84,7 @@
                     <p class="card-text">
                       Skill Match: {{ skillMatchPercentage(listingsWithSkills[listing.listing_id]) }}%
                     </p>
-                    <p class="card-text">{{ listing.listing_description }}</p>
+                    <p class="card-text">{{ truncateDescription(listing.listing_description) }}</p>
                     <p class="card-text">
                         Skill Required: 
                         <span v-for="skill in listingsWithSkills[listing.listing_id]" :key="skill">
@@ -220,7 +220,15 @@ export default {
 
       let percentage = (matchCount / skillsForListing.length) * 100;
       return Math.round(percentage);  // <-- Use Math.round() here
-    }
+    }, 
+
+    truncateDescription(description) {
+        const words = description.split(' ');
+        if (words.length > 100) {
+            return words.slice(0, 100).join(' ') + '...';
+        }
+        return description;
+    },
 
   },
 
