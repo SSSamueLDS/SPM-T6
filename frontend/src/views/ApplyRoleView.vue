@@ -1,6 +1,8 @@
 <template>
   <p>
-    <!-- {{$store.state.all_listing}} -->
+    <!-- {{$store.state.user_skills}}
+    {{ listingsWithSkills }} -->
+    
   </p>
 
   <div class="PostingView">
@@ -27,16 +29,16 @@
         </div>
         <div class="col-10">
           <div class="row">
-            <div class="col-5 m-0 col-sm-5 col-md-6 col-lg-3 col-xl-2">
+            <!-- <div class="col-5 m-0 col-sm-5 col-md-6 col-lg-3 col-xl-2">
               <a
                 href="/create-posting"
                 class="btn btn-dark w-100 m-2"
                 style="color: greenyellow; font-weight: bold"
                 >CREATE POSTING</a
               >
-            </div>
+            </div> -->
             <div
-              class="col-5 d-flex align-items-center col-sm-7 col-md-6 col-lg-9 col-xl-10"
+              class="col-5 d-flex align-items-center col-sm-10 col-md-12 col-lg-12 col-xl-12"
             >
               <form class="form-inline d-flex w-100">
                 <div class="input-group">
@@ -80,9 +82,18 @@
                   <div class="card-body text-left" style="text-align: left">
                     <h5 class="card-title">{{ listing.listing_name }}</h5>
                     <p class="card-text">
-                      Skill Match: 
+                      Skill Match: {{ skillMatchPercentage(listingsWithSkills[listing.listing_id]) }}%
                     </p>
                     <p class="card-text">{{ listing.listing_description }}</p>
+                    <p class="card-text">
+                        Skill Required: 
+                        <span v-for="skill in listingsWithSkills[listing.listing_id]" :key="skill">
+                            <span :style="{ backgroundColor: userHasSkill(skill) ? 'yellow' : 'grey', borderRadius: '5px', padding: '5px', marginRight: '5px' }">
+                                {{ skill }}
+                            </span>
+                        </span>
+                    </p>
+
                     <p class="card-text">
                       Department: {{ listing.dept }}</p>
                     <p class="card-text">
@@ -92,15 +103,11 @@
                     </p>
                     <div class="col" style="text-align: right">
                       <!-- Button to trigger applicants modal -->
-                      <a
+                      <button
                         href="#"
                         class="btn btn-dark"
-                        data-bs-toggle="modal"
-                        v-bind:data-bs-target="
-                          '#' + listing.role_tag + 'ApplicantsModal'
-                        "
                         style="color: greenyellow; font-weight: bold"
-                        >Apply</a
+                        >Apply</button
                       >
                       <!-- <a
                         :href="`edit_role_listing.html?role_id=${role.role_ID}`"
@@ -130,13 +137,13 @@
 
 <script>
 // import { ref, onMounted } from 'vue';
-// import axios from 'axios';
+import axios from 'axios';
 // import { mapState } from 'vuex';
 
 export default {
   name: "ApplyRole",
 
-  components: {},
+  components: {}, 
 
   data() {
     return {
@@ -146,7 +153,9 @@ export default {
       listing_department: "",
       deadline: null,
       // formSubmitted: false,
-      selected_skills: null,
+      staffID: 140025,
+      listingsWithSkills: {},
+      
     };
   },
   computed: {
@@ -165,43 +174,69 @@ export default {
     },
     all_listing() {
       return this.$store.state.all_listing;
+    },
+    user_skills() {
+        return this.$store.state.user_skills;
     }
   },
 
-  methods: {},
+  methods: {
+    async fetchSkillsForListing(listing_id) {
+    try {
+      // Fetch the skill ids for the given listing
+      const response = await axios.get(`http://127.0.0.1:5002/listing_skill/${listing_id}`);
+      const skill_ids = response.data.data.skill_ids;
+
+      // Now for each skill id, fetch the skill details
+      const skills = [];
+      for (const skill_id of skill_ids) {
+        const skillResponse = await axios.get(`http://127.0.0.1:5003/skills/${skill_id}`);
+        skills.push(skillResponse.data.data.skill_name);
+      }
+
+      // Store the skills in the listingsWithSkills object
+      this.listingsWithSkills[listing_id] = skills;
+      console.log(skills);
+
+    } catch (error) {
+      console.error("Error fetching skills for listing:", error);
+    }
+    },
+
+    userHasSkill(skill){
+      return this.user_skills.includes(skill);
+    },
+
+    skillMatchPercentage(skillsForListing) {
+      if (!skillsForListing || !skillsForListing.length) return 0;  // <-- Add this line
+
+      let matchCount = 0;
+
+      skillsForListing.forEach(skill => {
+          if (this.user_skills.includes(skill)) {
+              matchCount++;
+          }
+      });
+
+      let percentage = (matchCount / skillsForListing.length) * 100;
+      return Math.round(percentage);  // <-- Use Math.round() here
+    }
+
+  },
 
   created(){
     this.$store.dispatch('fetchAllListing');
+    this.$store.dispatch('fetchSkillsForUser', this.staffID);
+    this.$store.state.all_listing.forEach(listing => {
+    this.fetchSkillsForListing(listing.listing_id);
+    // console.log(listing.listing_id);
+    // console.log(listing.listing_id);
+  });
   }
 };
 </script>
 
 <style scoped>
-/* Add your component-specific styles here */
-/* Streamlined card styling */
-
-/* Centered layout */
-
-.streamlined-card {
-  max-width: 1000px;
-  border: 1px solid #eaeaea;
-  border-radius: 5px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  padding: 15px;
-}
-
-.refined-card {
-  border: 1px solid #c9c9c9;
-  border-radius: 5px;
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Shadow only on bottom and right */
-  transition:
-    transform 0.2s,
-    box-shadow 0.1s;
-}
-
-.apply-button-section {
-  text-align: center;
-}
 
 h5 {
   font-family:

@@ -45,6 +45,7 @@ def get_all_depts():
         "code": 404,
         "message": "No departments found."
     })
+    
 
 @app.route("/staffs/skills/<int:staff_id>", methods=['GET'])
 def get_staff_skills(staff_id):
