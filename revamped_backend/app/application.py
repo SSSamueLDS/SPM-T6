@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from models import db, Application
+from models import db, Application, Staff, Skill, Role, RoleSkill, StaffSkill, AccessControl
 
 from datetime import datetime
 import json
