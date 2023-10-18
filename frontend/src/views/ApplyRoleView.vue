@@ -69,7 +69,7 @@
           <!-- APPLICANTS -->
           <div class="row mt-3">
             <!-- Vue.js role listings go here -->
-            <div v-for="listing in $store.state.all_listing" :key="listing.listing_id" class="row mt-3">
+            <div v-for="listing in validListings" :key="listing.listing_id" class="row mt-3">
               <div class="mx-2 justify-content-center align-items-center">
                 <!-- Card for each role -->
                 <div
@@ -172,11 +172,14 @@ export default {
     all_dept() {
       return this.$store.state.all_dept;
     },
-    all_listing() {
-      return this.$store.state.all_listing;
-    },
+    // all_listing() {
+    //   return this.$store.state.all_listing;
+    // },
     user_skills() {
         return this.$store.state.user_skills;
+    },
+    validListings() {
+        return this.$store.state.all_listing.filter(listing => !this.isListingExpired(listing.deadline));
     }
   },
 
@@ -228,6 +231,12 @@ export default {
             return words.slice(0, 100).join(' ') + '...';
         }
         return description;
+    },
+
+    isListingExpired(deadline) {
+        const today = new Date();
+        const listingDeadline = new Date(deadline);
+        return today > listingDeadline;
     },
 
   },
