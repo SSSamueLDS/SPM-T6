@@ -65,6 +65,16 @@ const routes = [
     props: true
   },
   {
+    path: "/view-applicant-skill",
+
+    name: "ViewApplicantSkill",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "../views/ApplicantSkillView.vue"
+      );
+    },
+  },
+  {
     path: "/skills",
     name: "skills",
   },
