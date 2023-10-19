@@ -59,7 +59,7 @@
           <thead class="table-dark">
             <tr>
               <th scope="col">#</th>
-              <th scope="col">Skill</th>
+              <th scope="col">Required Skill</th>
               <th scope="col">Possessed by Applicant</th>
             </tr>
           </thead>
@@ -88,6 +88,36 @@
         </table>
       </div>
       </div>
+
+      <!-- OTHER SKILLS POSSESSED BY THE APPLICANT -->
+      <span class="text-start"><h5>Other Skills Possessed by Applicant</h5></span>
+      <div class="row">
+        <div class="col">
+          <ul>
+            <li class="text-start"> Data Analytics</li>
+            <li class="text-start">Problem Management</li>
+            <li class="text-start">Project Management</li>
+            <li class="text-start">Product Management</li>
+          </ul>
+        </div>
+        <div class="col">
+          <ul>
+            <li class="text-start">Solution Architecture</li>
+            <li class="text-start">Solutions Design Thinking</li>
+            <li class="text-start">Technology Application</li>
+            <li class="text-start">User Interface Design</li>
+          </ul>
+        </div>
+        <div class="col">
+          <ul>
+            <li class="text-start">Solution Architecture</li>
+            <li class="text-start">Solutions Design Thinking</li>
+            <li class="text-start">Technology Application</li>
+            <li class="text-start">User Interface Design</li>
+          </ul>
+        </div>
+      </div>
+      
 
     </div>
   </div>
