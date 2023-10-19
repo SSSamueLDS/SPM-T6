@@ -62,23 +62,23 @@
 
           <!-- APPLICANTS -->
           <div class="row mt-3">
-            <!-- Vue.js role listings go here -->
-            <div v-for="(role, id) in roles" :key="id" class="row mt-3">
+            <!-- Vue.js listing listings go here -->
+            <div v-for="(listing, id) in listings" :key="id" class="row mt-3">
               <div class="mx-2 justify-content-center align-items-center">
-                <!-- Card for each role -->
+                <!-- Card for each listing -->
                 <div
                   class="card rounded-4"
-                  v-bind:data-bs-target="'#' + role.role_tag + 'Modal'"
-                  :id="role.role_ID"
+                  v-bind:data-bs-target="'#' + listing.listing_tag + 'Modal'"
+                  :id="listing.listing_ID"
                   data-bs-toggle="modal"
                   style="cursor: pointer"
                 >
                   <div class="card-body text-left" style="text-align: left">
-                    <h5 class="card-title">{{ role.role_name }}</h5>
-                    <p class="card-text">{{ role.role_description }}</p>
+                    <h5 class="card-title">{{ listing.listing_name }}</h5>
+                    <p class="card-text">{{ listing.listing_description }}</p>
                     <p class="card-text">
                       <small class="text-muted">
-                        Deadline: {{ role.deadline }}</small
+                        Deadline: {{ listing.deadline }}</small
                       >
                     </p>
                     <div class="col" style="text-align: right">
@@ -88,19 +88,19 @@
                         class="btn btn-dark"
                         data-bs-toggle="modal"
                         v-bind:data-bs-target="
-                          '#' + role.role_tag + 'ApplicantsModal'
+                          '#' + listing.listing_tag + 'ApplicantsModal'
                         "
                         style="color: greenyellow; font-weight: bold"
                         >View Applicants</a
                       >
                       <!-- <a
-                        :href="`edit_role_listing.html?role_id=${role.role_ID}`"
+                        :href="`edit_listing_listing.html?listing_id=${listing.listing_ID}`"
                         class="btn btn-dark"
                         style="color: greenyellow; font-weight: bold"
                         >Edit</a
                       > -->
                       <!-- <router-link
-                        :to="{ name: 'EditPosting', params: { roleID: role.role_ID } }"
+                        :to="{ name: 'EditPosting', params: { listingID: listing.listing_ID } }"
                         class="btn btn-dark"
                         style="{ color: 'greenyellow', 'font-weight': 'bold' }"
 
@@ -112,19 +112,19 @@
                 </div>
               </div>
 
-              <!-- Role-specific cards pop up description -->
+              <!-- Listing-specific cards pop up description -->
               <div
                 class="modal fade"
-                :id="role.role_tag + 'Modal'"
+                :id="listing.listing_tag + 'Modal'"
                 tabindex="-1"
-                :aria-labelledby="role.role_tag"
+                :aria-labelledby="listing.listing_tag"
                 aria-hidden="true"
               >
                 <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title" :id="role.role_tag">
-                        {{ role.role_name }}
+                      <h5 class="modal-title" :id="listing.listing_tag">
+                        {{ listing.listing_name }}
                       </h5>
                       <button
                         type="button"
@@ -134,24 +134,24 @@
                       ></button>
                     </div>
                     <div class="modal-body" style="text-align: left">
-                      <!-- Role-specific details go here -->
+                      <!-- Listing-specific details go here -->
                       <p style="font-weight: bold">
-                        Application Deadline: {{ role.deadline }}
+                        Application Deadline: {{ listing.deadline }}
                       </p>
-                      <p>Required Skills: {{ role.skill_names.join(", ") }}</p>
-                      <p style="font-weight: bold">About the role</p>
-                      <p>{{ role.role_description }}</p>
+                      <p>Required Skills: {{ listing.skill_names.join(", ") }}</p>
+                      <p style="font-weight: bold">About the listing</p>
+                      <p>{{ listing.listing_description }}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Role-specific Applicants Modal -->
+              <!-- Listing-specific Applicants Modal -->
               <div
                 class="modal fade"
-                :id="role.role_tag + 'ApplicantsModal'"
+                :id="listing.listing_tag + 'ApplicantsModal'"
                 tabindex="-1"
-                :aria-labelledby="role.role_tag + 'ApplicantsModalLabel'"
+                :aria-labelledby="listing.listing_tag + 'ApplicantsModalLabel'"
                 aria-hidden="true"
               >
                 <div
@@ -161,9 +161,9 @@
                     <div class="modal-header">
                       <h5
                         class="modal-title"
-                        :id="role.role_tag + 'ApplicantsModalLabel'"
+                        :id="listing.listing_tag + 'ApplicantsModalLabel'"
                       >
-                        Applicants for {{ role.role_name }}
+                        Applicants for {{ listing.listing_name }}
                       </h5>
                       <button
                         type="button"
@@ -175,7 +175,7 @@
                     <div class="modal-body">
                       <p>
                         List of applicants for the
-                        {{ role.role_name }} position.
+                        {{ listing.listing_name }} position.
                       </p>
                       <div class="row">
                         <table class="table">
@@ -212,63 +212,71 @@ export default {
   components: {},
   data() {
     return {
-      roles: [],
-      role_skills: null,
+      listings: [],
+      listing_skills: null,
       skill_lookup: null,
     };
   },
+  computed: {
+    all_skills() {
+      return this.$store.state.all_skills.map(item => {
+              return {
+                value: item.skill_id,
+                name: item.skill_name
+              }})
+    },
+    all_roles() {
+      return this.$store.state.all_roles;
+    },
+    all_dept() {
+      return this.$store.state.all_dept;
+    },
+  },
   methods: {
-    processRoleName(roleName) {
-      // Remove all occurrences of '#' from roleName
-      return roleName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
+    processListingName(listingName) {
+      // Remove all occurrences of '#' from listingName
+      return listingName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
     },
     fetchData() {
-      // First, fetch the skills lookup data
-      axios
-        .get("http://127.0.0.1:5003/skills")
+      axios.get("http://127.0.0.1:5002/listing_skill")
         .then((response) => {
-          this.skillLookup = response.data.data.reduce((acc, skill) => {
-            acc[skill.skill_ID] = skill.skill_name;
-            return acc;
-          }, {});
-          return axios.get("http://127.0.0.1:5005/role_skill");
+          this.listing_skills = response.data.data;
+          return axios.get("http://127.0.0.1:5002/listings");
         })
         .then((response) => {
-          this.role_skills = response.data.data;
-          return axios.get("http://127.0.0.1:5005/roles");
-        })
-        .then((response) => {
-          this.roles = response.data.data;
-          this.roles.forEach((role) => {
-            role.role_tag = this.processRoleName(role.role_name);
-            let skillIdsForRole = this.role_skills?.[role.role_ID] || [];
-            role.skill_names = skillIdsForRole.map(
-              (id) => this.skillLookup[id] || "Unknown Skill",
-            );
+          this.listings = response.data.data;
+          this.listings.forEach((listing) => {
+            listing.listing_tag = this.processListingName(listing.listing_name);
+            let skillIdsForListing = this.listing_skills?.[listing.listing_id] || [];
+            listing.skill_names = skillIdsForListing.map(id => {
+                const skill = this.all_skills.find(skill => skill.value === id);
+                return skill ? skill.name : "Unknown Skill";
+            });
           });
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
         });
-    },
-    fetchRoles() {
-      console.log("Fetching roles...");
+    }
+    ,
+    fetchListings() {
+      console.log("Fetching listings...");
 
-      // Replace with your API endpoint to fetch role listings
+      // Replace with your API endpoint to fetch listing listings
       axios
-        .get("http://127.0.0.1:5005/roles") // Change the URL to your API endpoint
+        .get("http://127.0.0.1:5002/listings") // Change the URL to your API endpoint
         .then((response) => {
           console.log("Response from API:", response);
 
-          this.roles = response.data.data;
-          this.roles.forEach((role) => {
-            role.role_tag = this.processRoleName(role.role_name);
+          this.listings = response.data.data;
+          this.listings.forEach((listing) => {
+            listing.listing_tag = this.processListingName(listing.listing_name);
           });
 
-          console.log("Roles after processing:", this.roles);
+          console.log("Listings after processing:", this.listings);
         })
         .catch((error) => {
-          console.error("Error fetching roles:", error);
+          console.error("Error fetching listings:", error);
         });
     },
   },
