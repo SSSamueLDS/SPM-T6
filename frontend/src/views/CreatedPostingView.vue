@@ -204,79 +204,85 @@
   </div>
 </template>
 
-<script>
-import axios from "axios";
+  <script>
+  import axios from "axios";
 
-export default {
-  name: "PostingView",
-  components: {},
-  data() {
-    return {
-      roles: [],
-      role_skills: null,
-      skill_lookup: null,
-    };
-  },
-  methods: {
-    processRoleName(roleName) {
-      // Remove all occurrences of '#' from roleName
-      return roleName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
+  export default {
+    name: "PostingView",
+    components: {},
+    data() {
+      return {
+        roles: [],
+        role_skills: null,
+        skill_lookup: null,
+      };
     },
-    fetchData() {
-      // First, fetch the skills lookup data
-      axios
-        .get("http://127.0.0.1:5003/skills")
-        .then((response) => {
-          this.skillLookup = response.data.data.reduce((acc, skill) => {
-            acc[skill.skill_ID] = skill.skill_name;
-            return acc;
-          }, {});
-          return axios.get("http://127.0.0.1:5005/role_skill");
-        })
-        .then((response) => {
-          this.role_skills = response.data.data;
-          return axios.get("http://127.0.0.1:5005/roles");
-        })
-        .then((response) => {
-          this.roles = response.data.data;
-          this.roles.forEach((role) => {
-            role.role_tag = this.processRoleName(role.role_name);
-            let skillIdsForRole = this.role_skills?.[role.role_ID] || [];
-            role.skill_names = skillIdsForRole.map(
-              (id) => this.skillLookup[id] || "Unknown Skill",
-            );
-          });
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
+    methods: {
+      processRoleName(roleName) {
+        // Remove all occurrences of '#' from roleName
+        return roleName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
+      },
+      fetchData() {
+  // Start: Show loading
+  this.$store.commit('setLoading', true);
+  
+  axios
+    .get("http://127.0.0.1:5003/skills")
+    .then((response) => {
+      this.skillLookup = response.data.data.reduce((acc, skill) => {
+        acc[skill.skill_ID] = skill.skill_name;
+        return acc;
+      }, {});
+      return axios.get("http://127.0.0.1:5005/role_skill");
+    })
+    .then((response) => {
+      this.role_skills = response.data.data;
+      return axios.get("http://127.0.0.1:5005/roles");
+    })
+    .then((response) => {
+      this.roles = response.data.data;
+      this.roles.forEach((role) => {
+        role.role_tag = this.processRoleName(role.role_name);
+        let skillIdsForRole = this.role_skills?.[role.role_ID] || [];
+        role.skill_names = skillIdsForRole.map(
+          (id) => this.skillLookup[id] || "Unknown Skill"
+        );
+      });
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+    })
+    .finally(() => {
+      // End: Hide loading
+      this.$store.commit('setLoading', false);
+    });
+},
+      fetchRoles() {
+  // Start: Show loading
+  this.$store.commit('setLoading', true);
+  
+  axios
+    .get("http://127.0.0.1:5005/roles")
+    .then((response) => {
+      this.roles = response.data.data;
+      this.roles.forEach((role) => {
+        role.role_tag = this.processRoleName(role.role_name);
+      });
+    })
+    .catch((error) => {
+      console.error("Error fetching roles:", error);
+    })
+    .finally(() => {
+      // End: Hide loading
+      this.$store.commit('setLoading', false);
+    });
+},
     },
-    fetchRoles() {
-      console.log("Fetching roles...");
-
-      // Replace with your API endpoint to fetch role listings
-      axios
-        .get("http://127.0.0.1:5005/roles") // Change the URL to your API endpoint
-        .then((response) => {
-          console.log("Response from API:", response);
-
-          this.roles = response.data.data;
-          this.roles.forEach((role) => {
-            role.role_tag = this.processRoleName(role.role_name);
-          });
-
-          console.log("Roles after processing:", this.roles);
-        })
-        .catch((error) => {
-          console.error("Error fetching roles:", error);
-        });
+    created() {
+      this.fetchData();
     },
-  },
-  created() {
-    this.fetchData();
-  },
-};
-</script>
+  };
+  </script>
 
 <style scoped>
 /* Add your component-specific styles here */

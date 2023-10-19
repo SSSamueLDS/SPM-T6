@@ -6,14 +6,17 @@
     <router-link to="/about">About</router-link>
   </nav> -->
   <router-view />
+  <LoadingComponent />
 </template>
 
 <script>
 import AppNavbar from "./components/AppNavbar.vue";
+import LoadingComponent from "./components/LoadingComponent.vue";
 
 export default {
   components: {
     AppNavbar,
+    LoadingComponent
   },
 };
 </script>

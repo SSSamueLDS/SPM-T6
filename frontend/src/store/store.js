@@ -3,13 +3,18 @@ import axios from 'axios';
 
 export default createStore({
     state: {
+        isLoading : false,
         all_skills: [],
         all_dept: [],
         all_roles: [],
         all_listing: [],
         user_skills: []
+        
     },
     mutations: {
+        setLoading(state, isLoading){
+            state.isLoading = isLoading;
+        },
         setAllSkills(state, data) {
             state.all_skills = data;
         },
@@ -25,6 +30,7 @@ export default createStore({
         setUserSkills(state, skills) {
             state.user_skills = skills;
         }
+        
     },
     actions: {
         async fetchAllSkills({ commit }) {
