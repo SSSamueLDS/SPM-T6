@@ -2,31 +2,21 @@
     <div class="View Applicant's Skills">
     <div class="container text-center col-10 mt-5">
 
-      <!-- ROLE DETAILS CARD GROUP -->
-      <div class="card-group mb-3">
-          <div class="card border-2 border-dark">
-            <div class="card-body">
-              <h6><strong>Role ID: #0100</strong></h6>
-            </div>
+      <div class="col mb-3">
+        <div class="card text-start">
+          <div class="card-header text-bg-dark">
+            <h5><strong>Software Engineer #0100 Engineering Department</strong></h5>
           </div>
-          <div class="card border-2 border-dark">
-            <div class="card-body">
-              <h6><strong>Role Name: Software Engineer</strong></h6>
-            </div>
-          </div>
-          <div class="card border-2 border-dark">
-            <div class="card-body">
-              <h6><strong>Department: Engineering</strong></h6>
-            </div>
-          </div>
-      </div>
+          
+        </div> 
+        </div>
 
 
       <div class="row mb-3">
         <!-- APPLICANT'S DETAILS -->
         <div class="col-9">
         <div class="card text-start">
-          <div class="card-header text-bg-dark">
+          <div class="card-header text-bg-secondary">
             <h5><strong>Applicant's Personal Details</strong></h5>
           </div>
           <ul class="list-group list-group-flush">
@@ -52,7 +42,7 @@
         <!-- PERCENTAGE SKILL MATCH -->
         <div class="col-3">
         <div class="card" style="height:100%">
-          <div class="card-header text-bg-dark">
+          <div class="card-header text-bg-secondary">
             <h5><strong>Percentage Skill Match</strong></h5>
           </div>
           <div class="card-body d-flex align-items-center justify-content-center">
@@ -64,6 +54,7 @@
 
       <!-- APPLICANT'S SKILLS VS REQUIRED SKILLS TABLE -->
       <div class="row">
+      <div class="col">
         <table class="table table-striped">
           <thead class="table-dark">
             <tr>
@@ -83,8 +74,19 @@
               <td>Javascript</td>
               <td>No</td>
             </tr>
+            <tr>
+              <th scope="row">3</th>
+              <td>Bootstrap</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <th scope="row">3</th>
+              <td>Java</td>
+              <td>No</td>
+            </tr>
           </tbody>
         </table>
+      </div>
       </div>
 
     </div>
