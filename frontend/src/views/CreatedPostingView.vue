@@ -214,7 +214,6 @@ export default {
     return {
       listings: [],
       listing_skills: null,
-      skill_lookup: null,
     };
   },
   computed: {
@@ -257,8 +256,7 @@ export default {
         .catch((error) => {
           console.error("Error fetching data:", error);
         });
-    }
-    ,
+    },
     fetchListings() {
       console.log("Fetching listings...");
 

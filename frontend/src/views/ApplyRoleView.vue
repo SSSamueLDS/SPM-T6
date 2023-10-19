@@ -1,8 +1,6 @@
 <template>
   <p>
-    <!-- {{$store.state.user_skills}}
-    {{ listingsWithSkills }} -->
-    
+    {{user_skills}}
   </p>
 
   <div class="PostingView">
@@ -74,20 +72,20 @@
                 <!-- Card for each role -->
                 <div
                   class="card rounded-4"
-                  v-bind:data-bs-target="'#' + listing.role_tag + 'Modal'"
-                  :id="listing.role_ID"
+                  v-bind:data-bs-target="'#' + listing.listing_tag + 'Modal'"
+                  :id="listing.listing_id"
                   data-bs-toggle="modal"
                   style="cursor: pointer"
                 >
                   <div class="card-body text-left" style="text-align: left">
                     <h5 class="card-title">{{ listing.listing_name }}</h5>
                     <p class="card-text">
-                      Skill Match: {{ skillMatchPercentage(listingsWithSkills[listing.listing_id]) }}%
+                      Skill Match: {{ skillMatchPercentage(listing.skill_ids) }}%
                     </p>
                     <p class="card-text">{{ truncateDescription(listing.listing_description) }}</p>
                     <p class="card-text">
-                        Skill Required: 
-                        <span v-for="skill in listingsWithSkills[listing.listing_id]" :key="skill">
+                        Skill Required: {{ listing.skill_names.join(", ") }}
+                        <span v-for="skill in listing.skill_ids" :key="skill">
                             <span :style="{ backgroundColor: userHasSkill(skill) ? 'yellow' : 'grey', borderRadius: '5px', padding: '5px', marginRight: '5px' }">
                                 {{ skill }}
                             </span>
@@ -123,6 +121,40 @@
                       >
                         Edit
                       </router-link> -->
+
+                      <!--Listing description modal-->
+                        <div
+                          class="modal fade"
+                          :id="listing.listing_tag + 'Modal'"
+                          tabindex="-1"
+                          :aria-labelledby="listing.listing_tag"
+                          aria-hidden="true"
+                        >
+                        <div class="modal-dialog modal-dialog-centered">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" :id="listing.listing_tag">
+                                {{ listing.listing_name }}
+                              </h5>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+                            <div class="modal-body" style="text-align: left">
+                              <!-- Listing-specific details go here -->
+                              <p style="font-weight: bold">
+                                Application Deadline: {{ listing.deadline }}
+                              </p>
+                              <p>Required Skills: {{ listing.skill_names.join(", ") }}</p>
+                              <p style="font-weight: bold">About the listing</p>
+                              <p>{{ listing.listing_description }}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -136,9 +168,7 @@
 </template>
 
 <script>
-// import { ref, onMounted } from 'vue';
 import axios from 'axios';
-// import { mapState } from 'vuex';
 
 export default {
   name: "ApplyRole",
@@ -147,12 +177,8 @@ export default {
 
   data() {
     return {
-      selected_role: null,
-      listing_name: "",
-      listing_description: "",
-      listing_department: "",
-      deadline: null,
-      // formSubmitted: false,
+      listings: [], 
+      listing_skills: null,
       staffID: 140025,
       listingsWithSkills: {},
       
@@ -179,31 +205,36 @@ export default {
         return this.$store.state.user_skills;
     },
     validListings() {
-        return this.$store.state.all_listing.filter(listing => !this.isListingExpired(listing.deadline));
+        return this.listings.filter(listing => !this.isListingExpired(listing.deadline));
     }
   },
 
   methods: {
-    async fetchSkillsForListing(listing_id) {
-    try {
-      // Fetch the skill ids for the given listing
-      const response = await axios.get(`http://127.0.0.1:5002/listing_skill/${listing_id}`);
-      const skill_ids = response.data.data.skill_ids;
-
-      // Now for each skill id, fetch the skill details
-      const skills = [];
-      for (const skill_id of skill_ids) {
-        const skillResponse = await axios.get(`http://127.0.0.1:5003/skills/${skill_id}`);
-        skills.push(skillResponse.data.data.skill_name);
-      }
-
-      // Store the skills in the listingsWithSkills object
-      this.listingsWithSkills[listing_id] = skills;
-      console.log(skills);
-
-    } catch (error) {
-      console.error("Error fetching skills for listing:", error);
-    }
+    processListingName(listingName) {
+      // Remove all occurrences of '#' from listingName
+      return listingName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
+    },
+    fetchData() {
+      axios.get("http://127.0.0.1:5002/listing_skill")
+        .then((response) => {
+          this.listing_skills = response.data.data;
+          return axios.get("http://127.0.0.1:5002/listings");
+        })
+        .then((response) => {
+          this.listings = response.data.data;
+          this.listings.forEach((listing) => {
+            listing.listing_tag = this.processListingName(listing.listing_name);
+            let skillIdsForListing = this.listing_skills?.[listing.listing_id] || [];
+            listing.skill_ids = skillIdsForListing;
+            listing.skill_names = skillIdsForListing.map(id => {
+                const skill = this.all_skills.find(skill => skill.value === id);
+                return skill ? skill.name : "Unknown Skill";
+            });
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
     },
 
     userHasSkill(skill){
@@ -242,13 +273,8 @@ export default {
   },
 
   created(){
-    this.$store.dispatch('fetchAllListing');
     this.$store.dispatch('fetchSkillsForUser', this.staffID);
-    this.$store.state.all_listing.forEach(listing => {
-    this.fetchSkillsForListing(listing.listing_id);
-    // console.log(listing.listing_id);
-    // console.log(listing.listing_id);
-  });
+    this.fetchData();
   }
 };
 </script>
