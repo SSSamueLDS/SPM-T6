@@ -10,6 +10,7 @@ export default createStore({
         all_dept: [],
         all_roles: [],
         all_listing: [],
+        user_skills: [],
         country: null,
         dept: null,
         email: null,
@@ -47,7 +48,7 @@ export default createStore({
             state.all_listing = data;
         },
         setUserSkills(state, skills) {
-            state.userSkills = skills;
+            state.user_skills = skills;
         },
         setLoggedinStaff(state, staffData) {
             state.country = staffData.country;

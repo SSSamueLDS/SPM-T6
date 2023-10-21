@@ -4,8 +4,9 @@
     {{ listingsWithSkills }}
     {{ listing in validListings }} -->
     <!-- {{$store.state.all_skills}} -->
-    {{$store.state.all_skills["skill_id"]}}
-    {{$store.state.all_skills}}
+    <!-- {{$store.state.all_skills["skill_id"]}}
+    {{$store.state.all_skills}} -->
+    {{ user_skills }}
   </p>
 
   <div class="PostingView">
@@ -86,6 +87,7 @@
                     <h5 class="card-title">{{ listing.listing_name }}</h5>
                     <p class="card-text">
                       Skill Match: {{ skillMatchPercentage(listing.skill_ids) }}%
+                      {{ listing.skill_ids }}
                     </p>
                     <p class="card-text">{{ truncateDescription(listing.listing_description) }}</p>
                     <p class="card-text">
