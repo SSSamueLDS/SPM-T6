@@ -1,6 +1,11 @@
 <template>
   <p>
-    {{user_skills}}
+    <!-- {{$store.state.user_skills}}
+    {{ listingsWithSkills }}
+    {{ listing in validListings }} -->
+    <!-- {{$store.state.all_skills}} -->
+    {{$store.state.all_skills["skill_id"]}}
+    {{$store.state.all_skills}}
   </p>
 
   <div class="PostingView">

@@ -31,6 +31,19 @@ def get_all_staffs():
         "message": "No roles found."
     })
 
+@app.route('/staffs/<int:userID>', methods=['GET'])
+def get_staff_by_id(userID):
+    staff = Staff.query.get(userID)
+    if staff:
+        return jsonify({
+            "code": 200,
+            "data": staff.json()
+        })
+    return jsonify({
+        "code": 404,
+        "message": "No staff found for the given ID."
+    })
+
 @app.route("/staffs/dept", methods=['GET'])
 def get_all_depts():
     # fetch all unique departments from the staff table

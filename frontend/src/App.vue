@@ -18,6 +18,16 @@ export default {
     AppNavbar,
     LoadingComponent
   },
+
+  computed:{
+    loggedInStaff(){
+      return this.$store.state.loggedInStaff;
+    }
+  },
+
+  created() {
+    this.$store.dispatch('fetchInitialData');
+  }
 };
 </script>
 
