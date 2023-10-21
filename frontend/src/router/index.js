@@ -115,6 +115,11 @@ const routes = [
   {
     path: "/logout",
     name: "logout",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "../views/LogoutView.vue"
+      );
+    },
   },
 ];
 

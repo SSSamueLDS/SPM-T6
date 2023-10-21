@@ -1,29 +1,18 @@
 import { createStore } from 'vuex';
+import createPersistedState from 'vuex-persistedstate';
 import axios from 'axios';
 
 export default createStore({
     state: {
         staffAccessRole: null,
-        staffSkills: [],
         isLoading : false,
         all_skills: [],
         all_dept: [],
         all_roles: [],
         all_listing: [],
+        all_access_controls: [],
         user_skills: [],
-        country: null,
-        dept: null,
-        email: null,
-        role: null,
-        staff_fname: null,
-        staff_id: null,
-        staff_lname: null,
-        userID: null,
-        
-    },
-    getters: {
-        isLoggedIn: state => !!state.loggedInStaff,
-        // ... other getters
+        logged_in_staff: null
     },
     mutations: {
         setLoading(state, isLoading){
@@ -31,9 +20,6 @@ export default createStore({
         },
         setStaffAccessRole(state, role) {
             state.staffAccessRole = role;
-        },
-        setStaffSkills(state, skills) {
-            state.staffSkills = skills;
         },
         setAllSkills(state, data) {
             state.all_skills = data;
@@ -50,26 +36,25 @@ export default createStore({
         setUserSkills(state, skills) {
             state.user_skills = skills;
         },
-        setLoggedinStaff(state, staffData) {
-            state.country = staffData.country;
-            state.dept = staffData.dept;
-            state.email = staffData.email;
-            state.role = staffData.role;
-            state.staff_fname = staffData.staff_fname;
-            state.staff_id = staffData.staff_id;
-            state.staff_lname = staffData.staff_lname;
-            // ... set other state properties if needed ...
+        setAccessControls(state, data) {
+            state.all_access_controls = data;
+        },
+        setLoggedinStaff(state, data) {
+            state.logged_in_staff = data;
         },
 
         logout(state) {
-            state.loggedInStaff = null;
+            state.logged_in_staff = null;
             state.staffAccessRole = null;
-            state.staffSkills = [];
+            state.user_skills = [];
             // Clear other states if necessary
+            localStorage.removeItem('vuex');
         },
 
         },
-
+    plugins: [createPersistedState({
+        paths: ['logged_in_staff', 'staffAccessRole', 'user_skills']}
+        )],
     actions: {
         async fetchAllSkills({ commit }) {
             const response = await axios.get('http://127.0.0.1:5003/skills');
@@ -91,15 +76,25 @@ export default createStore({
             const response = await axios.get(`http://127.0.0.1:5004/staffs/skills/${userID}`);
             commit('setUserSkills', response.data.data);
         },
-        async login({ commit }, userID) {
+        async fetchAccessControls({ commit }) {
+            const response = await axios.get(`http://127.0.0.1:5004/access_control`);
+            commit('setAccessControls', response.data.data);
+        },
+        async login({ commit, dispatch, state }, userID) {
             try {
               const response = await axios.get(`http://127.0.0.1:5004/staffs/${userID}`);
               if (response.data) {
-                console.log(response.data.data);
-                commit('setLoggedinStaff', response.data.data);
-
-                // dispatch('fetchStaffSkills', userID);
-                // dispatch other actions as needed...
+                const user = response.data.data;
+                if (!state.all_access_controls.length) {
+                    await dispatch('fetchAccessControls');
+                }
+                const role = state.all_access_controls.find(r => r.access_id === user.role);
+                if (role) {
+                    console.log(role);
+                    user.role = role.access_control_name;
+                }
+                commit('setLoggedinStaff', user);
+                dispatch('fetchSkillsForUser', userID);
               } else {
                 alert('User not found');
               }

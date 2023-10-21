@@ -186,9 +186,7 @@ export default {
     return {
       listings: [], 
       listing_skills: null,
-      staffID: 140025,
       listingsWithSkills: {},
-      
     };
   },
   computed: {
@@ -280,7 +278,6 @@ export default {
   },
 
   created(){
-    this.$store.dispatch('fetchSkillsForUser', this.staffID);
     this.fetchData();
   }
 };
