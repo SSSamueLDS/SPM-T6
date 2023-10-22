@@ -236,6 +236,7 @@ export default {
         .catch((error) => {
           console.error("Error fetching data:", error);
         });
+        
     },
 
     userHasSkill(skill){
@@ -274,7 +275,9 @@ export default {
   },
 
   created(){
+    this.$store.commit('setLoading', true);
     this.fetchData();
+    this.$store.commit('setLoading', false);
   }
 };
 </script>

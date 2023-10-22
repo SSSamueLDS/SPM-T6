@@ -179,6 +179,9 @@ export default {
     },
     all_dept() {
       return this.$store.state.all_dept;
+    },
+    logged_in_staff() {
+      return this.$store.state.logged_in_staff;
     }
   },
   methods: {
@@ -189,7 +192,7 @@ export default {
         this.v$.$validate();
 
         if (!this.v$.$pending && !this.v$.$error) {
-          this.$store.commit('setLoading', true);  // Show loading
+          this.$store.commit('setLoading', true);
           // If there's no validation error and no validation is pending
           try {
             const response = await axios.post(
@@ -200,7 +203,7 @@ export default {
                 deadline: this.deadline,
                 dept: this.listing_department,
                 listing_skill: this.selected_skills,
-                hr_id: 160008
+                hr_id: this.logged_in_staff.staff_id
               }
             );
 
@@ -215,6 +218,7 @@ export default {
           finally {
             this.$store.commit('setLoading', false);  // Hide loading
           }
+          this.$router.push('/posting');
         }
       } else if (this.mode === "edit") {
         // Logic for editing an existing role
@@ -241,23 +245,6 @@ export default {
     return { v$ };
   },
   created() {
-    // get all skills
-    //this.$store.commit('setLoading', true);
-    axios.get('http://127.0.0.1:5003/skills')
-        .then(response => {
-            this.skills = response.data.data.map(item => {
-              return {
-                value: item.skill_ID,
-                name: item.skill_name
-              }
-            })
-        })
-        .catch(error => {
-            console.error('Failed to fetch the role data:', error);
-        }).finally(() => {
-      //this.$store.commit('setLoading', false);  // Hide loading
-    });
-    console.log(this.all_dept, this.all_roles)
   },
 
   validations: {
