@@ -51,7 +51,13 @@
         </div> 
         </div>
       </div>
-
+      <div class="card-body text-left" style="text-align: left">
+                    <h5 class="card-title">{{ skill_roles.role_id}}</h5>
+                    <p class="card-text">
+                      Skill Match: {{ skillMatchPercentage(skill_roles.skill_ids) }}%
+                      {{ skill_roles.skill_ids }}
+                    </p>
+                  </div>
       <!-- APPLICANT'S SKILLS VS REQUIRED SKILLS TABLE -->
       <div class="row">
       <div class="col">
@@ -131,6 +137,7 @@ export default {
   data() {
     return {
       employee_skills: {},
+      skill_roles: {},
     };
   },
   computed: {
@@ -140,7 +147,7 @@ export default {
   },
   created() {
     this.fetchSkills();
-    this.fetchRoleskill();
+    this.fetchSkillRoles();
   },
   
   methods: {
@@ -155,10 +162,30 @@ export default {
           console.error("Error fetching applicant skill:", error);
         });
     },
+    fetchSkillRoles() {
+      axios
+        .get("http://127.0.0.1:5005/role_skill/1")
+        .then((response) => {
+          this.skill_roles = response.data.data;
+        })
+      },
     userHasSkill(skill_id){
       return this.user_skills.includes(skill_id);
     },
+    skillMatchPercentage(skillsForListing) {
+      if (!skillsForListing || !skillsForListing.length) return 0;  // <-- Add this line
 
+      let matchCount = 0;
+
+      skillsForListing.forEach(skill => {
+          if (this.user_skills.includes(skill)) {
+              matchCount++;
+          }
+      });
+
+      let percentage = (matchCount / skillsForListing.length) * 100;
+      return Math.round(percentage);  // <-- Use Math.round() here
+    },
   },
 };
 </script>
