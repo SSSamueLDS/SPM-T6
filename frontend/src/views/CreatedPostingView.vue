@@ -42,15 +42,15 @@
                     type="search"
                     placeholder="Search"
                     aria-label="Search"
+                    v-model="search_term"
                   />
-                  <button
-                    class="btn btn-outline-success my-2 my-sm-0 p-2"
-                    type="submit"
-                  >
-                    Search
-                  </button>
-                </div>
+
+                </div>                
               </form>
+              <button class="btn btn-outline-success my-2 my-sm-0 p-2"
+                    @click="update_listings">
+                    Search
+              </button>
             </div>
           </div>
 
@@ -220,6 +220,7 @@ export default {
       current_page: 1,
       departments: [],
       selected_departments: [],
+      search_term: "",
     };
   },
   computed: {
@@ -239,14 +240,21 @@ export default {
   },
   methods: {
     update_listings(){
+      var result = this.listings
       //if no departments are selected, show all listings
       if (this.selected_departments.length == 0){
-        this.shown_listings = this.listings
+        result = this.listings
       }
       //else, show only listings from selected departments
       else{
-        this.shown_listings = this.listings.filter(listing => this.selected_departments.includes(listing.dept))
+        result = this.listings.filter(listing => this.selected_departments.includes(listing.dept))
       }
+      //if search term is not empty, filter listings by search term
+      if (this.search_term != ""){
+        result = result.filter(listing => listing.listing_name.toLowerCase().includes(this.search_term.toLowerCase()))
+      }
+
+      this.shown_listings = result
 
     },
     go_page(i) {
