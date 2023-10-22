@@ -4,20 +4,21 @@
       <div class="row">
         <!-- FILTER -->
         <div class="col-2" style="text-align: left">
-          <h4 style="font-weight: bold" class="mb-3">SEARCH FILTER</h4>
+          <h4 style="font-weight: bold" class="mb-3">Filter By:</h4>
           <div class="row" id="departmentFilter">
             <p style="font-weight: 500" class="mb-2">Department</p>
             <hr class="mx-2 w-75" />
             <div class="w-75">
               <!-- Checkbox filters go here -->
-            </div>
-          </div>
-
-          <div class="row" id="AnotherFilter">
-            <p style="font-weight: 500" class="my-2">Another Filter</p>
-            <hr class="mx-2 w-75" />
-            <div class="w-75">
-              <!-- Another set of checkbox filters go here -->
+              <div class="form-check" v-for="(department,id) in departments" :key = id>
+                <input class="form-check-input" type="checkbox" :value="department" :id="department" v-model="selected_departments">
+                <label class="form-check-label" :for="department">
+                  {{department}}
+                </label>
+              </div>
+              <div class="button">
+                <button class="btn btn-dark" @click="update_listings">Filter</button>
+              </div>
             </div>
           </div>
         </div>
@@ -63,7 +64,7 @@
           <!-- APPLICANTS -->
           <div class="row mt-3">
             <!-- Vue.js listing listings go here -->
-            <div v-for="(listing, id) in listings" :key="id" class="row mt-3">
+            <div v-for="(listing, id) in shown_listings" :key="id" class="row mt-3">
               <div class="mx-2 justify-content-center align-items-center">
                 <!-- Card for each listing -->
                 <div
@@ -196,9 +197,9 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div>                      
           </div>
-        </div>
+        </div>       
       </div>
     </div>
   </div>
@@ -213,7 +214,12 @@ export default {
   data() {
     return {
       listings: [],
+      shown_listings: [],
       listing_skills: null,
+      grouped_listings: [],
+      current_page: 1,
+      departments: [],
+      selected_departments: [],
     };
   },
   computed: {
@@ -232,6 +238,45 @@ export default {
     },
   },
   methods: {
+    update_listings(){
+      //if no departments are selected, show all listings
+      if (this.selected_departments.length == 0){
+        this.shown_listings = this.listings
+      }
+      //else, show only listings from selected departments
+      else{
+        this.shown_listings = this.listings.filter(listing => this.selected_departments.includes(listing.dept))
+      }
+
+    },
+    go_page(i) {
+      this.current_page = i;
+    },
+    go_previous_page() {
+      if (this.current_page > 1) {
+        this.current_page--;
+      }
+    },
+    go_next_page() {
+      if (this.current_page < this.grouped_skills.length - 1) {
+        this.current_page++;
+      }
+    },
+    group_listings() {
+      var grouped_listings = [];
+      var group = [];
+      var i = 0;
+      for (i = 0; i < this.listings.length; i++) {
+        if (i % 5 == 0 && i != 0) {
+          grouped_listings.push(group);
+          group = [];
+        }
+        group.push(this.listings[i]);
+      }
+      grouped_listings.push(group);
+      console.log(grouped_listings);
+      return grouped_listings;
+    },
     processListingName(listingName) {
       // Remove all occurrences of '#' from listingName
       return listingName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
@@ -244,6 +289,12 @@ export default {
         })
         .then((response) => {
           this.listings = response.data.data;
+          //remove listings which have expired
+          this.listings = this.listings.filter(listing => {
+            const deadline = new Date(listing.deadline);
+            const now = new Date();
+            return deadline > now;
+          });
           this.listings.forEach((listing) => {
             listing.listing_tag = this.processListingName(listing.listing_name);
             let skillIdsForListing = this.listing_skills?.[listing.listing_id] || [];
@@ -252,29 +303,25 @@ export default {
                 return skill ? skill.name : "Unknown Skill";
             });
           });
+          //show all listings by default
+          this.shown_listings = this.listings
+          //to do: group listings in groups of 5, for display purposes
+          this.grouped_listings = this.group_listings();
+          console.log(this.grouped_listings.length);
+                
+          //find out all the departments from all listings
+          for (var i = 0; i<this.listings.length; i++){
+            if (!this.departments.includes(this.listings[i].dept)){
+              this.departments.push(this.listings[i].dept)
+            }
+          }
+          //arrange departments array alphabetically
+          this.departments.sort()
+          console.log(this.departments.length)
+          
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
-        });
-    },
-    fetchListings() {
-      console.log("Fetching listings...");
-
-      // Replace with your API endpoint to fetch listing listings
-      axios
-        .get("http://127.0.0.1:5002/listings") // Change the URL to your API endpoint
-        .then((response) => {
-          console.log("Response from API:", response);
-
-          this.listings = response.data.data;
-          this.listings.forEach((listing) => {
-            listing.listing_tag = this.processListingName(listing.listing_name);
-          });
-
-          console.log("Listings after processing:", this.listings);
-        })
-        .catch((error) => {
-          console.error("Error fetching listings:", error);
         });
     },
   },
