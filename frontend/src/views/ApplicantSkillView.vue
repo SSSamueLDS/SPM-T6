@@ -131,8 +131,12 @@ export default {
   data() {
     return {
       employee_skills: {},
-      role_skill_ids: [],
     };
+  },
+  computed: {
+    user_skills() {
+      return this.employee_skills;
+    },
   },
   created() {
     this.fetchSkills();
@@ -151,13 +155,10 @@ export default {
           console.error("Error fetching applicant skill:", error);
         });
     },
-    fetchRoleskill() {
-      axios
-        .get("http://127.0.0.1:5005/role_skill/1")
-        .then((response) => {
-          
-          this.role_skill_ids = response.data.skill_ids
-        })}
+    userHasSkill(skill){
+      return this.user_skills.includes(skill);
+    },
+
   },
 };
 </script>
