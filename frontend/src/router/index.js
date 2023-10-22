@@ -18,6 +18,26 @@ const routes = [
     },
   },
   {
+    path: "/logout",
+    name: "logout",
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: function () {
+      return import(/* webpackChunkName: "about" */ "../views/LogoutView.vue");
+    },
+  },
+  {
+    path: "/login",
+    name: "login",
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: function () {
+      return import(/* webpackChunkName: "about" */ "../views/LoginView.vue");
+    },
+  },
+  {
     path: "/posting",
     name: "CreatedPostings",
     component: function () {
@@ -26,15 +46,15 @@ const routes = [
       );
     },
   },
-  // {
-  //   path: "/apply-role",
-  //   name: "ApplyRole",
-  //   component: function () {
-  //     return import(
-  //       /* webpackChunkName: "about" */ "../views/ApplyRoleView.vue"
-  //     );
-  //   },
-  // },
+  {
+    path: "/apply-role",
+    name: "ApplyRole",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "../views/ApplyRoleView.vue"
+      );
+    },
+  },
   {
     path: "/create-posting",
     name: "CreatePosting",
@@ -95,6 +115,11 @@ const routes = [
   {
     path: "/logout",
     name: "logout",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "../views/LogoutView.vue"
+      );
+    },
   },
 ];
 

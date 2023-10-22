@@ -1,6 +1,12 @@
 <template>
   <p>
-    <!-- {{$store.state.all_listing}} -->
+    <!-- {{$store.state.user_skills}}
+    {{ listingsWithSkills }}
+    {{ listing in validListings }} -->
+    <!-- {{$store.state.all_skills}} -->
+    <!-- {{$store.state.all_skills["skill_id"]}}
+    {{$store.state.all_skills}} -->
+    {{ user_skills }}
   </p>
 
   <div class="PostingView">
@@ -27,16 +33,16 @@
         </div>
         <div class="col-10">
           <div class="row">
-            <div class="col-5 m-0 col-sm-5 col-md-6 col-lg-3 col-xl-2">
+            <!-- <div class="col-5 m-0 col-sm-5 col-md-6 col-lg-3 col-xl-2">
               <a
                 href="/create-posting"
                 class="btn btn-dark w-100 m-2"
                 style="color: greenyellow; font-weight: bold"
                 >CREATE POSTING</a
               >
-            </div>
+            </div> -->
             <div
-              class="col-5 d-flex align-items-center col-sm-7 col-md-6 col-lg-9 col-xl-10"
+              class="col-5 d-flex align-items-center col-sm-10 col-md-12 col-lg-12 col-xl-12"
             >
               <form class="form-inline d-flex w-100">
                 <div class="input-group">
@@ -67,22 +73,32 @@
           <!-- APPLICANTS -->
           <div class="row mt-3">
             <!-- Vue.js role listings go here -->
-            <div v-for="listing in $store.state.all_listing" :key="listing.listing_id" class="row mt-3">
+            <div v-for="listing in validListings" :key="listing.listing_id" class="row mt-3">
               <div class="mx-2 justify-content-center align-items-center">
                 <!-- Card for each role -->
                 <div
                   class="card rounded-4"
-                  v-bind:data-bs-target="'#' + listing.role_tag + 'Modal'"
-                  :id="listing.role_ID"
+                  v-bind:data-bs-target="'#' + listing.listing_tag + 'Modal'"
+                  :id="listing.listing_id"
                   data-bs-toggle="modal"
                   style="cursor: pointer"
                 >
                   <div class="card-body text-left" style="text-align: left">
                     <h5 class="card-title">{{ listing.listing_name }}</h5>
                     <p class="card-text">
-                      Skill Match: 
+                      Skill Match: {{ skillMatchPercentage(listing.skill_ids) }}%
+                      {{ listing.skill_ids }}
                     </p>
-                    <p class="card-text">{{ listing.listing_description }}</p>
+                    <p class="card-text">{{ truncateDescription(listing.listing_description) }}</p>
+                    <p class="card-text">
+                        Skill Required: {{ listing.skill_names.join(", ") }}
+                        <span v-for="skill in listing.skill_ids" :key="skill">
+                            <span :style="{ backgroundColor: userHasSkill(skill) ? 'yellow' : 'grey', borderRadius: '5px', padding: '5px', marginRight: '5px' }">
+                                {{ skill }}
+                            </span>
+                        </span>
+                    </p>
+
                     <p class="card-text">
                       Department: {{ listing.dept }}</p>
                     <p class="card-text">
@@ -92,15 +108,11 @@
                     </p>
                     <div class="col" style="text-align: right">
                       <!-- Button to trigger applicants modal -->
-                      <a
+                      <button
                         href="#"
                         class="btn btn-dark"
-                        data-bs-toggle="modal"
-                        v-bind:data-bs-target="
-                          '#' + listing.role_tag + 'ApplicantsModal'
-                        "
                         style="color: greenyellow; font-weight: bold"
-                        >Apply</a
+                        >Apply</button
                       >
                       <!-- <a
                         :href="`edit_role_listing.html?role_id=${role.role_ID}`"
@@ -116,6 +128,40 @@
                       >
                         Edit
                       </router-link> -->
+
+                      <!--Listing description modal-->
+                        <div
+                          class="modal fade"
+                          :id="listing.listing_tag + 'Modal'"
+                          tabindex="-1"
+                          :aria-labelledby="listing.listing_tag"
+                          aria-hidden="true"
+                        >
+                        <div class="modal-dialog modal-dialog-centered">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" :id="listing.listing_tag">
+                                {{ listing.listing_name }}
+                              </h5>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+                            <div class="modal-body" style="text-align: left">
+                              <!-- Listing-specific details go here -->
+                              <p style="font-weight: bold">
+                                Application Deadline: {{ listing.deadline }}
+                              </p>
+                              <p>Required Skills: {{ listing.skill_names.join(", ") }}</p>
+                              <p style="font-weight: bold">About the listing</p>
+                              <p>{{ listing.listing_description }}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -129,24 +175,18 @@
 </template>
 
 <script>
-// import { ref, onMounted } from 'vue';
-// import axios from 'axios';
-// import { mapState } from 'vuex';
+import axios from 'axios';
 
 export default {
   name: "ApplyRole",
 
-  components: {},
+  components: {}, 
 
   data() {
     return {
-      selected_role: null,
-      listing_name: "",
-      listing_description: "",
-      listing_department: "",
-      deadline: null,
-      // formSubmitted: false,
-      selected_skills: null,
+      listings: [], 
+      listing_skills: null,
+      listingsWithSkills: {},
     };
   },
   computed: {
@@ -163,45 +203,87 @@ export default {
     all_dept() {
       return this.$store.state.all_dept;
     },
-    all_listing() {
-      return this.$store.state.all_listing;
+    // all_listing() {
+    //   return this.$store.state.all_listing;
+    // },
+    user_skills() {
+        return this.$store.state.user_skills;
+    },
+    validListings() {
+        return this.listings.filter(listing => !this.isListingExpired(listing.deadline));
     }
   },
 
-  methods: {},
+  methods: {
+    processListingName(listingName) {
+      // Remove all occurrences of '#' from listingName
+      return listingName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
+    },
+    fetchData() {
+      axios.get("http://127.0.0.1:5002/listing_skill")
+        .then((response) => {
+          this.listing_skills = response.data.data;
+          return axios.get("http://127.0.0.1:5002/listings");
+        })
+        .then((response) => {
+          this.listings = response.data.data;
+          this.listings.forEach((listing) => {
+            listing.listing_tag = this.processListingName(listing.listing_name);
+            let skillIdsForListing = this.listing_skills?.[listing.listing_id] || [];
+            listing.skill_ids = skillIdsForListing;
+            listing.skill_names = skillIdsForListing.map(id => {
+                const skill = this.all_skills.find(skill => skill.value === id);
+                return skill ? skill.name : "Unknown Skill";
+            });
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    },
+
+    userHasSkill(skill){
+      return this.user_skills.includes(skill);
+    },
+
+    skillMatchPercentage(skillsForListing) {
+      if (!skillsForListing || !skillsForListing.length) return 0;  // <-- Add this line
+
+      let matchCount = 0;
+
+      skillsForListing.forEach(skill => {
+          if (this.user_skills.includes(skill)) {
+              matchCount++;
+          }
+      });
+
+      let percentage = (matchCount / skillsForListing.length) * 100;
+      return Math.round(percentage);  // <-- Use Math.round() here
+    }, 
+
+    truncateDescription(description) {
+        const words = description.split(' ');
+        if (words.length > 100) {
+            return words.slice(0, 100).join(' ') + '...';
+        }
+        return description;
+    },
+
+    isListingExpired(deadline) {
+        const today = new Date();
+        const listingDeadline = new Date(deadline);
+        return today > listingDeadline;
+    },
+
+  },
 
   created(){
-    this.$store.dispatch('fetchAllListing');
+    this.fetchData();
   }
 };
 </script>
 
 <style scoped>
-/* Add your component-specific styles here */
-/* Streamlined card styling */
-
-/* Centered layout */
-
-.streamlined-card {
-  max-width: 1000px;
-  border: 1px solid #eaeaea;
-  border-radius: 5px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  padding: 15px;
-}
-
-.refined-card {
-  border: 1px solid #c9c9c9;
-  border-radius: 5px;
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Shadow only on bottom and right */
-  transition:
-    transform 0.2s,
-    box-shadow 0.1s;
-}
-
-.apply-button-section {
-  text-align: center;
-}
 
 h5 {
   font-family:
