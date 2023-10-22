@@ -104,26 +104,14 @@
                     </p>
                     <div class="col" style="text-align: right">
                       <!-- Button to trigger applicants modal -->
+                      <!-- {{ listing.listing_id }} -->
                       <button
                         href="#"
                         class="btn btn-dark"
                         style="color: greenyellow; font-weight: bold"
+                        @click="applyForListing(listing.listing_id)"
                         >Apply</button
                       >
-                      <!-- <a
-                        :href="`edit_role_listing.html?role_id=${role.role_ID}`"
-                        class="btn btn-dark"
-                        style="color: greenyellow; font-weight: bold"
-                        >Edit</a
-                      > -->
-                      <!-- <router-link
-                        :to="{ name: 'EditPosting', params: { roleID: role.role_ID } }"
-                        class="btn btn-dark"
-                        style="{ color: 'greenyellow', 'font-weight': 'bold' }"
-
-                      >
-                        Edit
-                      </router-link> -->
 
                       <!--Listing description modal-->
                         <div
@@ -271,6 +259,33 @@ export default {
         const listingDeadline = new Date(deadline);
         return today > listingDeadline;
     },
+
+    applyForListing(listingId) {
+  // Example data format - adjust as per your backend's expectations
+  const applicationData = {
+    staff_id: this.$store.state.logged_in_staff["staff_id"], 
+     // Assuming you store userId in your Vuex store
+     listing_id: listingId
+  };
+
+  axios.post("http://127.0.0.1:5006/apply", applicationData)
+    .then(response => {
+      if (response.status === 201) {
+        alert("Application submitted successfully!");
+        
+      } else {
+        console.log(applicationData);
+        alert("There was an issue submitting your application.");
+      }
+    })
+    .catch(error => {
+      // console.log(this.$store.state.logged_in_staff);
+      // console.log(this.$store.state.logged_in_staff["staff_id"]);
+      console.error("Error submitting application:", error);
+      alert("Error submitting application. Please try again later.");
+    });
+}
+
 
   },
 

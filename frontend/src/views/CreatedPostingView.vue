@@ -80,18 +80,21 @@
                       <small class="text-muted">
                         Deadline: {{ listing.deadline }}</small
                       >
+                  
                     </p>
                     <div class="col" style="text-align: right">
+                      {{listing.listing_id}}
                       <!-- Button to trigger applicants modal -->
-                      <a
+                      <button
                         href="#"
                         class="btn btn-dark"
+                        @click="fetchApplications(listing.listing_id)"
                         data-bs-toggle="modal"
                         v-bind:data-bs-target="
                           '#' + listing.listing_tag + 'ApplicantsModal'
                         "
                         style="color: greenyellow; font-weight: bold"
-                        >View Applicants</a
+                        >View Applicants</button
                       >
                       <!-- <a
                         :href="`edit_listing_listing.html?listing_id=${listing.listing_ID}`"
@@ -181,7 +184,7 @@
                         <table class="table">
                           <thead>
                             <tr>
-                              <th scope="col" class="col-1">#</th>
+                              <th scope="col=" class="col-1">#</th>
                               <th scope="col" class="col-5">Name</th>
                               <th scope="col" class="col-5">Email</th>
                               <th scope="col" class="col-1"></th>
@@ -189,6 +192,14 @@
                           </thead>
                           <tbody class="text-center align-middle">
                             <!-- Applicants table rows go here -->
+                            <tr v-for="application in filteredApplications" :key="application.application_id">
+                                <th scope="row" class="col-1">{{ application.application_id }}</th>
+                                <td class="col-5">{{ application.date_applied }}</td>
+                                <td class="col-5">{{ application.listing_id }}</td>
+                                <td class="col-1">
+                                    <button class="btn btn-sm btn-primary" @click="viewApplicant(application.application_id)">View</button>
+                                </td>
+                            </tr>
                           </tbody>
                         </table>
                       </div>
@@ -214,6 +225,7 @@ export default {
     return {
       listings: [],
       listing_skills: null,
+      applications: [],
     };
   },
   computed: {
@@ -229,6 +241,9 @@ export default {
     },
     all_dept() {
       return this.$store.state.all_dept;
+    },
+    filteredApplications() {
+    return this.applications.length ? this.applications : [];
     },
   },
   methods: {
@@ -277,6 +292,18 @@ export default {
           console.error("Error fetching listings:", error);
         });
     },
+    fetchApplications(listingId){
+      axios.get(`http://127.0.0.1:5006/listings/${listingId}/applications`)
+      .then(appResponse => {
+        this.applications = appResponse.data.data;
+      })
+      .catch(error => {
+        console.error("Error fetching applications:", error);
+      });
+    },
+    viewApplicant(applicantId){
+      this.$router.push({ name: 'ViewApplicantSkill', params: { id: applicantId } });
+    }
   },
   created() {
     this.fetchData();
