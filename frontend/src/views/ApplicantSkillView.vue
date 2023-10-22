@@ -155,8 +155,8 @@ export default {
           console.error("Error fetching applicant skill:", error);
         });
     },
-    userHasSkill(skill){
-      return this.user_skills.includes(skill);
+    userHasSkill(skill_id){
+      return this.user_skills.includes(skill_id);
     },
 
   },

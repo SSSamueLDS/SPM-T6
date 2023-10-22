@@ -48,7 +48,7 @@ def get_all_depts():
 
 @app.route("/staffs/skills/<int:staff_id>", methods=['GET'])
 def get_staff_skills(staff_id):
-    
+    skill_map = {}
     staff_skill= StaffSkill.query.filter_by(staff_id=staff_id).all()
     if staff_skill:
         skill_list=[]
@@ -58,9 +58,11 @@ def get_staff_skills(staff_id):
         for skill in skill_list:
             skill=Skill.query.filter_by(skill_id=skill).first()
             skill_names.append(skill.skill_name)
+        for id in skill_list:
+            skill_map[id]=skill_names[skill_list.index(id)]
         return jsonify({
             "code": 200,
-            "data": skill_names
+            "data": skill_map
         })
     else:
         return jsonify({
