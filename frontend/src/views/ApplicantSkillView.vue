@@ -47,17 +47,10 @@
           </div>
           <div class="card-body d-flex align-items-center justify-content-center">
             <p class="card-text">
-                      Skill Match: {{ skillMatchPercentage(role_skills.skill_ids) }}%
+                      {{ skillMatchPercentage(role_skills.skill_ids) }}%
                       {{ role_skills.skill_ids }}
                     </p>
-                    <p class="card-text">
-                        Skill ID Required: {{ role_skills.skill_ids }}
-                        <span v-for="skill in role_skills.skill_ids" :key="skill">
-                            <span :style="{ backgroundColor: userHasSkill(skill) ? 'yellow' : 'grey', borderRadius: '5px', padding: '5px', marginRight: '5px' }">
-                                {{ skill }}
-                            </span>
-                        </span>
-                    </p>
+                    
           </div>
         </div> 
         </div>
@@ -177,7 +170,20 @@ export default {
           this.role_skills = response.data.data
         })
     },
+    skillMatchPercentage(skillsForListing) {
+      if (!skillsForListing || !skillsForListing.length) return 0;  // <-- Add this line
 
+      let matchCount = 0;
+
+      skillsForListing.forEach(skill => {
+          if (this.user_skills.includes(skill)) {
+              matchCount++;
+          }
+      });
+
+      let percentage = (matchCount / skillsForListing.length) * 100;
+      return Math.round(percentage);  // <-- Use Math.round() here
+    },
   },
 };
 </script>
