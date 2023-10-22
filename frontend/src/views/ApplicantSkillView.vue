@@ -142,8 +142,11 @@ export default {
       axios
         .get("http://127.0.0.1:5004/staffs/skills/140002")
         .then((response) => {
+          console.log("Response from API:", response);
+
           // Assuming the API response has a property named "skillName"
-          this.employee_skills = response.data.data
+          this.employee_skills = response.data.data;
+          this.employee_skills = 
         })
         .catch((error) => {
           console.error("Error fetching applicant skill:", error);
