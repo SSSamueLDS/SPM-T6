@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from models import db, Staff, StaffSkill, Skill
+from models import db, Staff, StaffSkill, AccessControl
 
 from datetime import datetime
 import json
@@ -19,7 +19,6 @@ CORS(app)
 
 @app.route("/staffs", methods=['GET'])
 def get_all_staffs():
-    # fetch all roles from the database
     staffs = Staff.query.all()
     if staffs:
         return jsonify({
@@ -30,6 +29,19 @@ def get_all_staffs():
         "code": 404,
         "message": "No roles found."
     })
+
+@app.route('/staffs/<int:userID>', methods=['GET'])
+def get_staff_by_id(userID):
+    staff = Staff.query.filter_by(staff_id = userID).first()
+    if staff:
+        return jsonify({
+            "code": 200,
+            "data": staff.json()
+        }), 200
+    return jsonify({
+        "code": 404,
+        "message": "No staff found for the given ID."
+    }), 404
 
 @app.route("/staffs/dept", methods=['GET'])
 def get_all_depts():
@@ -45,7 +57,7 @@ def get_all_depts():
         "code": 404,
         "message": "No departments found."
     })
-
+    
 @app.route("/staffs/skills/<int:staff_id>", methods=['GET'])
 def get_staff_skills(staff_id):
     skill_map={}
@@ -70,7 +82,18 @@ def get_staff_skills(staff_id):
             "message": "No skills found."
         })
 
-
+@app.route("/access_control", methods=['GET'])
+def get_all_access_control():
+    access_controls = AccessControl.query.all()
+    if access_controls:
+        return jsonify({
+            "code": 200,
+            "data": [access_control.json() for access_control in access_controls]
+        }), 200
+    return jsonify({
+        "code": 404,
+        "message": "No access control found."
+    }), 404
 
 
 if __name__ == '__main__':

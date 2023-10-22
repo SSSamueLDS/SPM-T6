@@ -189,6 +189,7 @@ export default {
         this.v$.$validate();
 
         if (!this.v$.$pending && !this.v$.$error) {
+          this.$store.commit('setLoading', true);  // Show loading
           // If there's no validation error and no validation is pending
           try {
             const response = await axios.post(
@@ -211,6 +212,9 @@ export default {
           } catch (error) {
             console.error("Error adding role:", error);
           }
+          finally {
+            this.$store.commit('setLoading', false);  // Hide loading
+          }
         }
       } else if (this.mode === "edit") {
         // Logic for editing an existing role
@@ -218,6 +222,7 @@ export default {
     },
     prefillForm() {
       console.log(this.selected_role)
+      this.$store.commit('setLoading', true);  // Show loading
       var selectedRole = this.all_roles[this.selected_role - 1];
       this.listing_name = selectedRole.role_name;
       this.listing_description = selectedRole.role_description;
@@ -226,7 +231,9 @@ export default {
         this.selected_skills = response.data.data.skill_ids;
       }).catch((error) => {
         console.error("Error fetching data:", error);
-      });
+      }).finally(() => {
+      this.$store.commit('setLoading', false);  // Hide loading
+    });
     }
   },
   setup() {
@@ -235,6 +242,7 @@ export default {
   },
   created() {
     // get all skills
+    //this.$store.commit('setLoading', true);
     axios.get('http://127.0.0.1:5003/skills')
         .then(response => {
             this.skills = response.data.data.map(item => {
@@ -246,7 +254,9 @@ export default {
         })
         .catch(error => {
             console.error('Failed to fetch the role data:', error);
-        });
+        }).finally(() => {
+      //this.$store.commit('setLoading', false);  // Hide loading
+    });
     console.log(this.all_dept, this.all_roles)
   },
 

@@ -3,8 +3,9 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store/store";
 import "bootstrap/dist/css/bootstrap.css";
-createApp(App).use(router).use(store).mount("#app");
+
 import "bootstrap/dist/js/bootstrap.js";
+
 
 Promise.all([
     store.dispatch('fetchAllSkills'),
@@ -13,3 +14,5 @@ Promise.all([
 ]).catch(error => {
     console.error("An error occurred during one or more API calls:", error);
 });
+
+createApp(App).use(router).use(store).mount("#app");

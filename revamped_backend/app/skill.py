@@ -31,6 +31,24 @@ def get_all_skills():
         "message": "No skills found."
     })
 
+@app.route("/skills/<int:skill_id>", methods=['GET'])
+def get_all_name(skill_id):
+    # fetch all skills from the database
+    skill = Skill.query.get(skill_id)
+    if skill:
+        return jsonify({
+            "code": 200,
+            "data": {
+                "skill_id": skill_id,
+                "skill_name": skill.skill_name
+            }
+        })
+    return jsonify({
+        "code": 404,
+        "message": "No skill found for id {skill_id}"
+    })
+
+
 @app.route("/add_skill", methods=['POST'])
 def add_skill():
     #find if skill exists in database
