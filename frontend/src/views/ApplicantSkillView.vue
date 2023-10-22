@@ -130,25 +130,34 @@ export default {
   name: "ApplicantSkillView",
   data() {
     return {
-      employee_skills: [],
+      employee_skills: {},
+      role_skill_ids: [],
     };
   },
   created() {
     this.fetchSkills();
+    this.fetchRoleskill();
   },
   
   methods: {
     fetchSkills() {
       axios
-        .get("http://127.0.0.1:5004/staffs/skills/140002")
+        .get("http://127.0.0.1:5004/staffs/skills/150065")
         .then((response) => {
-          // Assuming the API response has a property named "skillName"
+          
           this.employee_skills = response.data.data
         })
         .catch((error) => {
           console.error("Error fetching applicant skill:", error);
         });
     },
+    fetchRoleskill() {
+      axios
+        .get("http://127.0.0.1:5005/role_skill/1")
+        .then((response) => {
+          
+          this.role_skill_ids = response.data.skill_ids
+        })}
   },
 };
 </script>
