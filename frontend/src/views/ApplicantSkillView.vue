@@ -130,11 +130,12 @@ export default {
   name: "ApplicantSkillView",
   data() {
     return {
-      employee_skills: [],
+      employee_skills: {},
     };
   },
   created() {
     this.fetchSkills();
+    this.fetchRoleskill();
   },
   
   methods: {
@@ -149,6 +150,10 @@ export default {
           console.error("Error fetching applicant skill:", error);
         });
     },
+    userHasSkill(skill_id){
+      return this.user_skills.includes(skill_id);
+    },
+
   },
 };
 </script>
