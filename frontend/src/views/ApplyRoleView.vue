@@ -1,12 +1,7 @@
 <template>
   <p>
-    <!-- {{$store.state.user_skills}}
-    {{ listingsWithSkills }}
-    {{ listing in validListings }} -->
-    <!-- {{$store.state.all_skills}} -->
-    <!-- {{$store.state.all_skills["skill_id"]}}
-    {{$store.state.all_skills}} -->
-    {{ user_skills }}
+    <!-- {{ user_skills }} -->
+    <!-- {{ $store.state.all_skills }} -->
   </p>
 
   <div class="PostingView">
@@ -87,16 +82,17 @@
                     <h5 class="card-title">{{ listing.listing_name }}</h5>
                     <p class="card-text">
                       Skill Match: {{ skillMatchPercentage(listing.skill_ids) }}%
-                      {{ listing.skill_ids }}
+                      <!-- {{ listing.skill_ids }} -->
                     </p>
                     <p class="card-text">{{ truncateDescription(listing.listing_description) }}</p>
                     <p class="card-text">
-                        Skill Required: {{ listing.skill_names.join(", ") }}
-                        <span v-for="skill in listing.skill_ids" :key="skill">
-                            <span :style="{ backgroundColor: userHasSkill(skill) ? 'yellow' : 'grey', borderRadius: '5px', padding: '5px', marginRight: '5px' }">
-                                {{ skill }}
-                            </span>
+                        Skill Required:
+                        <span v-for="(skillName, index) in listing.skill_names" :key="index">
+                          <span :style="{ backgroundColor: userHasSkill(listing.skill_ids[index]) ? 'yellow' : 'grey', borderRadius: '5px', padding: '5px', marginRight: '5px' }">
+                              {{ skillName }}
+                          </span>
                         </span>
+
                     </p>
 
                     <p class="card-text">
