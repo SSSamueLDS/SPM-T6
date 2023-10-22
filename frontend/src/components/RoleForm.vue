@@ -7,7 +7,7 @@
         <div class="card">
           <div class="card-header custom-header">
             <h4 class="no-margin" style="font-weight: bold">
-              Create a Role Listing
+              Submit Role Listing
             </h4>
             <!-- <h2 style="color: white">Add A Role</h2> -->
           </div>
@@ -26,9 +26,9 @@
                     <option selected disabled>Select role</option>
                     <option :value="role.role_id" v-for="role of all_roles" :key="role.role_id">{{role.role_name}}</option>
                   </select>
-                  <div v-if="v$.listing_name.$error" class="text-danger">
+                  <!-- <div v-if="v$.listing_name.$error" class="text-danger">
                     Role listing name is required.
-                  </div>
+                  </div> -->
                 </div>
               </div>
 
@@ -46,9 +46,9 @@
                     id="listing_description"
                     rows="3"
                   ></textarea>
-                  <div v-if="v$.listing_description.$error" class="text-danger">
+                  <!-- <div v-if="v$.listing_description.$error" class="text-danger">
                     Description is required.
-                  </div>
+                  </div> -->
                 </div>
               </div>
 
@@ -64,9 +64,10 @@
                     <option selected disabled>Select Department</option>
                     <option v-for="dept of all_dept" :key="dept" :value="dept">{{dept}}</option>
                   </select>
-                  <!-- <div v-if="v$.listing_department.$error" class="text-danger">
-                    Role department is required
-                  </div> -->
+
+                  <div v-if="formSubmitted && v$.listing_department.required" class="text-danger">
+                      Please choose a department.
+                  </div>
                 </div>
               </div>
 
@@ -84,9 +85,8 @@
                     class="form-control"
                     id="deadline"
                   />
-                  <div v-if="v$.deadline.$invalid" class="text-danger">
-                    <span v-if="!v$.deadline.required">Date is required.</span>
-                    <span v-if="!v$.deadline.afterToday">Date must be after today.</span>
+                  <div v-if="formSubmitted && v$.deadline.$invalid" class="text-danger">
+                    <span>invalid deadline</span>
                   </div>
                 </div>
               </div>
@@ -209,6 +209,7 @@ export default {
 
             if (response.data.code === 201) {
               alert("Role added successfully!");
+              this.$router.push({ name: 'CreatedPostings' });
             } else {
               alert(response.data.message);
             }
@@ -258,6 +259,9 @@ export default {
       required: required,
       afterToday: isFutureDate,
     },
+    listing_department:{
+      required: required,
+    }
   },
 };
 </script>
