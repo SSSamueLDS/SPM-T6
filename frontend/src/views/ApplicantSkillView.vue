@@ -47,8 +47,8 @@
           </div>
           <div class="card-body d-flex align-items-center justify-content-center">
             <p class="card-text">
-                      {{ skillMatchPercentage(role_skills.skill_ids) }}%
-                      {{ role_skills.skill_ids }}
+                      {{ skillMatchPercentage(listing_skills) }}%
+                      {{ listing_skills }}
                     </p>
                     
           </div>
@@ -138,37 +138,46 @@ export default {
   name: "ApplicantSkillView",
   data() {
     return {
-      employee_skills: {},
-      role_skills: {},
+      employee_skills: [],
+      listing_skills: {},
+      employee: {},
     };
   },
   created() {
-    this.fetchSkills();
-    this.fetchRoleskill();
+    this.fetchEmployeeSkills();
+    this.fetchListingskill();
+    this.fetchEmployee();
   },
   
   methods: {
-    fetchSkills() {
+    fetchEmployeeSkills() {
       axios
         .get("http://127.0.0.1:5004/staffs/skills/140002")
         .then((response) => {
           // Assuming the API response has a property named "skillName"
-          this.employee_skills = response.data.data
+          this.employee_skills = response.data.data;
         })
         .catch((error) => {
           console.error("Error fetching applicant skill:", error);
         });
     },
-    userHasSkill(skill_id){
-      return this.user_skills.includes(skill_id);
-    },
-    fetchRoleskill() {
+    fetchListingskill() {
       axios
-        .get("http://127.0.0.1:5005/role_skill/1")
+        .get("http://127.0.0.1:5002/listing_skill/1")
         .then((response) => {
-          
-          this.role_skills = response.data.data
+          this.listing_skills = response.data.data.skill_ids;
         })
+    },
+    fetchEmployee() {
+      axios
+        .get("http://127.0.0.1:5004/staffs/skills/140002")
+        .then((response) => {
+          // Assuming the API response has a property named "skillName"
+          this.employee_skills = response.data.data;
+        })
+        .catch((error) => {
+          console.error("Error fetching applicant skill:", error);
+        });
     },
     skillMatchPercentage(skillsForListing) {
       if (!skillsForListing || !skillsForListing.length) return 0;  // <-- Add this line
@@ -176,7 +185,7 @@ export default {
       let matchCount = 0;
 
       skillsForListing.forEach(skill => {
-          if (this.user_skills.includes(skill)) {
+          if (this.employee_skills.includes(skill)) {
               matchCount++;
           }
       });
