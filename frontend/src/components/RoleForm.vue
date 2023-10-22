@@ -206,6 +206,7 @@ export default {
 
             if (response.data.code === 201) {
               alert("Role added successfully!");
+              this.$router.push({ name: 'CreatedPostings' });
             } else {
               alert(response.data.message);
             }
