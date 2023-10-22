@@ -27,8 +27,8 @@
               <a
                 href="/create-posting"
                 class="btn btn-dark w-100 m-2"
-                style="color: greenyellow; font-weight: bold"
-                >CREATE POSTING</a
+                style="color: rgb(252, 254, 254); font-weight: bold"
+                >CREATE LISTING</a
               >
             </div>
             <div
