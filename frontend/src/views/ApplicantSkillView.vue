@@ -46,12 +46,27 @@
             <h5><strong>Percentage Skill Match</strong></h5>
           </div>
           <div class="card-body d-flex align-items-center justify-content-center">
-            <h1><strong>50%</strong></h1>
+            <p class="card-text">
+                      Skill Match: {{ skillMatchPercentage(role_skills.skill_ids) }}%
+                      {{ role_skills.skill_ids }}
+                    </p>
+                    <p class="card-text">
+                        Skill ID Required: {{ role_skills.skill_ids }}
+                        <span v-for="skill in role_skills.skill_ids" :key="skill">
+                            <span :style="{ backgroundColor: userHasSkill(skill) ? 'yellow' : 'grey', borderRadius: '5px', padding: '5px', marginRight: '5px' }">
+                                {{ skill }}
+                            </span>
+                        </span>
+                    </p>
           </div>
         </div> 
         </div>
       </div>
-
+      
+                  
+                  
+                  
+                
       <!-- APPLICANT'S SKILLS VS REQUIRED SKILLS TABLE -->
       <div class="row">
       <div class="col">
@@ -131,6 +146,7 @@ export default {
   data() {
     return {
       employee_skills: {},
+      role_skills: {},
     };
   },
   created() {
@@ -152,6 +168,14 @@ export default {
     },
     userHasSkill(skill_id){
       return this.user_skills.includes(skill_id);
+    },
+    fetchRoleskill() {
+      axios
+        .get("http://127.0.0.1:5005/role_skill/1")
+        .then((response) => {
+          
+          this.role_skills = response.data.data
+        })
     },
 
   },
