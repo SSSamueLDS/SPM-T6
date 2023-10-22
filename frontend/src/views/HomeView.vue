@@ -37,8 +37,8 @@
 
               <!-- Email input -->
               <div class="form-outline mb-4">
-                <input type="email" id="form3Example3" class="form-control" />
-                <label class="form-label" for="form3Example3">Email address</label>
+                <input type="number" v-model="userID" id="form3Example3" class="form-control" />
+                <label class="form-label" for="form3Example3">Staff ID</label>
               </div>
 
               <!-- Password input -->
@@ -47,20 +47,14 @@
                 <label class="form-label" for="form3Example4">Password</label>
               </div>
 
-              <!-- Checkbox -->
-              <!-- <div class="form-check d-flex justify-content-center mb-4">
-                <input class="form-check-input me-2" type="checkbox" value="" id="form2Example33" checked />
-                <label class="form-check-label" for="form2Example33">
-                  Subscribe to our newsletter
-                </label>
-              </div> -->
-
               <!-- Submit button -->
-              <button type="submit" class="btn btn-primary btn-block mb-4">
-                Sign In
-              </button>
-              
+              <button type="button" @click="handleLogin" class="btn btn-primary btn-block mb-4">Sign In</button>
+
             </form>
+
+            <!-- <h3>Hello {{ $store.state.logged_in_staff?.staff_fname }} {{ $store.state.logged_in_staff?.staff_lname }}</h3> -->
+              <!-- <p>{{ $store.state.logged_in_staff }}</p>
+              <p>{{ $store.state.user_skills }}</p> -->
           </div>
         </div>
       </div>
@@ -71,12 +65,47 @@
 
 <script>
 // @ is an alias to /src
-
 export default {
-  name: "HomeView",
-  components: {
+  data() {
+    return {
+      userID: ''
+    };
   },
-};
+  computed: {
+    logged_in_staff() {
+      return this.$store.logged_in_staff
+    }
+  },
+  methods: {
+  async handleLogin() {
+    if (this.userID) {
+      try {
+        await this.$store.dispatch('login', this.userID);
+        const role = this.$store.state.logged_in_staff?.role;
+        console.log("Logging in with userID:", this.userID);
+
+        if (role) {
+          switch(role) {
+            case "User":
+              this.$router.push('/apply-role');
+              break;
+            case "HR":
+              this.$router.push('/posting');
+              break;
+            default:
+              this.$router.push('/posting');
+          }
+        }
+      } catch (error) {
+        console.error('Login failed:', error);
+        alert('Login failed, please try again.');
+      }
+    } else {
+      alert('Please enter a User ID');
+    }
+  }
+}
+}
 </script>
 
 
