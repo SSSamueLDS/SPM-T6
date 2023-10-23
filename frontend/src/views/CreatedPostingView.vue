@@ -4,20 +4,21 @@
       <div class="row">
         <!-- FILTER -->
         <div class="col-2" style="text-align: left">
-          <h4 style="font-weight: bold" class="mb-3">SEARCH FILTER</h4>
+          <h4 style="font-weight: bold" class="mb-3">Filter By:</h4>
           <div class="row" id="departmentFilter">
             <p style="font-weight: 500" class="mb-2">Department</p>
             <hr class="mx-2 w-75" />
             <div class="w-75">
               <!-- Checkbox filters go here -->
-            </div>
-          </div>
-
-          <div class="row" id="AnotherFilter">
-            <p style="font-weight: 500" class="my-2">Another Filter</p>
-            <hr class="mx-2 w-75" />
-            <div class="w-75">
-              <!-- Another set of checkbox filters go here -->
+              <div class="form-check" v-for="(department,id) in departments" :key = id>
+                <input class="form-check-input" type="checkbox" :value="department" :id="department" v-model="selected_departments">
+                <label class="form-check-label" :for="department">
+                  {{department}}
+                </label>
+              </div>
+              <div class="button">
+                <button class="btn btn-dark" @click="update_listings">Filter</button>
+              </div>
             </div>
           </div>
         </div>
@@ -41,15 +42,15 @@
                     type="search"
                     placeholder="Search"
                     aria-label="Search"
+                    v-model="search_term"
                   />
-                  <button
-                    class="btn btn-outline-success my-2 my-sm-0 p-2"
-                    type="submit"
-                  >
-                    Search
-                  </button>
-                </div>
+
+                </div>                
               </form>
+              <button class="btn btn-outline-success my-2 my-sm-0 p-2"
+                    @click="update_listings">
+                    Search
+              </button>
             </div>
           </div>
 
@@ -63,7 +64,7 @@
           <!-- APPLICANTS -->
           <div class="row mt-3">
             <!-- Vue.js listing listings go here -->
-            <div v-for="(listing, id) in listings" :key="id" class="row mt-3">
+            <div v-for="(listing, id) in grouped_listings[current_page-1]" :key="id" class="row mt-3">
               <div class="mx-2 justify-content-center align-items-center">
                 <!-- Card for each listing -->
                 <div
@@ -72,16 +73,15 @@
                   :id="listing.listing_ID"
                 >
                   <div class="card-body text-left" style="text-align: left">
-                    <div v-bind:data-bs-target="'#' + listing.listing_tag + 'Modal'"
-                  data-bs-toggle="modal">
-                      <h5 class="card-title">{{ listing.listing_name }}</h5>
-                      <p class="card-text">{{ listing.listing_description }}</p>
-                      <p class="card-text">
-                        <small class="text-muted">
-                          Deadline: {{ listing.deadline }}</small>
-                      </p>
-                    </div>
-                    
+
+                    <h5 class="card-title">{{ listing.listing_name }}</h5>
+                    <p class="card-text">{{ listing.listing_description }}</p>
+                    <p class="card-text">
+                      <small class="text-muted">
+                        Department: {{ listing.dept }}<br>
+                        Deadline: {{ listing.deadline }} <br></small>
+                    </p>
+
                     <div class="col" style="text-align: right">
                       <button
                         href="#"
@@ -206,9 +206,24 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div>                      
           </div>
-        </div>
+          <nav aria-label="Skill page navigation">
+            <ul class="pagination">
+              <li class="page-item">
+                <a class="page-link text-black" @click="go_previous_page()"
+                  >Previous</a
+                >
+              </li>
+              <li class="page-item" v-for="i in grouped_listings.length" :key="i">
+                <a class="page-link text-black" @click="go_page(i)">{{ i }}</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link text-black" @click="go_next_page()">Next</a>
+              </li>
+            </ul>
+          </nav>
+        </div>       
       </div>
     </div>
   </div>
@@ -223,8 +238,16 @@ export default {
   data() {
     return {
       listings: [],
+      shown_listings: [],
       listing_skills: null,
+
+      grouped_listings: [],
+      current_page: 1,
+      departments: [],
+      selected_departments: [],
+      search_term: "",
       applications: [],
+
     };
   },
   computed: {
@@ -246,8 +269,57 @@ export default {
     },
   },
   methods: {
+
+    update_listings(){
+      var result = this.listings
+      //if no departments are selected, show all listings
+      if (this.selected_departments.length == 0){
+        result = this.listings
+      }
+      //else, show only listings from selected departments
+      else{
+        result = this.listings.filter(listing => this.selected_departments.includes(listing.dept))
+      }
+      //if search term is not empty, filter listings by search term
+      if (this.search_term != ""){
+        result = result.filter(listing => listing.listing_name.toLowerCase().includes(this.search_term.toLowerCase()))
+      }
+
+      this.shown_listings = result
+      this.grouped_listings = this.group_listings();
+
+    },
+    go_page(i) {
+      this.current_page = i;
+    },
+    go_previous_page() {
+      if (this.current_page > 1) {
+        this.current_page--;
+      }
+    },
+    go_next_page() {
+      if (this.current_page < this.grouped_listings.length - 1) {
+        this.current_page++;
+      }
+    },
+    group_listings() {
+      var grouped_listings = [];
+      var group = [];
+      var i = 0;
+      for (i = 0; i < this.shown_listings.length; i++) {
+        if (i % 5 == 0 && i != 0) {
+          grouped_listings.push(group);
+          group = [];
+        }
+        group.push(this.shown_listings[i]);
+      }
+      grouped_listings.push(group);
+      console.log(grouped_listings);
+      return grouped_listings;
+
     toEditPage(listingId) {
       this.$router.push(`/edit-posting/${listingId}`)
+
     },
     processListingName(listingName) {
       // Remove all occurrences of '#' from listingName
@@ -261,6 +333,9 @@ export default {
         })
         .then((response) => {
           this.listings = response.data.data;
+          //remove listings which have expired
+          this.listings = this.listings.filter(listing => new Date(listing.deadline) > new Date())
+
           this.listings.forEach((listing) => {
             listing.listing_tag = this.processListingName(listing.listing_name);
             let skillIdsForListing = this.listing_skills?.[listing.listing_id] || [];
@@ -269,29 +344,28 @@ export default {
                 return skill ? skill.name : "Unknown Skill";
             });
           });
+          //show all listings by default
+          this.shown_listings = this.listings
+          console.log(this.shown_listings.length)
+          
+                
+          //find out all the departments from all listings
+          for (var i = 0; i<this.shown_listings.length; i++){
+            if (!this.departments.includes(this.shown_listings[i].dept)){
+              this.departments.push(this.shown_listings[i].dept)
+            }
+          }
+          //arrange departments array alphabetically
+          this.departments.sort()
+          console.log(this.departments.length)
+
+          //group listings in groups of 5, for display purposes
+          this.grouped_listings = this.group_listings();
+          console.log(this.grouped_listings.length)
+
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
-        });
-    },
-    fetchListings() {
-      console.log("Fetching listings...");
-
-      // Replace with your API endpoint to fetch listing listings
-      axios
-        .get("http://127.0.0.1:5002/listings") // Change the URL to your API endpoint
-        .then((response) => {
-          console.log("Response from API:", response);
-
-          this.listings = response.data.data;
-          this.listings.forEach((listing) => {
-            listing.listing_tag = this.processListingName(listing.listing_name);
-          });
-
-          console.log("Listings after processing:", this.listings);
-        })
-        .catch((error) => {
-          console.error("Error fetching listings:", error);
         });
     },
     fetchApplications(listingId){
