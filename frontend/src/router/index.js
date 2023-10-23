@@ -85,8 +85,7 @@ const routes = [
     props: true
   },
   {
-    path: "/view-applicant-skill",
-
+    path: "/view-applicant-skill/:id",
     name: "ViewApplicantSkill",
     component: function () {
       return import(

@@ -28,8 +28,8 @@
               <a
                 href="/create-posting"
                 class="btn btn-dark w-100 m-2"
-                style="color: greenyellow; font-weight: bold"
-                >CREATE POSTING</a
+                style="color: rgb(252, 254, 254); font-weight: bold"
+                >CREATE LISTING</a
               >
             </div>
             <div
@@ -69,12 +69,11 @@
                 <!-- Card for each listing -->
                 <div
                   class="card rounded-4"
-                  v-bind:data-bs-target="'#' + listing.listing_tag + 'Modal'"
-                  :id="listing.listing_ID"
-                  data-bs-toggle="modal"
                   style="cursor: pointer"
+                  :id="listing.listing_ID"
                 >
                   <div class="card-body text-left" style="text-align: left">
+
                     <h5 class="card-title">{{ listing.listing_name }}</h5>
                     <p class="card-text">{{ listing.listing_description }}</p>
                     <p class="card-text">
@@ -82,32 +81,25 @@
                         Department: {{ listing.dept }}<br>
                         Deadline: {{ listing.deadline }} <br></small>
                     </p>
+
                     <div class="col" style="text-align: right">
-                      <!-- Button to trigger applicants modal -->
-                      <a
+                      <button
                         href="#"
                         class="btn btn-dark"
+                        @click="toEditPage(listing.listing_id)"
+                        style="color: greenyellow; font-weight: bold"
+                        >Edit</button
+                      >
+                      <button
+                        href="#"
+                        class="btn btn-dark"
+                        @click="fetchApplications(listing.listing_id)"
                         data-bs-toggle="modal"
                         v-bind:data-bs-target="
                           '#' + listing.listing_tag + 'ApplicantsModal'
                         "
                         style="color: greenyellow; font-weight: bold"
-                        >View Applicants</a
-                      >
-                      <!-- <a
-                        :href="`edit_listing_listing.html?listing_id=${listing.listing_ID}`"
-                        class="btn btn-dark"
-                        style="color: greenyellow; font-weight: bold"
-                        >Edit</a
-                      > -->
-                      <!-- <router-link
-                        :to="{ name: 'EditPosting', params: { listingID: listing.listing_ID } }"
-                        class="btn btn-dark"
-                        style="{ color: 'greenyellow', 'font-weight': 'bold' }"
-
-                      >
-                        Edit
-                      </router-link> -->
+                        >View Applicants</button>
                     </div>
                   </div>
                 </div>
@@ -154,6 +146,7 @@
                 tabindex="-1"
                 :aria-labelledby="listing.listing_tag + 'ApplicantsModalLabel'"
                 aria-hidden="true"
+                ref="applicantsModal"
               >
                 <div
                   class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
@@ -182,14 +175,30 @@
                         <table class="table">
                           <thead>
                             <tr>
-                              <th scope="col" class="col-1">#</th>
-                              <th scope="col" class="col-5">Name</th>
-                              <th scope="col" class="col-5">Email</th>
+                              <th scope="col=" class="col-1">#</th>
+                              <th scope="col" class="col-3">Staff ID</th>
+                              <th scope="col" class="col-3">Staff Name</th>
+                              <th scope="col" class="col-3">Date Applied</th>
                               <th scope="col" class="col-1"></th>
                             </tr>
                           </thead>
                           <tbody class="text-center align-middle">
                             <!-- Applicants table rows go here -->
+                            <!-- {{ listing.listing_name }} -->
+                            <tr v-for="application in filteredApplications" :key="application.application_id" :currentListing="listing">
+                              
+                                <th scope="row" class="col-1">{{ application.application_id }}</th>
+                                <td class="col-3">{{ application.staff_id }}</td>
+                                <td class="col-3">{{ application.staff_name }}</td>
+                                <td class="col-3">{{ application.date_applied }}</td>
+                                <td class="col-1">
+                                    <!-- {{ listing.listing_name }} -->
+                                    <button type="button"
+                                      data-bs-dismiss="modal"
+                                      aria-label="Close"
+                                    class="btn btn-sm btn-primary" @click="viewApplicant(application.application_id, listing.listing_name)">View</button>
+                                </td>
+                            </tr>
                           </tbody>
                         </table>
                       </div>
@@ -231,11 +240,14 @@ export default {
       listings: [],
       shown_listings: [],
       listing_skills: null,
+
       grouped_listings: [],
       current_page: 1,
       departments: [],
       selected_departments: [],
       search_term: "",
+      applications: [],
+
     };
   },
   computed: {
@@ -252,8 +264,12 @@ export default {
     all_dept() {
       return this.$store.state.all_dept;
     },
+    filteredApplications() {
+      return this.applications?.length ? this.applications : [];
+    },
   },
   methods: {
+
     update_listings(){
       var result = this.listings
       //if no departments are selected, show all listings
@@ -300,6 +316,10 @@ export default {
       grouped_listings.push(group);
       console.log(grouped_listings);
       return grouped_listings;
+
+    toEditPage(listingId) {
+      this.$router.push(`/edit-posting/${listingId}`)
+
     },
     processListingName(listingName) {
       // Remove all occurrences of '#' from listingName
@@ -348,6 +368,19 @@ export default {
           console.error("Error fetching data:", error);
         });
     },
+    fetchApplications(listingId){
+      axios.get(`http://127.0.0.1:5006/listings/${listingId}/applications`)
+      .then(appResponse => {
+        this.applications = appResponse.data.data;
+      })
+      .catch(error => {
+        console.error("Error fetching applications:", error);
+      });
+    },
+    viewApplicant(applicantionId, listingName){
+      console.log("listingName before route push:", listingName);
+      this.$router.push(`/view-applicant-skill/${applicantionId}`);
+    }
   },
   created() {
     this.fetchData();

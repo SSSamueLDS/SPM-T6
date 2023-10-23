@@ -7,7 +7,7 @@
         <div class="card">
           <div class="card-header custom-header">
             <h4 class="no-margin" style="font-weight: bold">
-              Create a Role Listing
+              Submit Role Listing
             </h4>
             <!-- <h2 style="color: white">Add A Role</h2> -->
           </div>
@@ -26,9 +26,9 @@
                     <option selected disabled>Select role</option>
                     <option :value="role.role_id" v-for="role of all_roles" :key="role.role_id">{{role.role_name}}</option>
                   </select>
-                  <div v-if="v$.listing_name.$error" class="text-danger">
+                  <!-- <div v-if="v$.listing_name.$error" class="text-danger">
                     Role listing name is required.
-                  </div>
+                  </div> -->
                 </div>
               </div>
 
@@ -46,9 +46,9 @@
                     id="listing_description"
                     rows="3"
                   ></textarea>
-                  <div v-if="v$.listing_description.$error" class="text-danger">
+                  <!-- <div v-if="v$.listing_description.$error" class="text-danger">
                     Description is required.
-                  </div>
+                  </div> -->
                 </div>
               </div>
 
@@ -64,9 +64,10 @@
                     <option selected disabled>Select Department</option>
                     <option v-for="dept of all_dept" :key="dept" :value="dept">{{dept}}</option>
                   </select>
-                  <!-- <div v-if="v$.listing_department.$error" class="text-danger">
-                    Role department is required
-                  </div> -->
+
+                  <div v-if="formSubmitted && v$.listing_department.required" class="text-danger">
+                      Please choose a department.
+                  </div>
                 </div>
               </div>
 
@@ -84,9 +85,8 @@
                     class="form-control"
                     id="deadline"
                   />
-                  <div v-if="v$.deadline.$invalid" class="text-danger">
-                    <span v-if="!v$.deadline.required">Date is required.</span>
-                    <span v-if="!v$.deadline.afterToday">Date must be after today.</span>
+                  <div v-if="formSubmitted && v$.deadline.$invalid" class="text-danger">
+                    <span>invalid deadline</span>
                   </div>
                 </div>
               </div>
@@ -179,6 +179,9 @@ export default {
     },
     all_dept() {
       return this.$store.state.all_dept;
+    },
+    logged_in_staff() {
+      return this.$store.state.logged_in_staff;
     }
   },
   methods: {
@@ -189,7 +192,7 @@ export default {
         this.v$.$validate();
 
         if (!this.v$.$pending && !this.v$.$error) {
-          this.$store.commit('setLoading', true);  // Show loading
+          this.$store.commit('setLoading', true);
           // If there's no validation error and no validation is pending
           try {
             const response = await axios.post(
@@ -200,12 +203,13 @@ export default {
                 deadline: this.deadline,
                 dept: this.listing_department,
                 listing_skill: this.selected_skills,
-                hr_id: 160008
+                hr_id: this.logged_in_staff.staff_id
               }
             );
 
             if (response.data.code === 201) {
               alert("Role added successfully!");
+              this.$router.push({ name: 'CreatedPostings' });
             } else {
               alert(response.data.message);
             }
@@ -215,6 +219,7 @@ export default {
           finally {
             this.$store.commit('setLoading', false);  // Hide loading
           }
+          this.$router.push('/posting');
         }
       } else if (this.mode === "edit") {
         // Logic for editing an existing role
@@ -241,23 +246,6 @@ export default {
     return { v$ };
   },
   created() {
-    // get all skills
-    //this.$store.commit('setLoading', true);
-    axios.get('http://127.0.0.1:5003/skills')
-        .then(response => {
-            this.skills = response.data.data.map(item => {
-              return {
-                value: item.skill_ID,
-                name: item.skill_name
-              }
-            })
-        })
-        .catch(error => {
-            console.error('Failed to fetch the role data:', error);
-        }).finally(() => {
-      //this.$store.commit('setLoading', false);  // Hide loading
-    });
-    console.log(this.all_dept, this.all_roles)
   },
 
   validations: {
@@ -271,6 +259,9 @@ export default {
       required: required,
       afterToday: isFutureDate,
     },
+    listing_department:{
+      required: required,
+    }
   },
 };
 </script>
