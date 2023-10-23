@@ -156,6 +156,7 @@
                 tabindex="-1"
                 :aria-labelledby="listing.listing_tag + 'ApplicantsModalLabel'"
                 aria-hidden="true"
+                ref="applicantsModal"
               >
                 <div
                   class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
@@ -202,7 +203,10 @@
                                 <td class="col-3">{{ application.date_applied }}</td>
                                 <td class="col-1">
                                     <!-- {{ listing.listing_name }} -->
-                                    <button class="btn btn-sm btn-primary" @click="viewApplicant(application.application_id, listing.listing_name)">View</button>
+                                    <button type="button"
+                                      data-bs-dismiss="modal"
+                                      aria-label="Close"
+                                    class="btn btn-sm btn-primary" @click="viewApplicant(application.application_id, listing.listing_name)">View</button>
                                 </td>
                             </tr>
                           </tbody>
@@ -248,7 +252,7 @@ export default {
       return this.$store.state.all_dept;
     },
     filteredApplications() {
-    return this.applications.length ? this.applications : [];
+      return this.applications?.length ? this.applications : [];
     },
   },
   methods: {
@@ -308,11 +312,7 @@ export default {
     },
     viewApplicant(applicantionId, listingName){
       console.log("listingName before route push:", listingName);
-      this.$router.push({ 
-        name: 'ViewApplicantSkill', 
-        params: { id: applicantionId }, 
-        query: { listingName: listingName } 
-      });
+      this.$router.push(`/view-applicant-skill/${applicantionId}`);
     }
   },
   created() {
