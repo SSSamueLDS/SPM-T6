@@ -5,7 +5,7 @@
       <div class="col mb-3">
         <div class="card text-start">
           <div class="card-header text-bg-dark">
-            <h5><strong>Software Engineer #0100 Engineering Department</strong></h5>
+            <h5><strong>{{ listingName }}</strong></h5>
           </div>
           
         </div> 
@@ -114,6 +114,11 @@ export default {
   computed: {
     applicationId(){
       return this.$route.params.id;
+    },
+    listingName(){
+      console.log(this.$route); 
+      console.log(this.$route.query.listingName);
+      return this.$route.query.listingName;
     },
     otherSkills() {
       if (!Array.isArray(this.employee_skills) || !Array.isArray(this.listing_skills)) {

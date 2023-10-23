@@ -193,13 +193,16 @@
                           </thead>
                           <tbody class="text-center align-middle">
                             <!-- Applicants table rows go here -->
-                            <tr v-for="application in filteredApplications" :key="application.application_id">
+                            <!-- {{ listing.listing_name }} -->
+                            <tr v-for="application in filteredApplications" :key="application.application_id" :currentListing="listing">
+                              
                                 <th scope="row" class="col-1">{{ application.application_id }}</th>
                                 <td class="col-3">{{ application.staff_id }}</td>
                                 <td class="col-3">{{ application.staff_name }}</td>
                                 <td class="col-3">{{ application.date_applied }}</td>
                                 <td class="col-1">
-                                    <button class="btn btn-sm btn-primary" @click="viewApplicant(application.application_id)">View</button>
+                                    <!-- {{ listing.listing_name }} -->
+                                    <button class="btn btn-sm btn-primary" @click="viewApplicant(application.application_id, listing.listing_name)">View</button>
                                 </td>
                             </tr>
                           </tbody>
@@ -303,8 +306,13 @@ export default {
         console.error("Error fetching applications:", error);
       });
     },
-    viewApplicant(applicantionId){
-      this.$router.push({ name: 'ViewApplicantSkill', params: { id: applicantionId } });
+    viewApplicant(applicantionId, listingName){
+      console.log("listingName before route push:", listingName);
+      this.$router.push({ 
+        name: 'ViewApplicantSkill', 
+        params: { id: applicantionId }, 
+        query: { listingName: listingName } 
+      });
     }
   },
   created() {
