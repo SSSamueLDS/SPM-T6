@@ -73,7 +73,7 @@
           <tbody>
             <tr v-for="(skill, index) in listing_skills" :key="index">
             <th scope="row">{{ index + 1 }}</th>
-            <td>{{ skill }}</td>
+            <td>{{ getSkillNameById(skill) }}</td>
             <td>{{ employee_skills.includes(skill) ? 'Yes' : 'No' }}</td>
         </tr>
           </tbody>
@@ -87,7 +87,7 @@
       <div class="row">
         <div class="col" v-for="(chunk, index) in getChunks(otherSkills, 4)" :key="index">
           <ul>
-            <li class="text-start" v-for="(skill, skillIndex) in chunk" :key="skillIndex">{{ skill }}</li>
+            <li class="text-start" v-for="(skill, skillIndex) in chunk" :key="skillIndex">{{ getSkillNameById(skill) }}</li>
           </ul>
         </div>
       </div>
@@ -125,6 +125,9 @@ export default {
         return [];
       }
       return this.employee_skills.filter(skill => !this.listing_skills.includes(skill));
+    },
+    all_skills() {
+      return this.$store.state.all_skills;
     }
   },
   created() {
@@ -133,18 +136,18 @@ export default {
   
   methods: {
     fetchApplicationDetails() {
-      console.log(this.applicationId);
       axios.get(`http://127.0.0.1:5006/applications/${this.applicationId}`)
         .then(response => {
           this.application = response.data.data;
-          // console.log(this.application);
-          // console.log(this.application["staff_id"]);
-          // console.log(this.application["listing_id"]);
-
-          // Now fetch other details using this application data
-          this.fetchEmployeeSkills(this.application["staff_id"]);
-          this.fetchListingskill(this.application["listing_id"]);
-          this.fetchApplicantInfo(this.application["staff_id"]);
+          return Promise.all([
+            this.fetchEmployeeSkills(this.application["staff_id"]),
+            this.fetchListingskill(this.application["listing_id"]),
+            this.fetchApplicantInfo(this.application["staff_id"])
+          ]);
+        })
+        .then(() => {
+          // All fetch operations are completed
+          // You can perform any other operations that rely on all data being fetched
         })
         .catch(error => {
           console.error("Error fetching application details:", error);
@@ -192,15 +195,19 @@ export default {
       if (!Array.isArray(skillsForListing) || !skillsForListing.length) return 0;
       if (!Array.isArray(this.employee_skills)) return 0;
 
-      let matchCount = 0;
-      skillsForListing.forEach(skill => {
-        if (this.employee_skills.includes(skill)) {
-          matchCount++;
-        }
-      });
-
+      // let matchCount = 0;
+      // skillsForListing.forEach(skill => {
+      //   if (this.employee_skills.includes(skill)) {
+      //     matchCount++;
+      //   }
+      // });
+      const matchCount = skillsForListing.filter(skill => this.employee_skills.includes(skill)).length;
       let percentage = (matchCount / skillsForListing.length) * 100;
       return Math.round(percentage);
+    },
+    getSkillNameById(skillId) {
+      const skillObj = this.all_skills.find(skill => skill.skill_id === skillId);
+      return skillObj ? skillObj.skill_name : 'Unknown';
     },
   },
 };
