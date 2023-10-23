@@ -316,10 +316,10 @@ export default {
       grouped_listings.push(group);
       console.log(grouped_listings);
       return grouped_listings;
+    },
 
     toEditPage(listingId) {
       this.$router.push(`/edit-posting/${listingId}`)
-
     },
     processListingName(listingName) {
       // Remove all occurrences of '#' from listingName
