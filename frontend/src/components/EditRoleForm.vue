@@ -226,6 +226,7 @@ export default {
               listing_skill: this.selected_skills
             }).then(response => {
                 alert('Role updated successfully!');
+                this.$router.push('/posting');
                 console.log(response)
             })
             .catch(error => {

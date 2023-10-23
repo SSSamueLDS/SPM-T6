@@ -68,23 +68,28 @@
                 <!-- Card for each listing -->
                 <div
                   class="card rounded-4"
-                  v-bind:data-bs-target="'#' + listing.listing_tag + 'Modal'"
-                  :id="listing.listing_ID"
-                  data-bs-toggle="modal"
                   style="cursor: pointer"
+                  :id="listing.listing_ID"
                 >
                   <div class="card-body text-left" style="text-align: left">
-                    <h5 class="card-title">{{ listing.listing_name }}</h5>
-                    <p class="card-text">{{ listing.listing_description }}</p>
-                    <p class="card-text">
-                      <small class="text-muted">
-                        Deadline: {{ listing.deadline }}</small
-                      >
-                  
-                    </p>
+                    <div v-bind:data-bs-target="'#' + listing.listing_tag + 'Modal'"
+                  data-bs-toggle="modal">
+                      <h5 class="card-title">{{ listing.listing_name }}</h5>
+                      <p class="card-text">{{ listing.listing_description }}</p>
+                      <p class="card-text">
+                        <small class="text-muted">
+                          Deadline: {{ listing.deadline }}</small>
+                      </p>
+                    </div>
+                    
                     <div class="col" style="text-align: right">
-                      {{listing.listing_id}}
-                      <!-- Button to trigger applicants modal -->
+                      <button
+                        href="#"
+                        class="btn btn-dark"
+                        @click="toEditPage(listing.listing_id)"
+                        style="color: greenyellow; font-weight: bold"
+                        >Edit</button
+                      >
                       <button
                         href="#"
                         class="btn btn-dark"
@@ -94,22 +99,7 @@
                           '#' + listing.listing_tag + 'ApplicantsModal'
                         "
                         style="color: greenyellow; font-weight: bold"
-                        >View Applicants</button
-                      >
-                      <!-- <a
-                        :href="`edit_listing_listing.html?listing_id=${listing.listing_ID}`"
-                        class="btn btn-dark"
-                        style="color: greenyellow; font-weight: bold"
-                        >Edit</a
-                      > -->
-                      <!-- <router-link
-                        :to="{ name: 'EditPosting', params: { listingID: listing.listing_ID } }"
-                        class="btn btn-dark"
-                        style="{ color: 'greenyellow', 'font-weight': 'bold' }"
-
-                      >
-                        Edit
-                      </router-link> -->
+                        >View Applicants</button>
                     </div>
                   </div>
                 </div>
@@ -256,6 +246,9 @@ export default {
     },
   },
   methods: {
+    toEditPage(listingId) {
+      this.$router.push(`/edit-posting/${listingId}`)
+    },
     processListingName(listingName) {
       // Remove all occurrences of '#' from listingName
       return listingName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
