@@ -80,9 +80,7 @@
                     <p class="card-text">
                       <small class="text-muted">
                         Department: {{ listing.dept }}<br>
-                        Deadline: {{ listing.deadline }} <br>
-                        Skills needed: {{  }}</small
-                      >
+                        Deadline: {{ listing.deadline }} <br></small>
                     </p>
                     <div class="col" style="text-align: right">
                       <!-- Button to trigger applicants modal -->
