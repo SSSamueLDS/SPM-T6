@@ -64,7 +64,7 @@
           <!-- APPLICANTS -->
           <div class="row mt-3">
             <!-- Vue.js listing listings go here -->
-            <div v-for="(listing, id) in shown_listings" :key="id" class="row mt-3">
+            <div v-for="(listing, id) in grouped_listings[current_page-1]" :key="id" class="row mt-3">
               <div class="mx-2 justify-content-center align-items-center">
                 <!-- Card for each listing -->
                 <div
@@ -79,7 +79,9 @@
                     <p class="card-text">{{ listing.listing_description }}</p>
                     <p class="card-text">
                       <small class="text-muted">
-                        Deadline: {{ listing.deadline }}</small
+                        Department: {{ listing.dept }}<br>
+                        Deadline: {{ listing.deadline }} <br>
+                        Skills needed: {{  }}</small
                       >
                     </p>
                     <div class="col" style="text-align: right">
@@ -199,6 +201,21 @@
               </div>
             </div>                      
           </div>
+          <nav aria-label="Skill page navigation">
+            <ul class="pagination">
+              <li class="page-item">
+                <a class="page-link text-black" @click="go_previous_page()"
+                  >Previous</a
+                >
+              </li>
+              <li class="page-item" v-for="i in grouped_listings.length" :key="i">
+                <a class="page-link text-black" @click="go_page(i)">{{ i }}</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link text-black" @click="go_next_page()">Next</a>
+              </li>
+            </ul>
+          </nav>
         </div>       
       </div>
     </div>
@@ -255,6 +272,7 @@ export default {
       }
 
       this.shown_listings = result
+      this.grouped_listings = this.group_listings();
 
     },
     go_page(i) {
@@ -266,7 +284,7 @@ export default {
       }
     },
     go_next_page() {
-      if (this.current_page < this.grouped_skills.length - 1) {
+      if (this.current_page < this.grouped_listings.length - 1) {
         this.current_page++;
       }
     },
@@ -274,12 +292,12 @@ export default {
       var grouped_listings = [];
       var group = [];
       var i = 0;
-      for (i = 0; i < this.listings.length; i++) {
+      for (i = 0; i < this.shown_listings.length; i++) {
         if (i % 5 == 0 && i != 0) {
           grouped_listings.push(group);
           group = [];
         }
-        group.push(this.listings[i]);
+        group.push(this.shown_listings[i]);
       }
       grouped_listings.push(group);
       console.log(grouped_listings);
@@ -298,11 +316,8 @@ export default {
         .then((response) => {
           this.listings = response.data.data;
           //remove listings which have expired
-          this.listings = this.listings.filter(listing => {
-            const deadline = new Date(listing.deadline);
-            const now = new Date();
-            return deadline > now;
-          });
+          this.listings = this.listings.filter(listing => new Date(listing.deadline) > new Date())
+
           this.listings.forEach((listing) => {
             listing.listing_tag = this.processListingName(listing.listing_name);
             let skillIdsForListing = this.listing_skills?.[listing.listing_id] || [];
@@ -313,20 +328,23 @@ export default {
           });
           //show all listings by default
           this.shown_listings = this.listings
-          //to do: group listings in groups of 5, for display purposes
-          this.grouped_listings = this.group_listings();
-          console.log(this.grouped_listings.length);
+          console.log(this.shown_listings.length)
+          
                 
           //find out all the departments from all listings
-          for (var i = 0; i<this.listings.length; i++){
-            if (!this.departments.includes(this.listings[i].dept)){
-              this.departments.push(this.listings[i].dept)
+          for (var i = 0; i<this.shown_listings.length; i++){
+            if (!this.departments.includes(this.shown_listings[i].dept)){
+              this.departments.push(this.shown_listings[i].dept)
             }
           }
           //arrange departments array alphabetically
           this.departments.sort()
           console.log(this.departments.length)
-          
+
+          //group listings in groups of 5, for display purposes
+          this.grouped_listings = this.group_listings();
+          console.log(this.grouped_listings.length)
+
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
