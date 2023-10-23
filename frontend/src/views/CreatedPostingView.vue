@@ -185,8 +185,9 @@
                           <thead>
                             <tr>
                               <th scope="col=" class="col-1">#</th>
-                              <th scope="col" class="col-5">Name</th>
-                              <th scope="col" class="col-5">Email</th>
+                              <th scope="col" class="col-3">Staff ID</th>
+                              <th scope="col" class="col-3">Staff Name</th>
+                              <th scope="col" class="col-3">Date Applied</th>
                               <th scope="col" class="col-1"></th>
                             </tr>
                           </thead>
@@ -194,8 +195,9 @@
                             <!-- Applicants table rows go here -->
                             <tr v-for="application in filteredApplications" :key="application.application_id">
                                 <th scope="row" class="col-1">{{ application.application_id }}</th>
-                                <td class="col-5">{{ application.date_applied }}</td>
-                                <td class="col-5">{{ application.listing_id }}</td>
+                                <td class="col-3">{{ application.staff_id }}</td>
+                                <td class="col-3">{{ application.staff_name }}</td>
+                                <td class="col-3">{{ application.date_applied }}</td>
                                 <td class="col-1">
                                     <button class="btn btn-sm btn-primary" @click="viewApplicant(application.application_id)">View</button>
                                 </td>
@@ -301,8 +303,8 @@ export default {
         console.error("Error fetching applications:", error);
       });
     },
-    viewApplicant(applicantId){
-      this.$router.push({ name: 'ViewApplicantSkill', params: { id: applicantId } });
+    viewApplicant(applicantionId){
+      this.$router.push({ name: 'ViewApplicantSkill', params: { id: applicantionId } });
     }
   },
   created() {

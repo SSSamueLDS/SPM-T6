@@ -21,16 +21,16 @@
           </div>
           <ul class="list-group list-group-flush">
             <li class="list-group-item">
-              <h6><strong>ID: 150065</strong></h6>
+              <h6><strong>ID: {{ applicantInfo.staff_id }}</strong></h6>
             </li>
             <li class="list-group-item">
-              <h6><strong>Name: Noah Goh</strong></h6>
+              <h6><strong>Name: {{ applicantInfo.staff_fname }} {{ applicantInfo.staff_lname }}</strong></h6>
             </li>
             <li class="list-group-item">
-              <h6><strong>Email: Noah.Goh@allinone.com.sg</strong></h6>
+              <h6><strong>Email: {{ applicantInfo.email }}</strong></h6>
             </li>
             <li class="list-group-item">
-              <h6><strong>Department: Engineering</strong></h6>
+              <h6><strong>Department: {{ applicantInfo.country }}</strong></h6>
             </li>
             <li class="list-group-item">
               <h6><strong>Country: Singapore</strong></h6>
@@ -48,7 +48,6 @@
           <div class="card-body d-flex align-items-center justify-content-center">
             <p class="card-text">
                       {{ skillMatchPercentage(listing_skills) }}%
-                      {{ listing_skills }}
                     </p>
                     
           </div>
@@ -72,56 +71,23 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td>Node.js</td>
-              <td>Yes</td>
-            </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>Javascript</td>
-              <td>No</td>
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>Bootstrap</td>
-              <td>Yes</td>
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>Java</td>
-              <td>No</td>
-            </tr>
+            <tr v-for="(skill, index) in listing_skills" :key="index">
+            <th scope="row">{{ index + 1 }}</th>
+            <td>{{ skill }}</td>
+            <td>{{ employee_skills.includes(skill) ? 'Yes' : 'No' }}</td>
+        </tr>
           </tbody>
         </table>
       </div>
       </div>
 
       <!-- OTHER SKILLS POSSESSED BY THE APPLICANT -->
+      
       <span class="text-start"><h5>Other Skills Possessed by Applicant</h5></span>
       <div class="row">
-        <div class="col">
+        <div class="col" v-for="(chunk, index) in getChunks(otherSkills, 4)" :key="index">
           <ul>
-            <li class="text-start"> Data Analytics</li>
-            <li class="text-start">Problem Management</li>
-            <li class="text-start">Project Management</li>
-            <li class="text-start">Product Management</li>
-          </ul>
-        </div>
-        <div class="col">
-          <ul>
-            <li class="text-start">Solution Architecture</li>
-            <li class="text-start">Solutions Design Thinking</li>
-            <li class="text-start">Technology Application</li>
-            <li class="text-start">User Interface Design</li>
-          </ul>
-        </div>
-        <div class="col">
-          <ul>
-            <li class="text-start">Solution Architecture</li>
-            <li class="text-start">Solutions Design Thinking</li>
-            <li class="text-start">Technology Application</li>
-            <li class="text-start">User Interface Design</li>
+            <li class="text-start" v-for="(skill, skillIndex) in chunk" :key="skillIndex">{{ skill }}</li>
           </ul>
         </div>
       </div>
@@ -138,60 +104,98 @@ export default {
   name: "ApplicantSkillView",
   data() {
     return {
+      application: {},
       employee_skills: [],
-      listing_skills: {},
-      employee: {},
+      listing_skills: [],
+      applicant: [],
+      applicantInfo: {},
     };
   },
+  computed: {
+    applicationId(){
+      return this.$route.params.id;
+    },
+    otherSkills() {
+      if (!Array.isArray(this.employee_skills) || !Array.isArray(this.listing_skills)) {
+        return [];
+      }
+      return this.employee_skills.filter(skill => !this.listing_skills.includes(skill));
+    }
+  },
   created() {
-    this.fetchEmployeeSkills();
-    this.fetchListingskill();
-    this.fetchEmployee();
+    this.fetchApplicationDetails();
   },
   
   methods: {
-    fetchEmployeeSkills() {
+    fetchApplicationDetails() {
+      console.log(this.applicationId);
+      axios.get(`http://127.0.0.1:5006/applications/${this.applicationId}`)
+        .then(response => {
+          this.application = response.data.data;
+          // console.log(this.application);
+          // console.log(this.application["staff_id"]);
+          // console.log(this.application["listing_id"]);
+
+          // Now fetch other details using this application data
+          this.fetchEmployeeSkills(this.application["staff_id"]);
+          this.fetchListingskill(this.application["listing_id"]);
+          this.fetchApplicantInfo(this.application["staff_id"]);
+        })
+        .catch(error => {
+          console.error("Error fetching application details:", error);
+        });
+    },
+    fetchEmployeeSkills(staffId) {
       axios
-        .get("http://127.0.0.1:5004/staffs/skills/140002")
+        .get(`http://127.0.0.1:5004/staffs/skills/${staffId}`)
         .then((response) => {
           // Assuming the API response has a property named "skillName"
           this.employee_skills = response.data.data;
+          console.log("employee skills="+this.employee_skills);
         })
         .catch((error) => {
           console.error("Error fetching applicant skill:", error);
         });
     },
-    fetchListingskill() {
+    fetchListingskill(listingId) {
       axios
-        .get("http://127.0.0.1:5002/listing_skill/1")
+        .get(`http://127.0.0.1:5002/listing_skill/${listingId}`)
         .then((response) => {
           this.listing_skills = response.data.data.skill_ids;
+          console.log("listing skills="+this.listing_skills);
         })
     },
-    fetchEmployee() {
+    fetchApplicantInfo(staffId) {
       axios
-        .get("http://127.0.0.1:5004/staffs/skills/140002")
+        .get(`http://127.0.0.1:5004/staffs/${staffId}`)
         .then((response) => {
-          // Assuming the API response has a property named "skillName"
-          this.employee_skills = response.data.data;
+          this.applicantInfo = response.data.data;
+          console.log("Applicant Info:", this.applicantInfo);
         })
         .catch((error) => {
-          console.error("Error fetching applicant skill:", error);
+          console.error("Error fetching applicant info:", error);
         });
     },
+    getChunks(arr, size) {
+        let chunks = [];
+        for (let i = 0; i < arr.length; i += size) {
+            chunks.push(arr.slice(i, i + size));
+        }
+        return chunks;
+    },
     skillMatchPercentage(skillsForListing) {
-      if (!skillsForListing || !skillsForListing.length) return 0;  // <-- Add this line
+      if (!Array.isArray(skillsForListing) || !skillsForListing.length) return 0;
+      if (!Array.isArray(this.employee_skills)) return 0;
 
       let matchCount = 0;
-
       skillsForListing.forEach(skill => {
-          if (this.employee_skills.includes(skill)) {
-              matchCount++;
-          }
+        if (this.employee_skills.includes(skill)) {
+          matchCount++;
+        }
       });
 
       let percentage = (matchCount / skillsForListing.length) * 100;
-      return Math.round(percentage);  // <-- Use Math.round() here
+      return Math.round(percentage);
     },
   },
 };

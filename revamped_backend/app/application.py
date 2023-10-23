@@ -56,6 +56,21 @@ def get_applications_by_listing(listing_id):
         "message": "No applications found for this listing."
     })
 
+@app.route("/applications/<int:application_id>", methods=['GET'])
+def get_application_by_id(application_id):
+    # fetch the application with the specific application_id from the database
+    application = Application.query.get(application_id)
+    if application:
+        return jsonify({
+            "code": 200,
+            "data": application.json()
+        })
+    return jsonify({
+        "code": 404,
+        "message": "Application not found."
+    })
+
+
 
 if __name__ == '__main__':
     with app.app_context():
