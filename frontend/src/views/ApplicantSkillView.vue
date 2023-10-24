@@ -30,10 +30,10 @@
               <h6><strong>Email: {{ applicantInfo.email }}</strong></h6>
             </li>
             <li class="list-group-item">
-              <h6><strong>Department: {{ applicantInfo.country }}</strong></h6>
+              <h6><strong>Department: {{ applicantInfo.dept }}</strong></h6>
             </li>
             <li class="list-group-item">
-              <h6><strong>Country: Singapore</strong></h6>
+              <h6><strong>Country: {{ applicantInfo.country }}</strong></h6>
             </li>
           </ul>
         </div> 
