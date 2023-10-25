@@ -13,6 +13,8 @@
           </div>
 
           <div class="card-body">
+            <!-- <pre>{{ v$ }}</pre> -->
+
             <form @submit.prevent="onSubmit">
               <div class="row mb-3">
                 <label
@@ -23,12 +25,12 @@
                 >
                 <div class="col-sm-9">
                   <select id="listing_name" class="form-select" aria-label="Default select example" @change="prefillForm" v-model="selected_role">
-                    <option selected disabled>Select role</option>
+                    <option disabled value="">Select role</option>
                     <option :value="role.role_id" v-for="role of all_roles" :key="role.role_id">{{role.role_name}}</option>
                   </select>
-                  <!-- <div v-if="v$.listing_name.$error" class="text-danger">
+                  <div v-if="v$.listing_name.$error" class="text-danger">
                     Role listing name is required.
-                  </div> -->
+                  </div>
                 </div>
               </div>
 
@@ -46,9 +48,9 @@
                     id="listing_description"
                     rows="3"
                   ></textarea>
-                  <!-- <div v-if="v$.listing_description.$error" class="text-danger">
+                  <div v-if="v$.listing_description.$error" class="text-danger">
                     Description is required.
-                  </div> -->
+                  </div>
                 </div>
               </div>
 
@@ -61,11 +63,11 @@
                 >
                 <div class="col-sm-9">
                   <select id="listing_department" class="form-select" aria-label="Department select" v-model="listing_department">
-                    <option selected disabled>Select Department</option>
+                    <option disabled value="">Select Department</option>
                     <option v-for="dept of all_dept" :key="dept" :value="dept">{{dept}}</option>
                   </select>
 
-                  <div v-if="formSubmitted && v$.listing_department.required" class="text-danger">
+                  <div v-if="formSubmitted && v$.listing_department.$error" class="text-danger">
                       Please choose a department.
                   </div>
                 </div>
@@ -107,6 +109,10 @@
                     mode="tags"
                     id="select_skill"
                   />
+                  <div v-if="formSubmitted && v$.selected_skills.$error" class="text-danger">
+                    Please select at least one skill.
+                  </div>
+
                 </div>
               </div>
 
@@ -160,7 +166,7 @@ export default {
       selected_role: null,
       listing_name: "",
       listing_description: "",
-      listing_department: "",
+      listing_department: null,
       deadline: null,
       formSubmitted: false, // Add this
       selected_skills: null
@@ -261,7 +267,10 @@ export default {
     },
     listing_department:{
       required: required,
-    }
+    },
+    selected_skills: {
+      required: value => !!value.length  // This checks if the array has any items
+    },
   },
 };
 </script>
