@@ -19,32 +19,20 @@
         <div class="card bg-glass">
           <div class="card-body px-4 py-5 px-md-5">
             <form>
-              <!-- 2 column grid layout with text inputs for the first and last names -->
-              <div class="row">
-                <div class="col-md-6 mb-4">
-                  <div class="form-outline">
-                    <input type="text" id="form3Example1" class="form-control" />
-                    <label class="form-label" for="form3Example1">First name</label>
-                  </div>
-                </div>
-                <div class="col-md-6 mb-4">
-                  <div class="form-outline">
-                    <input type="text" id="form3Example2" class="form-control" />
-                    <label class="form-label" for="form3Example2">Last name</label>
-                  </div>
-                </div>
-              </div>
 
               <!-- Email input -->
               <div class="form-outline mb-4">
-                <input type="number" v-model="userID" id="form3Example3" class="form-control" />
                 <label class="form-label" for="form3Example3">Staff ID</label>
+                <input type="number" v-model="userID" id="form3Example3" class="form-control" />
               </div>
 
               <!-- Password input -->
               <div class="form-outline mb-4">
-                <input type="password" id="form3Example4" class="form-control" />
-                <label class="form-label" for="form3Example4">Password</label>
+                <div v-if="errorMessage" class="error-message">
+                    {{ errorMessage }}
+                </div>
+                <!-- <input type="password" id="form3Example4" class="form-control" />
+                <label class="form-label" for="form3Example4">Password</label> -->
               </div>
 
               <!-- Submit button -->
@@ -67,7 +55,8 @@
 export default {
   data() {
     return {
-      userID: ''
+      userID: '',
+      errorMessage: '',
     };
   },
   computed: {
@@ -76,32 +65,44 @@ export default {
     }
   },
   methods: {
-  async handleLogin() {
-    if (this.userID) {
-      try {
+    async handleLogin() {
+    this.errorMessage = ''; // Reset the error message each time the method runs
+    
+    if (!this.userID) {
+        this.errorMessage = 'Please enter a User ID';
+        return;
+    }
+    
+    try {
         await this.$store.dispatch('login', this.userID);
         const role = this.$store.state.logged_in_staff?.role;
 
-        if (role) {
-          switch(role) {
-            case "User":
-              this.$router.push('/apply-role');
-              break;
-            case "HR":
-              this.$router.push('/posting');
-              break;
-            default:
-              this.$router.push('/posting');
-          }
+        if (!role) {
+            throw new Error('Role not assigned to user.');
         }
-      } catch (error) {
+
+        switch(role) {
+            case "User":
+                this.$router.push('/apply-role');
+                break;
+            case "HR":
+                this.$router.push('/posting');
+                break;
+            default:
+                this.$router.push('/posting');
+        }
+    } catch (error) {
         console.error('Login failed:', error);
-        alert('Login failed, please try again.');
-      }
-    } else {
-      alert('Please enter a User ID');
+        
+        if (error.message.includes('Role not assigned')) {
+            this.errorMessage = 'Your account does not have an assigned role. Please contact the system administrator.';
+        } else {
+            // Handle the case where StaffID is not in the database
+            this.errorMessage = 'Invalid StaffID, please re-enter and try again.';
+        }
     }
-  }
+}
+
 }
 
 }
@@ -147,4 +148,13 @@ export default {
       background-color: hsla(0, 0%, 100%, 0.9) !important;
       backdrop-filter: saturate(200%) blur(25px);
     }
+
+    .error-message {
+    color: red;
+    border: 1px solid red;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    }
+
 </style>

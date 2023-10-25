@@ -96,11 +96,12 @@ export default createStore({
                 commit('setLoggedinStaff', user);
                 dispatch('fetchSkillsForUser', userID);
               } else {
-                alert('User not found');
+                throw new Error('User not found');
               }
             } catch (error) {
-              alert('Error during login:', error.message);
+                throw new Error(`Error during login: ${error.message}`);
             }
+            
           },
         
 

@@ -1,6 +1,6 @@
 <template>
   <!-- This is our Navbar -->
-  <AppNavbar />
+  <AppNavbar v-if="showNavbar"></AppNavbar>
   <!-- <nav>
     <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link>
@@ -22,7 +22,12 @@ export default {
   computed:{
     loggedInStaff(){
       return this.$store.state.loggedInStaff;
+    },
+    showNavbar() {
+        return this.$route.name !== 'login';  // 'login' should be the name of your login route
     }
+
+
   }
 };
 </script>
