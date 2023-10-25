@@ -92,6 +92,7 @@ export default createStore({
                 if (role) {
                     console.log(role);
                     user.role = role.access_control_name;
+                    
                 }
                 commit('setLoggedinStaff', user);
                 dispatch('fetchSkillsForUser', userID);
