@@ -1,12 +1,8 @@
 <template>
-  <p>
-    <!-- {{ user_skills }} -->
-    <!-- {{ $store.state.all_skills }} -->
-  </p>
-
   <div class="PostingView">
-    <div class="container text-center mt-5">
+    <div class="container mt-5">
       <div class="row">
+
         <!-- FILTER -->
         <div class="col-2" style="text-align: left">
           <h4 style="font-weight: bold" class="mb-3">SEARCH FILTER</h4>
@@ -26,18 +22,11 @@
             </div>
           </div>
         </div>
+
         <div class="col-10">
-          <div class="row">
-            <!-- <div class="col-5 m-0 col-sm-5 col-md-6 col-lg-3 col-xl-2">
-              <a
-                href="/create-posting"
-                class="btn btn-dark w-100 m-2"
-                style="color: greenyellow; font-weight: bold"
-                >CREATE POSTING</a
-              >
-            </div> -->
+          <div class="row text-center">
             <div
-              class="col-5 d-flex align-items-center col-sm-10 col-md-12 col-lg-12 col-xl-12"
+              class="col-5 d-flex col-sm-10 col-md-12 col-lg-12 col-xl-12"
             >
               <form class="form-inline d-flex w-100">
                 <div class="input-group">
@@ -67,91 +56,81 @@
 
           <!-- APPLICANTS -->
           <div class="row mt-3">
-            <!-- Vue.js role listings go here -->
-            <div v-for="listing in validListings" :key="listing.listing_id" class="row mt-3">
-              <div class="mx-2 justify-content-center align-items-center">
-                <!-- Card for each role -->
-                <div
-                  class="card rounded-4"
-                  v-bind:data-bs-target="'#' + listing.listing_tag + 'Modal'"
-                  :id="listing.listing_id"
-                  data-bs-toggle="modal"
-                  style="cursor: pointer"
-                >
-                  <div class="card-body text-left" style="text-align: left">
+    <!-- Vue.js role listings go here -->
+    <div v-for="listing in validListings" :key="listing.listing_id" class="row mt-3">
+        <div class="mx-2">
+            <!-- Card for each role -->
+            <div class="card rounded-4" style="cursor: pointer">
+                <div class="card-body">
                     <h5 class="card-title">{{ listing.listing_name }}</h5>
                     <p class="card-text">
-                      Skill Match: {{ skillMatchPercentage(listing.skill_ids) }}%
-                      <!-- {{ listing.skill_ids }} -->
+                        Skill Match: {{ skillMatchPercentage(listing.skill_ids) }}%
                     </p>
                     <p class="card-text">{{ truncateDescription(listing.listing_description) }}</p>
                     <p class="card-text">
                         Skill Required:
                         <span v-for="(skillName, index) in listing.skill_names" :key="index">
-                          <span :style="{ backgroundColor: userHasSkill(listing.skill_ids[index]) ? 'yellow' : 'grey', borderRadius: '5px', padding: '5px', marginRight: '5px' }">
-                              {{ skillName }}
-                          </span>
+                            <span :style="{ backgroundColor: userHasSkill(listing.skill_ids[index]) ? 'yellow' : 'grey', borderRadius: '5px', padding: '5px', marginRight: '5px' }">
+                                {{ skillName }}
+                            </span>
                         </span>
-
                     </p>
-
                     <p class="card-text">
-                      Department: {{ listing.dept }}</p>
+                        Department: {{ listing.dept }}
+                    </p>
                     <p class="card-text">
-                      <small class="text-muted">
-                        Deadline: {{ listing.deadline }}</small
-                      >
+                        <small class="text-muted">
+                            Deadline: {{ listing.deadline }}
+                        </small>
                     </p>
                     <div class="col" style="text-align: right">
-                      <!-- Button to trigger applicants modal -->
-                      <!-- {{ listing.listing_id }} -->
-                      <button
-                        href="#"
-                        class="btn btn-dark"
-                        style="color: greenyellow; font-weight: bold"
-                        @click="applyForListing(listing.listing_id)"
-                        >Apply</button
-                      >
-
-                      <!--Listing description modal-->
-                        <div
-                          class="modal fade"
-                          :id="listing.listing_tag + 'Modal'"
-                          tabindex="-1"
-                          :aria-labelledby="listing.listing_tag"
-                          aria-hidden="true"
+                        <!-- Button to view details, which triggers the modal -->
+                        <button
+                            class="btn btn-info"
+                            v-bind:data-bs-toggle="'modal'"
+                            v-bind:data-bs-target="'#' + listing.listing_tag + 'Modal'">
+                            View Details
+                        </button>
+                        <!-- Button to apply -->
+                        <button
+                            href="#"
+                            class="btn btn-dark"
+                            style="color: greenyellow; font-weight: bold"
+                            @click="applyForListing(listing.listing_id)"
                         >
-                        <div class="modal-dialog modal-dialog-centered">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title" :id="listing.listing_tag">
-                                {{ listing.listing_name }}
-                              </h5>
-                              <button
-                                type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close"
-                              ></button>
-                            </div>
-                            <div class="modal-body" style="text-align: left">
-                              <!-- Listing-specific details go here -->
-                              <p style="font-weight: bold">
-                                Application Deadline: {{ listing.deadline }}
-                              </p>
-                              <p>Required Skills: {{ listing.skill_names.join(", ") }}</p>
-                              <p style="font-weight: bold">About the listing</p>
-                              <p>{{ listing.listing_description }}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                            Apply
+                        </button>
                     </div>
-                  </div>
                 </div>
-              </div>
             </div>
-          </div>
+            
+            <!--Listing description modal-->
+            <div class="modal fade" :id="listing.listing_tag + 'Modal'" tabindex="-1" :aria-labelledby="listing.listing_tag" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" :id="listing.listing_tag">
+                                {{ listing.listing_name }}
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" style="text-align: left">
+                            <p style="font-weight: bold">
+                                Application Deadline: {{ listing.deadline }}
+                            </p>
+                            <p>Required Skills: {{ listing.skill_names.join(", ") }}</p>
+                            <p style="font-weight: bold">About the listing</p>
+                            <p>{{ listing.listing_description }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
         </div>
       </div>
     </div>
@@ -271,25 +250,35 @@ export default {
   axios.post("http://127.0.0.1:5006/apply", applicationData)
     .then(response => {
       if (response.status === 201) {
-        alert("Application submitted successfully!");
+        this.$swal({
+        title: 'Suceess!',
+        text: 'Your Job Application is Successful',
+        icon: 'success',
+        confirmButtonText: 'Okay'
+      });
         
       } else {
         console.log(applicationData);
-        alert("There was an issue submitting your application.");
+        this.$swal({
+            title: 'Oops!',
+            text: 'There was an issue submitting your application.',
+            icon: 'error',
+            confirmButtonText: 'Try Again'
+        });
       }
     })
     .catch(error => {
-      // console.log(this.$store.state.logged_in_staff);
-      // console.log(this.$store.state.logged_in_staff["staff_id"]);
       if (error.response){
         console.log(error.response.data.message);
-        alert(error.response.data.message);
+        this.$swal({
+            title: 'Error!',
+            text: error.response.data.message,
+            icon: 'error',
+            confirmButtonText: 'Try Again'
+        });
       }
-      // console.error("Error submitting application:", error);
-      // alert("Error submitting application. Please try again later.");
     });
-}
-
+    },
 
   },
 
