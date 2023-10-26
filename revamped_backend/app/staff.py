@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from models import db, Staff, StaffSkill, AccessControl
+from models import db, Staff, StaffSkill, AccessControl, Skill
 
 from datetime import datetime
 import json
@@ -75,6 +75,30 @@ def get_staff_skills(staff_id):
             "code": 404,
             "message": "No skills found."
         })
+
+@app.route("/staffs/display_skills/<int:staff_id>", methods=['GET'])
+def get_staff_skills(staff_id):
+    
+    staff_skill= StaffSkill.query.filter_by(staff_id=staff_id).all()
+    
+    if staff_skill:
+        skill_map={}
+        skill_list=[]
+        for staff in staff_skill:
+            skill_list.append(staff.skill_id)
+        for skill_id in skill_list:
+            skill_map[skill_id]=Skill.query.filter_by(skill_id=skill_id).first().skill_name
+            
+        return jsonify({
+            "code": 200,
+            "data": skill_map
+        })
+    else:
+        return jsonify({
+            "code": 404,
+            "message": "No skills found."
+        })
+
 
 @app.route("/access_control", methods=['GET'])
 def get_all_access_control():
