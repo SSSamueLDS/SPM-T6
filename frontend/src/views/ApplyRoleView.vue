@@ -281,8 +281,12 @@ export default {
     .catch(error => {
       // console.log(this.$store.state.logged_in_staff);
       // console.log(this.$store.state.logged_in_staff["staff_id"]);
-      console.error("Error submitting application:", error);
-      alert("Error submitting application. Please try again later.");
+      if (error.response){
+        console.log(error.response.data.message);
+        alert(error.response.data.message);
+      }
+      // console.error("Error submitting application:", error);
+      // alert("Error submitting application. Please try again later.");
     });
 }
 
