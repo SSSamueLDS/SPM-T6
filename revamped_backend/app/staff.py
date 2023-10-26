@@ -77,7 +77,7 @@ def get_staff_skills(staff_id):
         })
 
 @app.route("/staffs/display_skills/<int:staff_id>", methods=['GET'])
-def get_staff_skills(staff_id):
+def get_staff_skilldisplay(staff_id):
     
     staff_skill= StaffSkill.query.filter_by(staff_id=staff_id).all()
     

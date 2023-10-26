@@ -122,6 +122,24 @@ const routes = [
       );
     },
   },
+  {
+    path: "/employees",
+    name: "employess",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "../views/EmployeeList.vue"
+      );
+    },
+  },
+  {
+    path: "/employees/:id",
+    name: "ViewStaffSkill",
+    component: function () {
+      return import(
+        /* webpackChunkName: "about" */ "../views/EmployeeSkill.vue"
+      );
+    },
+  },
 ];
 
 const router = createRouter({
