@@ -42,12 +42,12 @@
             </router-link>
           </li> -->
 
-          <li class="nav-item">
+          <li v-if="userRole === 'Manager'" class="nav-item">
             <router-link to="/employees">
               <a class="nav-link" aria-current="page" href="#">EMPLOYEES</a>
             </router-link>
-
           </li>
+
           <li class="nav-item">
             <router-link to="/logout">
               <a class="nav-link" aria-current="page" href="#">LOGOUT</a>

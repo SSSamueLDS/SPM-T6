@@ -22,7 +22,15 @@ def apply_for_listing():
     data = request.json
     staff_id = data.get('staff_id')
     listing_id = data.get('listing_id')
-    application = Application(staff_id=staff_id, listing_id=listing_id, date_applied=date.today())
+    staff_name = data.get('staff_name')
+
+    # Check if an application with the same staff_id and listing_id already exist
+    existing_application = Application.query.filter_by(staff_id=staff_id, listing_id=listing_id).first()
+    if existing_application:
+        return jsonify({"message": "You've already applied for this listing.", "error": True}), 400  # Directly return the error message
+
+    # If not, proceed to add the application
+    application = Application(staff_id=staff_id, listing_id=listing_id,staff_name=staff_name,date_applied=date.today())
     db.session.add(application)
     db.session.commit()
 
@@ -69,7 +77,6 @@ def get_application_by_id(application_id):
         "code": 404,
         "message": "Application not found."
     })
-
 
 
 if __name__ == '__main__':
