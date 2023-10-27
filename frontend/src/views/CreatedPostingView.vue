@@ -74,7 +74,7 @@
                 >
                   <div class="card-body text-left" style="text-align: left">
 
-                    <h5 class="card-title">{{ listing.listing_name }}</h5>
+                    <h5 class="card-title">Listing #{{ listing.listing_id }}: {{ listing.listing_name }}</h5>
                     <p class="card-text">{{ listing.listing_description }}</p>
                     <p class="card-text">
                       <small class="text-muted">
