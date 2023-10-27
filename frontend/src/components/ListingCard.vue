@@ -4,7 +4,7 @@
             <!-- Card for each role -->
             <div class="card rounded-4" style="cursor: pointer">
                 <div class="card-body">
-                    <h5 class="card-title">{{ listing.listing_name }}</h5>
+                    <h5 class="card-title">Listing #{{  listing.listing_id }}: {{ listing.listing_name }}</h5>
                     <p class="card-text">
                         Skill Match: {{ skillMatchPercentage(listing.skill_ids) }}%
                     </p>
