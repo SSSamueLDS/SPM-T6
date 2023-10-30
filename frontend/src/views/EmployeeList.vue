@@ -15,11 +15,28 @@
             <hr class="mx-2 w-75" />
             <div class="w-75">
               <!-- Checkbox filters go here -->
-              <div class="form-check" v-for="(value,name) in all_skills" :key = value>
+              <!-- <div class="form-check" v-for="(value,name) in all_skills" :key = value>
                 <input class="form-check-input" type="checkbox" :value="value.value" :id="name" v-model="skill_filter">
                 <label class="form-check-label" :for="name">
                   {{value.name}}
                 </label>
+              </div> -->
+              <div class="dropdown">
+                <button class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton"
+                style="color: greenyellow; font-weight: bold"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                Skills filter dropdown
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="max-height: 200px; overflow-y: auto;">
+                    <li>
+                        <div class="m-3" @click.stop>
+                            <div class="form-check" v-for="(value,name) in all_skills" :key = value>
+                                <input class="form-check-input" type="checkbox" :value="value.value" :id="name" v-model="skill_filter" @click.stop/>
+                                <label class="form-check-label" :for="name" @click.stop>{{value.name}}</label>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
               </div>
             </div>
           </div>
