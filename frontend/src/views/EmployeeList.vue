@@ -155,9 +155,10 @@ export default {
   methods: {
    
     fetchData() {
-      //setLoadingstate
-      this.$store.commit('setLoading', true);
+     this.$store.commit('setLoading', true)
+      
       axios.get("http://127.0.0.1:5004/staffs")
+      
         .then((response) => {
           this.listings = response.data.data;
           console.log(this.listings);
@@ -190,9 +191,9 @@ applyForListings(staffId) {
   },
 
   created(){
-    this.$store.commit('setLoading', true);
+    
     this.fetchData();
-    this.$store.commit('setLoading', false);
+    
   }
 };
 </script>

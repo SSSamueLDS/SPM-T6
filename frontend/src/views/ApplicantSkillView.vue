@@ -142,6 +142,7 @@ export default {
   
   methods: {
     fetchApplicationDetails() {
+      this.$store.commit('setLoading', true);
       axios.get(`http://127.0.0.1:5006/applications/${this.applicationId}`)
         .then(response => {
           this.application = response.data.data;
@@ -157,9 +158,13 @@ export default {
         })
         .catch(error => {
           console.error("Error fetching application details:", error);
-        });
+        })
+        .finally(()=>{
+              this.$store.commit('setLoading', false);
+          });
     },
     fetchEmployeeSkills(staffId) {
+      this.$store.commit('setLoading', true);
       axios
         .get(`http://127.0.0.1:5004/staffs/skills/${staffId}`)
         .then((response) => {
@@ -169,7 +174,10 @@ export default {
         })
         .catch((error) => {
           console.error("Error fetching applicant skill:", error);
-        });
+        })
+        .finally(()=>{
+              this.$store.commit('setLoading', false);
+          });
     },
     fetchListingskill(listingId) {
       axios
@@ -180,6 +188,7 @@ export default {
         })
     },
     fetchApplicantInfo(staffId) {
+      this.$store.commit('setLoading', true);
       axios
         .get(`http://127.0.0.1:5004/staffs/${staffId}`)
         .then((response) => {
@@ -188,7 +197,10 @@ export default {
         })
         .catch((error) => {
           console.error("Error fetching applicant info:", error);
-        });
+        })
+        .finally(()=>{
+              this.$store.commit('setLoading', false);
+          });
     },
     getChunks(arr, size) {
         let chunks = [];

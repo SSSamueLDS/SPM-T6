@@ -24,9 +24,9 @@
         </div>
         <div class="col-10">
           <div class="row">
-            <div class="col-5 m-0 col-sm-5 col-md-6 col-lg-3 col-xl-2">
+            <div class="col-5 m-0 col-sm-5 col-md-6 col-lg-3 col-xl-2"  v-if="!logged_in_staff.role=='Manager'">
               <a
-                v-if="!logged_in_staff.role=='Manager'"
+               
                 href="/create-posting"
                 class="btn btn-dark w-100 m-2"
                 style="color: rgb(252, 254, 254); font-weight: bold"
@@ -333,6 +333,7 @@ export default {
       return listingName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
     },
     fetchData() {
+      this.$store.commit('setLoading', true);
       axios.get("http://127.0.0.1:5002/listing_skill")
         .then((response) => {
           this.listing_skills = response.data.data;
@@ -373,16 +374,23 @@ export default {
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
-        });
+        })
+        .finally(()=>{
+              this.$store.commit('setLoading', false);
+          });
     },
     fetchApplications(listingId){
+      this.$store.commit('setLoading', true);
       axios.get(`http://127.0.0.1:5006/listings/${listingId}/applications`)
       .then(appResponse => {
         this.applications = appResponse.data.data;
       })
       .catch(error => {
         console.error("Error fetching applications:", error);
-      });
+      })
+      .finally(()=>{
+              this.$store.commit('setLoading', false);
+          });
     },
     viewApplicant(applicantionId, listingName){
       console.log("listingName before route push:", listingName);

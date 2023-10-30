@@ -231,9 +231,9 @@ export default {
     if (this.$store.state.logged_in_staff.role != "User") {
       this.$router.push("/posting")
     }
-    this.$store.commit('setLoading', true);
+    
     this.fetchData();
-    this.$store.commit('setLoading', false);
+    
   }
 };
 </script>
