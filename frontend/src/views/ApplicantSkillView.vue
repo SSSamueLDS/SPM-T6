@@ -131,6 +131,12 @@ export default {
     }
   },
   created() {
+    if (this.$store.state.logged_in_staff == null) {
+      this.$router.push("/login")
+    }
+    if (this.$store.state.logged_in_staff.role == "User") {
+      this.$router.push("/apply-role")
+    }
     this.fetchApplicationDetails();
   },
   
