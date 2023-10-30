@@ -15,6 +15,12 @@
             <hr class="mx-2 w-75" />
             <div class="w-75">
               <!-- Checkbox filters go here -->
+              <div class="form-check" v-for="(value,name) in all_skills" :key = value>
+                <input class="form-check-input" type="checkbox" :value="value.value" :id="name" v-model="skill_filter">
+                <label class="form-check-label" :for="name">
+                  {{value.name}}
+                </label>
+              </div>
             </div>
           </div>
 
@@ -28,14 +34,6 @@
         </div>
         <div class="col-10">
           <div class="row">
-            <!-- <div class="col-5 m-0 col-sm-5 col-md-6 col-lg-3 col-xl-2">
-              <a
-                href="/create-posting"
-                class="btn btn-dark w-100 m-2"
-                style="color: greenyellow; font-weight: bold"
-                >CREATE POSTING</a
-              >
-            </div> -->
             <div
               class="col-5 d-flex align-items-center col-sm-10 col-md-12 col-lg-12 col-xl-12"
             >
@@ -69,14 +67,11 @@
           <!-- APPLICANTS -->
           <div class="row mt-3">
             <!-- Vue.js role listings go here -->
-            <div v-for="listing in validListings" :key="listing.staff_id" class="row mt-3">
+            <div v-for="listing in filteredEmployees" :key="listing.staff_id" class="row mt-3">
               <div class="mx-2 justify-content-center align-items-center">
-                <!-- Card for each role -->
-                
+                <!-- Card for each employee -->
                   <div class="card-body text-left" style="text-align: left">
-                    <h5 class="card-title">{{ listing.staff_fname }} {{ listing.staff_lname }}</h5>
-                    
-                    
+                    <h5 class="card-title">{{ listing.staff_fname }} {{ listing.staff_lname }}</h5>                    
                     
                     <p class="card-text">
                       ID: {{ listing.staff_id }}</p>
@@ -124,15 +119,27 @@ export default {
       listings: [], 
       listing_skills: null,
       listingsWithSkills: {},
+      skill_filter: [],
+      employee_skills: {}
     };
   },
   computed: {
     all_skills() {
       return this.$store.state.all_skills.map(item => {
-              return {
-                value: item.skill_id,
-                name: item.skill_name
-              }})
+        return {
+          value: item.skill_id,
+          name: item.skill_name
+        }})
+    },
+    filteredEmployees() {
+      if (this.skill_filter.length === 0) {
+        return this.listings;
+      } else {
+        return this.listings.filter(employee => {
+          const skills = this.employee_skills[employee.staff_id] || [];
+          return this.skill_filter.every(skill => skills.includes(skill));
+        });
+      }
     },
     all_roles() {
       return this.$store.state.all_roles;
@@ -146,25 +153,26 @@ export default {
     user_skills() {
         return this.$store.state.user_skills;
     },
-    validListings() {
-        return this.listings;
-    }
     
   },
 
   methods: {
    
     fetchData() {
-      axios.get("http://127.0.0.1:5004/staffs")
-        .then((response) => {
-          this.listings = response.data.data;
-          console.log(this.listings);
-          
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-        
+      Promise.all([
+        axios.get("http://127.0.0.1:5004/staffs"),
+        axios.get("http://127.0.0.1:5004/staff_skill")
+      ])
+      .then((responses) => {
+        this.listings = responses[0].data.data;
+        console.log(this.listings);
+        // Handle responses[1] as needed for staff_skill
+        this.employee_skills = responses[1].data.data;
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+
     },
 
 
