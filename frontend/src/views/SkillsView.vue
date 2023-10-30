@@ -161,6 +161,8 @@ export default {
   },
   created() {
     //Call to fetch skill data from API
+    //setLoadingstate
+      this.$store.commit('setLoading', true);
     $(async () => {
       // Change serviceURL to your own
       var serviceURL = "http://localhost:5003/skills";
@@ -189,6 +191,9 @@ export default {
         }
       } catch (error) {
         this.database_error = true;
+      }
+      finally{
+        this.$store.commit('setLoading', false);
       }
     });
   },

@@ -65,7 +65,7 @@
             <h5 class="title m-3" style="text-align: left">Sort By</h5>
           </div>
           
-            <!--{{ listings }-->
+            <!--{ listings }-->
           <!-- APPLICANTS -->
           <div class="row mt-3">
             <!-- Vue.js role listings go here -->
@@ -155,6 +155,8 @@ export default {
   methods: {
    
     fetchData() {
+      //setLoadingstate
+      this.$store.commit('setLoading', true);
       axios.get("http://127.0.0.1:5004/staffs")
         .then((response) => {
           this.listings = response.data.data;
@@ -163,6 +165,9 @@ export default {
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
+        })
+        .finally(()=>{
+              this.$store.commit('setLoading', false);
         });
         
     },

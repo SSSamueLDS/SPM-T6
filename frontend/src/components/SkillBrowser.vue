@@ -73,6 +73,8 @@ export default {
   },
   mounted() {
     // Fetch the skills when the component is mounted
+    //setLoadingstate
+      this.$store.commit('setLoading', true);
     axios
       .get("http://localhost:5003/skills")
       .then((response) => {
@@ -86,6 +88,9 @@ export default {
       })
       .catch((error) => {
         console.error("Error fetching skills:", error);
+      })
+      .finally(()=>{
+              this.$store.commit('setLoading', false);
       });
 
     new window.MultiSelectTag("selectedSkills");
