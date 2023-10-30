@@ -86,9 +86,6 @@
         case "User":
             this.$router.push('/apply-role');
             break;
-        case "Manager":
-            this.$router.push('/posting');
-            break;
       }
       this.fetchStaffInfo(this.$route.query.staffId);
       this.fetchEmployeeSkills(this.$route.query.staffId);
