@@ -120,6 +120,8 @@ export default {
       return listingName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
     },
     fetchData() {
+      //setLoadingstate
+      this.$store.commit('setLoading', true);
       axios.get("http://127.0.0.1:5002/listing_skill")
         .then((response) => {
           this.listing_skills = response.data.data;
@@ -139,6 +141,9 @@ export default {
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
+        })
+        .finally(()=>{
+              this.$store.commit('setLoading', false);
         });
         
     },

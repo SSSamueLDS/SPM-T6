@@ -221,6 +221,9 @@
     },
     methods: {
       update_listings(){
+
+        
+
         var result = this.listings
         //if no departments are selected, show all listings
         if (this.selected_departments.length == 0){
@@ -232,7 +235,12 @@
         }
         //if search term is not empty, filter listings by search term
         if (this.search_term != ""){
+          //setLoadingstate
+          this.$store.commit('setLoading', true);
+
           result = result.filter(listing => listing.listing_name.toLowerCase().includes(this.search_term.toLowerCase()))
+
+          this.$store.commit('setLoading', false);
         }
         //if only_skills_employee_has is true, show only listings which match all skills the employee has
         //assume that employee has the below skills:
@@ -295,6 +303,9 @@
         return listingName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
       },
       fetchData() {
+        //setLoadingstate
+        this.$store.commit('setLoading', true);
+
         axios.get("http://127.0.0.1:5002/listing_skill")
           .then((response) => {
             this.listing_skills = response.data.data;
@@ -340,6 +351,9 @@
           })
           .catch((error) => {
             console.error("Error fetching data:", error);
+          })
+          .finally(()=>{
+              this.$store.commit('setLoading', false);
           });
       },
     },
