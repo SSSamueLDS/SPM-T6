@@ -191,7 +191,7 @@
                             <!-- {{ listing.listing_name }} -->
                             <tr v-for="application in filteredApplications" :key="application.application_id" :currentListing="listing">
                               
-                                <th scope="row" class="col-1">{{ application.application_id }}</th>
+                                <th scope="row" class="col-1  fw-bold" >{{ application.application_id }}</th>
                                 <td class="col-3">{{ application.staff_id }}</td>
                                 <td class="col-3">{{ application.staff_name }}</td>
                                 <td class="col-3">{{ application.date_applied }}</td>
