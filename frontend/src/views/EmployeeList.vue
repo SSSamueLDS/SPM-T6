@@ -10,18 +10,11 @@
             <p style="font-weight: 500" class="mb-2">Skills</p>
             <hr class="mx-2 w-75" />
             <div class="w-75">
-              <!-- Checkbox filters go here -->
-              <!-- <div class="form-check" v-for="(value,name) in all_skills" :key = value>
-                <input class="form-check-input" type="checkbox" :value="value.value" :id="name" v-model="skill_filter">
-                <label class="form-check-label" :for="name">
-                  {{value.name}}
-                </label>
-              </div> -->
               <div class="dropdown">
                 <button class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton"
                 style="color: greenyellow; font-weight: bold"
                 data-bs-toggle="dropdown" aria-expanded="false">
-                Skills filter dropdown
+                Skills filter
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="max-height: 200px; overflow-y: auto;">
                     <li>
@@ -60,19 +53,12 @@
               </form>
             </div>
           </div>
-
-          <div
-            class="row mx-2 mt-3 w-100"
-            style="background-color: grey; color: white; border-radius: 10px"
-          >
-            <h5 class="title m-3" style="text-align: left">Sort By</h5>
-          </div>
-          
-            <!--{ listings }-->
+        
           <!-- APPLICANTS -->
           <div class="row mt-3">
             <!-- Vue.js role listings go here -->
-            <div v-for="listing in groupedEmployees[currentPage]" :key="listing.staff_id" class="row mt-3">
+            <p v-if="filteredEmployees.length == 0">No employees with such skill</p>
+            <div v-else v-for="listing in groupedEmployees[currentPage]" :key="listing.staff_id" class="row mt-3">
               <div class="mx-2 justify-content-center align-items-center">
                 <!-- Card for each employee -->
                   <div class="card-body text-left" style="text-align: left">
