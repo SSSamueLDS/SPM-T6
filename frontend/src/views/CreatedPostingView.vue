@@ -44,7 +44,10 @@
                     aria-label="Search"
                     v-model="search_term"
                   />
-
+                  <select v-model="search_by">
+                    <option value="ID">By Listing ID</option>
+                    <option value="Role Name">By Role Name</option>
+                  </select>
                 </div>                
               </form>
               <button class="btn btn-outline-success my-2 my-sm-0 p-2"
@@ -54,15 +57,8 @@
             </div>
           </div>
 
-          <div
-            class="row mx-2 mt-3 w-100"
-            style="background-color: grey; color: white; border-radius: 10px"
-          >
-            <h5 class="title m-3" style="text-align: left">Sort By</h5>
-          </div>
-
           <!-- APPLICANTS -->
-          <div class="row mt-3">
+          <div class="row mt-3"  v-if="grouped_listings.length>0">
             <!-- Vue.js listing listings go here -->
             <div v-for="(listing, id) in grouped_listings[current_page-1]" :key="id" class="row mt-3">
               <div class="mx-2 justify-content-center align-items-center">
@@ -79,7 +75,10 @@
                     <p class="card-text">
                       <small class="text-muted">
                         Department: {{ listing.dept }}<br>
-                        Deadline: {{ listing.deadline }} <br></small>
+                        Deadline: {{ listing.deadline }} <br>
+                        Listing ID: {{ listing.listing_id }}
+                      </small>
+                        
                     </p>
 
                     <div class="col" style="text-align: right">
@@ -208,7 +207,10 @@
               </div>
             </div>                      
           </div>
-          <nav aria-label="Skill page navigation">
+          <div v-else>
+            <h3>No listings found</h3>
+          </div>
+          <nav aria-label="Skill page navigation" v-if="grouped_listings.length>0">
             <ul class="pagination">
               <li class="page-item">
                 <a class="page-link text-black" @click="go_previous_page()"
@@ -240,7 +242,7 @@ export default {
       listings: [],
       shown_listings: [],
       listing_skills: null,
-
+      search_by: "ID",
       grouped_listings: [],
       current_page: 1,
       departments: [],
@@ -280,10 +282,19 @@ export default {
       else{
         result = this.listings.filter(listing => this.selected_departments.includes(listing.dept))
       }
-      //if search term is not empty, filter listings by search term
+
+      //if search term is not empty
       if (this.search_term != ""){
-        result = result.filter(listing => listing.listing_name.toLowerCase().includes(this.search_term.toLowerCase()))
+        //if search by is ID, filter listings by ID
+        if (this.search_by == "ID"){
+          result = result.filter(listing => listing.listing_id == this.search_term)
+        }
+        // else if search by is Role Name, filter listings by Role Name
+        else if (this.search_by == "Role Name"){
+          result = result.filter(listing => listing.listing_name.toLowerCase().includes(this.search_term.toLowerCase()))
+        }
       }
+      
 
       this.shown_listings = result
       this.grouped_listings = this.group_listings();
@@ -307,6 +318,9 @@ export default {
       var grouped_listings = [];
       var group = [];
       var i = 0;
+      if (this.shown_listings.length == 0){
+        return []
+      }
       for (i = 0; i < this.shown_listings.length; i++) {
         if (i % 5 == 0 && i != 0) {
           grouped_listings.push(group);
