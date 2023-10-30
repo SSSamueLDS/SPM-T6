@@ -10,8 +10,8 @@
         <!-- FILTER -->
         <div class="col-2" style="text-align: left">
           <h4 style="font-weight: bold" class="mb-3">SEARCH FILTER</h4>
-          <div class="row" id="departmentFilter">
-            <p style="font-weight: 500" class="mb-2">Department</p>
+          <div class="row" id="skillsFilter">
+            <p style="font-weight: 500" class="mb-2">Skills</p>
             <hr class="mx-2 w-75" />
             <div class="w-75">
               <!-- Checkbox filters go here -->
@@ -21,14 +21,6 @@
                   {{value.name}}
                 </label>
               </div>
-            </div>
-          </div>
-
-          <div class="row" id="AnotherFilter">
-            <p style="font-weight: 500" class="my-2">Another Filter</p>
-            <hr class="mx-2 w-75" />
-            <div class="w-75">
-              <!-- Another set of checkbox filters go here -->
             </div>
           </div>
         </div>
@@ -67,7 +59,7 @@
           <!-- APPLICANTS -->
           <div class="row mt-3">
             <!-- Vue.js role listings go here -->
-            <div v-for="listing in filteredEmployees" :key="listing.staff_id" class="row mt-3">
+            <div v-for="listing in groupedEmployees[currentPage]" :key="listing.staff_id" class="row mt-3">
               <div class="mx-2 justify-content-center align-items-center">
                 <!-- Card for each employee -->
                   <div class="card-body text-left" style="text-align: left">
@@ -92,14 +84,26 @@
                         @click="applyForListings(listing.staff_id)"
                         >View Detail</button
                       >
-
-                      
-                    
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          <nav aria-label="Employee page navigation">
+            <ul class="pagination">
+              <li class="page-item">
+                <a class="page-link text-black" @click="go_previous_page()"
+                  >Previous</a
+                >
+              </li>
+              <li class="page-item" v-for="i in groupedEmployees?.length" :key="i">
+                <a class="page-link text-black" @click="go_page(i)">{{ i }}</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link text-black" @click="go_next_page()">Next</a>
+              </li>
+            </ul>
+          </nav>
         </div>
       </div>
     </div>
@@ -118,9 +122,10 @@ export default {
     return {
       listings: [], 
       listing_skills: null,
-      listingsWithSkills: {},
       skill_filter: [],
-      employee_skills: {}
+      employee_skills: {},
+      currentPage: 0,
+      listingsPerPage: 5
     };
   },
   computed: {
@@ -153,7 +158,22 @@ export default {
     user_skills() {
         return this.$store.state.user_skills;
     },
-    
+    groupedEmployees() {
+      let result = [];
+      if (this.filteredEmployees) {
+        for (let i = 0; i < this.filteredEmployees?.length; i += this.listingsPerPage) {
+          let group = this.filteredEmployees.slice(i, i + this.listingsPerPage);
+          result.push(group);
+        }
+      }
+      return result;
+    },
+    shownListings() {
+      return this.groupedEmployees[this.currentPage] || [];
+    },
+    totalPages() {
+      return this.groupedEmployees?.length;
+    }
   },
 
   methods: {
@@ -175,21 +195,32 @@ export default {
 
     },
 
-
-    
-
     applyForListing(staffId) {
-    const staffIdStr = staffId.toString(); // Ensure staffId is a string
-    const link = `http://localhost:8080/employees/${staffIdStr}`;
-    
-    // Navigate to the link
-    window.location.href = link;
-},
-applyForListings(staffId) {
-    // Use Vue Router to navigate to the destination component with 'staffId' as a query parameter
-    this.$router.push({ path: `/employees/${staffId}`, query: { staffId: staffId } });
-  }
-
+      const staffIdStr = staffId.toString(); // Ensure staffId is a string
+      const link = `http://localhost:8080/employees/${staffIdStr}`;
+      
+      // Navigate to the link
+      window.location.href = link;
+    },
+    applyForListings(staffId) {
+      // Use Vue Router to navigate to the destination component with 'staffId' as a query parameter
+      this.$router.push({ path: `/employees/${staffId}`, query: { staffId: staffId } });
+    },
+    goToPage(pageIndex) {
+      if (pageIndex >= 0 && pageIndex < this.totalPages) {
+        this.currentPage = pageIndex;
+      }
+    },
+    previousPage() {
+      if (this.currentPage > 0) {
+        this.currentPage -= 1;
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages - 1) {
+        this.currentPage += 1;
+      }
+    },
   },
 
   created(){
