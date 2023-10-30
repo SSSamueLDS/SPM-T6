@@ -176,7 +176,7 @@ class TestListingSkill(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_get_listing(self):
-        listing = Listing(listing_name='Test Listing', listing_description='Test Description', dept='HR', deadline='2023-10-30', hr_id=1)
+        listing = Listing(listing_name='Test Listing', listing_description='Test Description', dept='HR', deadline='2023-10-30', hr_id=190019)
         db.session.add(listing)
         db.session.commit()
         response = self.client.get(f'/listings/{listing.listing_id}')
@@ -185,7 +185,7 @@ class TestListingSkill(unittest.TestCase):
         self.assertEqual(data['data']['listing_name'], 'Test Listing')
 
     def test_update_listing(self):
-        listing = Listing(listing_name='Test Listing', listing_description='Test Description', dept='HR', deadline='2023-10-30', hr_id=1)
+        listing = Listing(listing_name='Test Listing', listing_description='Test Description', dept='HR', deadline='2023-10-30', hr_id=190019)
         db.session.add(listing)
         db.session.commit()
         response = self.client.put(f'/update_listing/{listing.listing_id}', json={
@@ -193,7 +193,7 @@ class TestListingSkill(unittest.TestCase):
             'listing_description': 'Updated Test Description',
             'dept': 'Finance',
             'deadline': '2023-11-30',
-            'listing_skill': [1, 3]
+            'listing_skill': [1,2,3]
         })
         data = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -237,21 +237,21 @@ class TestStaffSkill(unittest.TestCase):
                 
         
                 self.assertEqual(s1.json(), {
-                    'staff_id':1, 
-                    'skill_id':1
+                    'staff_id':140001, 
+                    'skill_id':[1,12,23,26,37,51,54,79]
                 })
         
             def test_get_skills_by_staff(self):
                 
         
                 # Make a request to get skills by staff ID
-                response = self.client.get("/staff_skill/1")
+                response = self.client.get("/staff_skill/140001")
                 self.assertEqual(response.status_code, 200)
         
                 # Check the response data
                 data = json.loads(response.data)
-                self.assertEqual(data['data']['staff_id'], 1)
-                # Assertions for the skills associated with staff_id=1
+                self.assertEqual(data['data']['staff_id'], 140001)
+                # Assertions for the skills associated with staff_id=140001
         
                 # Test for a non-existent staff
                 response = self.client.get("/staff_skill/23")  # Staff ID 23 does not exist based on the image
@@ -280,9 +280,9 @@ class TestApplication(unittest.TestCase):
     def test_apply_for_listing(self):
         # Sample data for testing the POST method
         data = {
-            "staff_id": 1,
+            "staff_id": 140002,
             "listing_id": 1,
-            "staff_name": "John Doe"
+            "staff_name": "Susan Goh"
         }
         response = self.client.post('/apply', json=data)
         self.assertEqual(response.status_code, 201)
