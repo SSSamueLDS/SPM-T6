@@ -57,7 +57,8 @@
           <!-- APPLICANTS -->
           <div class="row mt-3">
             <!-- Vue.js role listings go here -->
-            <div v-for="listing in groupedEmployees[currentPage]" :key="listing.staff_id" class="row mt-3">
+            <p v-if="filteredEmployees.length == 0">No employees with such skill</p>
+            <div v-else v-for="listing in groupedEmployees[currentPage]" :key="listing.staff_id" class="row mt-3">
               <div class="mx-2 justify-content-center align-items-center">
                 <!-- Card for each employee -->
                   <div class="card-body text-left" style="text-align: left">
