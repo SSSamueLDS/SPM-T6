@@ -53,7 +53,8 @@ def main():
             })
         return jsonify({
             "code": 404,
-            "message": "No roles found."
+            "message": "No roles found.",
+            "data": []
         })
 
     # This is to find all the skills given specific role id

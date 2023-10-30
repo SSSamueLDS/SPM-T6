@@ -54,7 +54,8 @@ def main():
             })
         return jsonify({
             "code": 404,
-            "message": "No skills found."
+            "message": "No skills found.",
+            "data": []
         })
 
     @app.route("/skills/<int:skill_id>", methods=['GET'])

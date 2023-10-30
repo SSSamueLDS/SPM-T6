@@ -73,6 +73,7 @@ def main():
     def get_all_depts():
         # fetch all unique departments from the staff table
         depts = db.session.query(Staff.dept).distinct().all()
+        depts_list = []
         if depts:
             depts_list = [dept[0] for dept in depts]
             return jsonify({
@@ -81,15 +82,16 @@ def main():
             })
         return jsonify({
             "code": 404,
-            "message": "No departments found."
+            "message": "No departments found.",
+            "data": depts_list
         })
         
     @app.route("/staffs/skills/<int:staff_id>", methods=['GET'])
     def get_staff_skills(staff_id):
         
         staff_skill= StaffSkill.query.filter_by(staff_id=staff_id).all()
+        skill_list=[]
         if staff_skill:
-            skill_list=[]
             for staff in staff_skill:
                 skill_list.append(staff.skill_id)
             return jsonify({
@@ -99,16 +101,16 @@ def main():
         else:
             return jsonify({
                 "code": 404,
-                "message": "No skills found."
+                "message": "No skills found.",
+                "data": skill_list
             })
 
     @app.route("/staffs/display_skills/<int:staff_id>", methods=['GET'])
     def get_staff_skilldisplay(staff_id):
         
         staff_skill= StaffSkill.query.filter_by(staff_id=staff_id).all()
-        
+        skill_map={}
         if staff_skill:
-            skill_map={}
             skill_list=[]
             for staff in staff_skill:
                 skill_list.append(staff.skill_id)
@@ -122,7 +124,8 @@ def main():
         else:
             return jsonify({
                 "code": 404,
-                "message": "No skills found."
+                "message": "No skills found.",
+                "data": skill_map
             })
 
 

@@ -86,7 +86,8 @@ def main():
             })
         return jsonify({
             "code": 404,
-            "message": "No listings found."
+            "message": "No listings found.",
+            "data": []
         })
 
     @app.route("/listings/<int:listing_id>", methods=['GET'])

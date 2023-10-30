@@ -64,7 +64,8 @@
           <!-- APPLICANTS -->
           <div class="row mt-3">
             <!-- Vue.js listing listings go here -->
-            <div v-for="(listing, id) in grouped_listings[current_page-1]" :key="id" class="row mt-3">
+            <div v-if="listings.length == 0">No available listings</div>
+            <div v-else v-for="(listing, id) in grouped_listings[current_page-1]" :key="id" class="row mt-3">
               <div class="mx-2 justify-content-center align-items-center">
                 <!-- Card for each listing -->
                 <div
@@ -172,7 +173,8 @@
                         {{ listing.listing_name }} position.
                       </p>
                       <div class="row">
-                        <table class="table">
+                        <p v-if="filteredApplications.length == 0">No applicants yet</p>
+                        <table v-else class="table">
                           <thead>
                             <tr>
                               <th scope="col=" class="col-1">#</th>

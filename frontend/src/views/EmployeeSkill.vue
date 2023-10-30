@@ -102,6 +102,7 @@
         
           .get(`http://127.0.0.1:5004/staffs/skills/${staffId}`)
           .then((response) => {
+            console.log(response.data)
             if (response.data.data.length === 0) {
               this.employee_skills = [];
               return;

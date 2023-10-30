@@ -110,7 +110,7 @@ export default {
         return this.$store.state.user_skills;
     },
     validListings() {
-        return this.listings.filter(listing => !this.isListingExpired(listing.deadline));
+        return this.listings?.filter(listing => !this.isListingExpired(listing.deadline));
     }
   },
 

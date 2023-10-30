@@ -70,7 +70,8 @@ def main():
             })
         return jsonify({
             "code": 404,
-            "message": "No applications found."
+            "message": "No applications found.",
+            "data": []
         })
 
     @app.route("/listings/<int:listing_id>/applications", methods=['GET'])
@@ -84,7 +85,8 @@ def main():
             })
         return jsonify({
             "code": 404,
-            "message": "No applications found for this listing."
+            "message": "No applications found for this listing.",
+            "data": []
         })
 
     @app.route("/applications/<int:application_id>", methods=['GET'])
@@ -94,11 +96,12 @@ def main():
         if application:
             return jsonify({
                 "code": 200,
-                "data": application.json()
+                "data": application.json(),
             })
         return jsonify({
             "code": 404,
-            "message": "Application not found."
+            "message": "Application not found.",
+            "data": []
         })
 
 
