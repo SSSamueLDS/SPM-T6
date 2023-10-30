@@ -24,9 +24,9 @@
         </div>
         <div class="col-10">
           <div class="row">
-            <div class="col-5 m-0 col-sm-5 col-md-6 col-lg-3 col-xl-2"  v-if="!logged_in_staff.role=='Manager'">
+            <div class="col-5 m-0 col-sm-5 col-md-6 col-lg-3 col-xl-2"  v-if="logged_in_staff.role=='HR'||logged_in_staff.role=='Admin'">
               <a
-                v-if="logged_in_staff.role=='HR'||logged_in_staff.role=='Admin'"
+                
                 href="/create-posting"
                 class="btn btn-dark w-100 m-2"
                 style="color: rgb(252, 254, 254); font-weight: bold"
