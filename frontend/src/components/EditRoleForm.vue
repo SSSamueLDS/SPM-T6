@@ -82,9 +82,8 @@
                     class="form-control"
                     id="deadline"
                   />
-                  <div v-if="v$.deadline.$invalid" class="text-danger">
-                    <span v-if="!v$.deadline.required">Date is required.</span>
-                    <span v-if="!v$.deadline.afterToday">Date must be after today.</span>
+                  <div v-if="formSubmitted && v$.deadline.$invalid" class="text-danger">
+                    <span>invalid deadline</span>
                   </div>
                 </div>
               </div>
@@ -105,6 +104,9 @@
                     mode="tags"
                     id="select_skill"
                   />
+                  <div v-if="formSubmitted && v$.selected_skills.$error" class="text-danger">
+                    Please select at least one skill.
+                  </div>
                 </div>
               </div>
 
@@ -257,6 +259,12 @@ export default {
     deadline: {
       required: required,
       afterToday: isFutureDate,
+    },
+    listing_department:{
+      required: required,
+    },
+    selected_skills: {
+      required: value => !!value.length  // This checks if the array has any items
     },
   },
 };
