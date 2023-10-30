@@ -11,14 +11,12 @@
             <hr class="mx-2 w-75" />
             <div class="w-75">
               <!-- Checkbox filters go here -->
-            </div>
-          </div>
-
-          <div class="row" id="AnotherFilter">
-            <p style="font-weight: 500" class="my-2">Another Filter</p>
-            <hr class="mx-2 w-75" />
-            <div class="w-75">
-              <!-- Another set of checkbox filters go here -->
+              <div class="form-check" v-for="(department,id) in all_dept" :key = id>
+                <input class="form-check-input" type="checkbox" :value="department" :id="department" v-model="selected_departments">
+                <label class="form-check-label" :for="department">
+                  {{department}}
+                </label>
+              </div>
             </div>
           </div>
         </div>
@@ -35,6 +33,7 @@
                     type="search"
                     placeholder="Search"
                     aria-label="Search"
+                    v-model="search_term"
                   />
                   <button
                     class="btn btn-outline-success my-2 my-sm-0 p-2"
@@ -46,25 +45,26 @@
               </form>
             </div>
           </div>
-
-          <div
-            class="row mx-2 mt-3 w-100"
-            style="background-color: grey; color: white; border-radius: 10px"
-          >
-            <h5 class="title m-3" style="text-align: left">Sort By</h5>
-          </div>
-              <div v-if="listings.length == 0">No available listings</div>
+              <p v-if="loading_listings">Loading...</p>
+              <div v-else-if="listings.length == 0">No available listings</div>
               <!-- Use the child component with v-for and pass necessary props -->
-              <ListingCard v-else
-              v-for="listing in validListings" 
-              :key="listing.listing_id"
-              :listing="listing"
-              :userSkills="user_skills"
-              :skillMatchPercentage="skillMatchPercentage"
-              :truncateDescription="truncateDescription"
-              :userHasSkill="userHasSkill"
-              :applyForListing="applyForListing"
-            />
+              <div v-else>
+                <p v-if="groupedListings.length == 0">No matching listings with current filter</p>
+                <div v-else>
+                  <ListingCard
+                  v-for="listing in groupedListings[currentPage]" 
+                  :key="listing.listing_id"
+                  :listing="listing"
+                  :userSkills="user_skills"
+                  :skillMatchPercentage="skillMatchPercentage"
+                  :truncateDescription="truncateDescription"
+                  :userHasSkill="userHasSkill"
+                  :applyForListing="applyForListing"
+                  />
+                  <PaginationComponent :totalPages="totalPages" v-model:currentPage="currentPage">
+                  </PaginationComponent>
+                </div>
+              </div>
         </div>
       </div>
     </div>
@@ -74,19 +74,26 @@
 <script>
 import axios from 'axios';
 import ListingCard from '../components/ListingCard.vue';
+import PaginationComponent from '@/components/PaginationComponent.vue';
 
 export default {
   name: "ApplyRole",
 
   components: {
-    ListingCard
+    ListingCard,
+    PaginationComponent
   }, 
 
   data() {
     return {
       listings: [], 
       listing_skills: null,
+      selected_departments: [],
+      search_term: "",
       listingsWithSkills: {},
+      loading_listings: false,
+      currentPage: 0,
+      listingsPerPage: 5
     };
   },
   computed: {
@@ -103,14 +110,34 @@ export default {
     all_dept() {
       return this.$store.state.all_dept;
     },
-    // all_listing() {
-    //   return this.$store.state.all_listing;
-    // },
     user_skills() {
         return this.$store.state.user_skills;
     },
     validListings() {
         return this.listings?.filter(listing => !this.isListingExpired(listing.deadline));
+    },
+    filteredListings() {
+      var result = this.listings;
+      if (this.selected_departments.length > 0) {
+        result = this.listings.filter(listing => this.selected_departments.includes(listing.dept));
+      }
+      if (this.search_term != "") {
+        result = result.filter(listing => listing.listing_name.toLowerCase().includes(this.search_term.toLowerCase()))
+      }
+      return result;
+    },
+    groupedListings() {
+      let result = [];
+      if (this.filteredListings) {
+        for (let i = 0; i < this.filteredListings?.length; i += this.listingsPerPage) {
+          let group = this.filteredListings.slice(i, i + this.listingsPerPage);
+          result.push(group);
+        }
+      }
+      return result;
+    },
+    totalPages() {
+      return this.groupedListings?.length;
     }
   },
 
@@ -120,6 +147,7 @@ export default {
       return listingName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
     },
     fetchData() {
+      this.loading_listings = true;
       axios.get("http://127.0.0.1:5002/listing_skill")
         .then((response) => {
           this.listing_skills = response.data.data;
@@ -135,6 +163,7 @@ export default {
                 const skill = this.all_skills.find(skill => skill.value === id);
                 return skill ? skill.name : "Unknown Skill";
             });
+          this.loading_listings = false;
           });
         })
         .catch((error) => {
