@@ -53,9 +53,9 @@
           >
             <h5 class="title m-3" style="text-align: left">Sort By</h5>
           </div>
-
+              <div v-if="listings.length == 0">No available listings</div>
               <!-- Use the child component with v-for and pass necessary props -->
-              <ListingCard 
+              <ListingCard v-else
               v-for="listing in validListings" 
               :key="listing.listing_id"
               :listing="listing"
