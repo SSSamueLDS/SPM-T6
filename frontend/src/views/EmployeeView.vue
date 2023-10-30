@@ -260,6 +260,7 @@
 
         this.shown_listings = result
         this.grouped_listings = this.group_listings();
+        this.current_page = 1;
         
       },
       go_page(i) {
