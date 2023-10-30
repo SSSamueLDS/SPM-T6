@@ -188,8 +188,9 @@ export default {
      // Assuming you store userId in your Vuex store
      listing_id: listingId
   };
-
+    this.$store.commit('setLoading', true);
   axios.post("http://127.0.0.1:5006/apply", applicationData)
+  
     .then(response => {
       if (response.status === 201) {
         this.$swal({
@@ -219,7 +220,10 @@ export default {
             confirmButtonText: 'Try Again'
         });
       }
-    });
+    })
+    .finally(()=>{
+              this.$store.commit('setLoading', false);
+          });
     },
 
   },

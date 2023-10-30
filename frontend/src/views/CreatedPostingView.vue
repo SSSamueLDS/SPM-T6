@@ -26,7 +26,7 @@
           <div class="row">
             <div class="col-5 m-0 col-sm-5 col-md-6 col-lg-3 col-xl-2"  v-if="logged_in_staff.role=='HR'||logged_in_staff.role=='Admin'">
               <a
-                
+
                 href="/create-posting"
                 class="btn btn-dark w-100 m-2"
                 style="color: rgb(252, 254, 254); font-weight: bold"
@@ -200,7 +200,8 @@
                                     <button type="button"
                                       data-bs-dismiss="modal"
                                       aria-label="Close"
-                                    class="btn btn-sm btn-primary" @click="viewApplicant(application.application_id, listing.listing_name)">View</button>
+                                      style="backgroundColor: greenyellow; fontWeight: 600"
+                                    class="btn btn-sm" @click="viewApplicant(application.application_id, listing.listing_name)">View</button>
                                 </td>
                             </tr>
                           </tbody>
