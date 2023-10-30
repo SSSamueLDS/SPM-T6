@@ -55,7 +55,24 @@ def main():
             "code": 404,
             "message": "No roles found."
         })
-
+    
+    @app.route('/staff_skill', methods=['GET'])
+    def get_all_staff_skill():
+        staff_skills = StaffSkill.query.all()
+        staff_skill_map = {}
+        
+        for ss in staff_skills:
+            if ss.staff_id not in staff_skill_map:
+                staff_skill_map[ss.staff_id] = []
+            staff_skill_map[ss.staff_id].append(ss.skill_id)
+        
+        return jsonify(
+            {
+                "code": 201,
+                "data": staff_skill_map
+            }
+        ), 201
+    
     @app.route('/staffs/<int:userID>', methods=['GET'])
     def get_staff_by_id(userID):
         staff = Staff.query.filter_by(staff_id = userID).first()

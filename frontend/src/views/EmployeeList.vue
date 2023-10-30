@@ -1,8 +1,4 @@
 <template>
-  <p>
-    <!-- {{ user_skills }} -->
-    <!-- {{ $store.state.all_skills }} -->
-  </p>
 
   <div class="PostingView">
     <div class="container text-center mt-5">
@@ -10,32 +6,39 @@
         <!-- FILTER -->
         <div class="col-2" style="text-align: left">
           <h4 style="font-weight: bold" class="mb-3">SEARCH FILTER</h4>
-          <div class="row" id="departmentFilter">
-            <p style="font-weight: 500" class="mb-2">Department</p>
+          <div class="row" id="skillsFilter">
+            <p style="font-weight: 500" class="mb-2">Skills</p>
             <hr class="mx-2 w-75" />
             <div class="w-75">
               <!-- Checkbox filters go here -->
-            </div>
-          </div>
-
-          <div class="row" id="AnotherFilter">
-            <p style="font-weight: 500" class="my-2">Another Filter</p>
-            <hr class="mx-2 w-75" />
-            <div class="w-75">
-              <!-- Another set of checkbox filters go here -->
+              <!-- <div class="form-check" v-for="(value,name) in all_skills" :key = value>
+                <input class="form-check-input" type="checkbox" :value="value.value" :id="name" v-model="skill_filter">
+                <label class="form-check-label" :for="name">
+                  {{value.name}}
+                </label>
+              </div> -->
+              <div class="dropdown">
+                <button class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton"
+                style="color: greenyellow; font-weight: bold"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                Skills filter dropdown
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="max-height: 200px; overflow-y: auto;">
+                    <li>
+                        <div class="m-3" @click.stop>
+                            <div class="form-check" v-for="(value,name) in all_skills" :key = value>
+                                <input class="form-check-input" type="checkbox" :value="value.value" :id="name" v-model="skill_filter" @click.stop @click="resetCurrentPage"/>
+                                <label class="form-check-label" :for="name" @click.stop>{{value.name}}</label>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
         <div class="col-10">
           <div class="row">
-            <!-- <div class="col-5 m-0 col-sm-5 col-md-6 col-lg-3 col-xl-2">
-              <a
-                href="/create-posting"
-                class="btn btn-dark w-100 m-2"
-                style="color: greenyellow; font-weight: bold"
-                >CREATE POSTING</a
-              >
-            </div> -->
             <div
               class="col-5 d-flex align-items-center col-sm-10 col-md-12 col-lg-12 col-xl-12"
             >
@@ -69,14 +72,11 @@
           <!-- APPLICANTS -->
           <div class="row mt-3">
             <!-- Vue.js role listings go here -->
-            <div v-for="listing in validListings" :key="listing.staff_id" class="row mt-3">
+            <div v-for="listing in groupedEmployees[currentPage]" :key="listing.staff_id" class="row mt-3">
               <div class="mx-2 justify-content-center align-items-center">
-                <!-- Card for each role -->
-                
+                <!-- Card for each employee -->
                   <div class="card-body text-left" style="text-align: left">
-                    <h5 class="card-title">{{ listing.staff_fname }} {{ listing.staff_lname }}</h5>
-                    
-                    
+                    <h5 class="card-title">{{ listing.staff_fname }} {{ listing.staff_lname }}</h5>                    
                     
                     <p class="card-text">
                       ID: {{ listing.staff_id }}</p>
@@ -97,14 +97,14 @@
                         @click="applyForListings(listing.staff_id)"
                         >View Detail</button
                       >
-
-                      
-                    
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          <PaginationComponent :totalPages="totalPages" v-model:currentPage="currentPage">
+
+          </PaginationComponent>
         </div>
       </div>
     </div>
@@ -113,26 +113,42 @@
 
 <script>
 import axios from 'axios';
+import PaginationComponent from "@/components/PaginationComponent.vue";
 
 export default {
   name: "ApplyRole",
 
-  components: {}, 
+  components: {
+    PaginationComponent
+  }, 
 
   data() {
     return {
       listings: [], 
       listing_skills: null,
-      listingsWithSkills: {},
+      skill_filter: [],
+      employee_skills: {},
+      currentPage: 0,
+      listingsPerPage: 5
     };
   },
   computed: {
     all_skills() {
       return this.$store.state.all_skills.map(item => {
-              return {
-                value: item.skill_id,
-                name: item.skill_name
-              }})
+        return {
+          value: item.skill_id,
+          name: item.skill_name
+        }})
+    },
+    filteredEmployees() {
+      if (this.skill_filter.length === 0) {
+        return this.listings;
+      } else {
+        return this.listings.filter(employee => {
+          const skills = this.employee_skills[employee.staff_id] || [];
+          return this.skill_filter.every(skill => skills.includes(skill));
+        });
+      }
     },
     all_roles() {
       return this.$store.state.all_roles;
@@ -146,10 +162,22 @@ export default {
     user_skills() {
         return this.$store.state.user_skills;
     },
-    validListings() {
-        return this.listings;
+    groupedEmployees() {
+      let result = [];
+      if (this.filteredEmployees) {
+        for (let i = 0; i < this.filteredEmployees?.length; i += this.listingsPerPage) {
+          let group = this.filteredEmployees.slice(i, i + this.listingsPerPage);
+          result.push(group);
+        }
+      }
+      return result;
+    },
+    shownListings() {
+      return this.groupedEmployees[this.currentPage] || [];
+    },
+    totalPages() {
+      return this.groupedEmployees?.length;
     }
-    
   },
 
   methods: {
@@ -157,37 +185,40 @@ export default {
     fetchData() {
      this.$store.commit('setLoading', true)
       
-      axios.get("http://127.0.0.1:5004/staffs")
+      Promise.all([
+        axios.get("http://127.0.0.1:5004/staffs"),
       
-        .then((response) => {
-          this.listings = response.data.data;
-          console.log(this.listings);
-          
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
+        axios.get("http://127.0.0.1:5004/staff_skill")
+      ])
+      .then((responses) => {
+        this.listings = responses[0].data.data;
+        console.log(this.listings);
+        // Handle responses[1] as needed for staff_skill
+        this.employee_skills = responses[1].data.data;
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
         })
         .finally(()=>{
               this.$store.commit('setLoading', false);
-        });
-        
+      });
+
     },
 
-
-    
-
     applyForListing(staffId) {
-    const staffIdStr = staffId.toString(); // Ensure staffId is a string
-    const link = `http://localhost:8080/employees/${staffIdStr}`;
-    
-    // Navigate to the link
-    window.location.href = link;
-},
-applyForListings(staffId) {
-    // Use Vue Router to navigate to the destination component with 'staffId' as a query parameter
-    this.$router.push({ path: `/employees/${staffId}`, query: { staffId: staffId } });
-  }
-
+      const staffIdStr = staffId.toString(); // Ensure staffId is a string
+      const link = `http://localhost:8080/employees/${staffIdStr}`;
+      
+      // Navigate to the link
+      window.location.href = link;
+    },
+    applyForListings(staffId) {
+      // Use Vue Router to navigate to the destination component with 'staffId' as a query parameter
+      this.$router.push({ path: `/employees/${staffId}`, query: { staffId: staffId } });
+    },
+    resetCurrentPage(){
+      this.currentPage = 0
+    }
   },
 
   created(){
