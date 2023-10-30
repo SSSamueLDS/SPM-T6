@@ -78,8 +78,19 @@
     },
     },
     created() {
-        
-        this.fetchStaffInfo(this.$route.query.staffId);
+      if (this.$store.state.logged_in_staff == null) {
+        this.$router.push("/login")
+      }
+      var role = this.$store.state.logged_in_staff.role;
+      switch(role) {
+        case "User":
+            this.$router.push('/apply-role');
+            break;
+        case "Manager":
+            this.$router.push('/posting');
+            break;
+      }
+      this.fetchStaffInfo(this.$route.query.staffId);
       this.fetchEmployeeSkills(this.$route.query.staffId);
     },
     methods: {
@@ -109,6 +120,7 @@
         
           .get(`http://127.0.0.1:5004/staffs/skills/${staffId}`)
           .then((response) => {
+            console.log(response.data)
             if (response.data.data.length === 0) {
               this.employee_skills = [];
               return;

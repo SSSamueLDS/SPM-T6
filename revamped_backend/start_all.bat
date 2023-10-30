@@ -1,7 +1,7 @@
 cd app
-start python role.py
-start python skill.py
-start python application.py
-start python listing.py
-start python staff.py
+start python role.py -test
+start python skill.py -test
+start python application.py -test
+start python listing.py -test
+start python staff.py -test
 

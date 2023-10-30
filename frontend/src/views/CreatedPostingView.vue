@@ -26,6 +26,7 @@
           <div class="row">
             <div class="col-5 m-0 col-sm-5 col-md-6 col-lg-3 col-xl-2">
               <a
+                v-if="!logged_in_staff.role=='Manager'"
                 href="/create-posting"
                 class="btn btn-dark w-100 m-2"
                 style="color: rgb(252, 254, 254); font-weight: bold"
@@ -64,7 +65,8 @@
           <!-- APPLICANTS -->
           <div class="row mt-3">
             <!-- Vue.js listing listings go here -->
-            <div v-for="(listing, id) in grouped_listings[current_page-1]" :key="id" class="row mt-3">
+            <div v-if="listings.length == 0">No available listings</div>
+            <div v-else v-for="(listing, id) in grouped_listings[current_page-1]" :key="id" class="row mt-3">
               <div class="mx-2 justify-content-center align-items-center">
                 <!-- Card for each listing -->
                 <div
@@ -86,6 +88,7 @@
                       <button
                         href="#"
                         class="btn btn-dark"
+                        v-if="!logged_in_staff.role=='Manager'"
                         @click="toEditPage(listing.listing_id)"
                         style="color: greenyellow; font-weight: bold"
                         >Edit</button
@@ -172,7 +175,8 @@
                         {{ listing.listing_name }} position.
                       </p>
                       <div class="row">
-                        <table class="table">
+                        <p v-if="filteredApplications.length == 0">No applicants yet</p>
+                        <table v-else class="table">
                           <thead>
                             <tr>
                               <th scope="col=" class="col-1">#</th>
@@ -267,6 +271,9 @@ export default {
     filteredApplications() {
       return this.applications?.length ? this.applications : [];
     },
+    logged_in_staff() {
+      return this.$store.state.logged_in_staff;
+    }
   },
   methods: {
 
@@ -383,6 +390,18 @@ export default {
     }
   },
   created() {
+    if (this.$store.state.logged_in_staff == null) {
+      this.$router.push("/login")
+    }
+    var role = this.$store.state.logged_in_staff.role;
+    switch(role) {
+      case "User":
+          this.$router.push('/apply-role');
+          break;
+      case "Manager":
+          this.$router.push('/posting');
+          break;
+    }
     this.fetchData();
   },
 };

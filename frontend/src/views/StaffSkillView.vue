@@ -82,6 +82,15 @@ export default {
     }
   },
   created() {
+    if (this.$store.state.logged_in_staff == null) {
+      this.$router.push("/login")
+    }
+    var role = this.$store.state.logged_in_staff.role;
+    switch(role) {
+      case "User":
+          this.$router.push('/apply-role');
+          break;
+    }
     this.fetchStaffInfo();
     this. fetchEmployeeSkills();
   },

@@ -53,9 +53,9 @@
           >
             <h5 class="title m-3" style="text-align: left">Sort By</h5>
           </div>
-
+              <div v-if="listings.length == 0">No available listings</div>
               <!-- Use the child component with v-for and pass necessary props -->
-              <ListingCard 
+              <ListingCard v-else
               v-for="listing in validListings" 
               :key="listing.listing_id"
               :listing="listing"
@@ -110,7 +110,7 @@ export default {
         return this.$store.state.user_skills;
     },
     validListings() {
-        return this.listings.filter(listing => !this.isListingExpired(listing.deadline));
+        return this.listings?.filter(listing => !this.isListingExpired(listing.deadline));
     }
   },
 
@@ -225,6 +225,12 @@ export default {
   },
 
   created(){
+    if (this.$store.state.logged_in_staff == null) {
+      this.$router.push("/login")
+    }
+    if (this.$store.state.logged_in_staff.role != "User") {
+      this.$router.push("/posting")
+    }
     this.$store.commit('setLoading', true);
     this.fetchData();
     this.$store.commit('setLoading', false);
