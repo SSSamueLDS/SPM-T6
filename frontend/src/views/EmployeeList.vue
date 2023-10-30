@@ -57,7 +57,8 @@
           <!-- APPLICANTS -->
           <div class="row mt-3">
             <!-- Vue.js role listings go here -->
-            <p v-if="filteredEmployees.length == 0">No employees with such skill</p>
+            <p v-if="employee_loading">Loading...</p>
+            <p v-else-if="filteredEmployees.length == 0">No employees with such skill</p>
             <div v-else v-for="listing in groupedEmployees[currentPage]" :key="listing.staff_id" class="row mt-3">
               <div class="mx-2 justify-content-center align-items-center">
                 <!-- Card for each employee -->
@@ -114,6 +115,7 @@ export default {
       listing_skills: null,
       skill_filter: [],
       employee_skills: {},
+      employee_loading: false,
       currentPage: 0,
       listingsPerPage: 5
     };
@@ -169,11 +171,13 @@ export default {
   methods: {
    
     fetchData() {
+      this.employee_loading = true;
       Promise.all([
         axios.get("http://127.0.0.1:5004/staffs"),
         axios.get("http://127.0.0.1:5004/staff_skill")
       ])
       .then((responses) => {
+        this.employee_loading = false;
         this.listings = responses[0].data.data;
         console.log(this.listings);
         // Handle responses[1] as needed for staff_skill
