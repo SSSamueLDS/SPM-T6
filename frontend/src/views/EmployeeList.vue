@@ -1,8 +1,4 @@
 <template>
-  <p>
-    <!-- {{ user_skills }} -->
-    <!-- {{ $store.state.all_skills }} -->
-  </p>
 
   <div class="PostingView">
     <div class="container text-center mt-5">
@@ -31,7 +27,7 @@
                     <li>
                         <div class="m-3" @click.stop>
                             <div class="form-check" v-for="(value,name) in all_skills" :key = value>
-                                <input class="form-check-input" type="checkbox" :value="value.value" :id="name" v-model="skill_filter" @click.stop/>
+                                <input class="form-check-input" type="checkbox" :value="value.value" :id="name" v-model="skill_filter" @click.stop @click="resetCurrentPage"/>
                                 <label class="form-check-label" :for="name" @click.stop>{{value.name}}</label>
                             </div>
                         </div>
@@ -106,21 +102,9 @@
               </div>
             </div>
           </div>
-          <nav aria-label="Employee page navigation">
-            <ul class="pagination">
-              <li class="page-item">
-                <a class="page-link text-black" @click="go_previous_page()"
-                  >Previous</a
-                >
-              </li>
-              <li class="page-item" v-for="i in groupedEmployees?.length" :key="i">
-                <a class="page-link text-black" @click="go_page(i)">{{ i }}</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link text-black" @click="go_next_page()">Next</a>
-              </li>
-            </ul>
-          </nav>
+          <PaginationComponent :totalPages="totalPages" v-model:currentPage="currentPage">
+
+          </PaginationComponent>
         </div>
       </div>
     </div>
@@ -129,11 +113,14 @@
 
 <script>
 import axios from 'axios';
+import PaginationComponent from "@/components/PaginationComponent.vue";
 
 export default {
   name: "ApplyRole",
 
-  components: {}, 
+  components: {
+    PaginationComponent
+  }, 
 
   data() {
     return {
@@ -223,21 +210,9 @@ export default {
       // Use Vue Router to navigate to the destination component with 'staffId' as a query parameter
       this.$router.push({ path: `/employees/${staffId}`, query: { staffId: staffId } });
     },
-    goToPage(pageIndex) {
-      if (pageIndex >= 0 && pageIndex < this.totalPages) {
-        this.currentPage = pageIndex;
-      }
-    },
-    previousPage() {
-      if (this.currentPage > 0) {
-        this.currentPage -= 1;
-      }
-    },
-    nextPage() {
-      if (this.currentPage < this.totalPages - 1) {
-        this.currentPage += 1;
-      }
-    },
+    resetCurrentPage(){
+      this.currentPage = 0
+    }
   },
 
   created(){
