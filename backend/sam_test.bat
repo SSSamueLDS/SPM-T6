@@ -1,4 +1,4 @@
-cd revamped_backend
+cd backend
 cd app
 start python role.py -test
 start python skill.py -test

@@ -1,4 +1,4 @@
 .env
 /frontend/node_modules/
-/revamped_backend/app/_pycache_/
-revamped_backend/app/__pycache__/
+/backend/app/_pycache_/
+backend/app/__pycache__/

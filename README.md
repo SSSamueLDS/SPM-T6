@@ -27,7 +27,7 @@ Before running the backend app, you need to install the required Python packages
 Start Backend (Make sure you are on project root folder)
 
 ```shell
- cd revamped_backend
+ cd backend
  start_all.bat
 ```
 
@@ -49,7 +49,7 @@ Before running the backend app, you need to install the required Python packages
 Start Backend (Make sure you are on project root folder)
 
 ```shell
-cd revamped_backend
+cd backend
 ./start_all.sh
 ```
 
@@ -64,7 +64,7 @@ cd revamped_backend
 │   ├── ...
 │   └── README.md
 ├── requirements.txt
-└── revamped_backend
+└── backend
     ├── ...
     └── README.md
 ```
