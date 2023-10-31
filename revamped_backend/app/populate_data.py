@@ -43,3 +43,4 @@ def load_data_into_db(DATABASE_URI):
 
     connection.close()
 
+
