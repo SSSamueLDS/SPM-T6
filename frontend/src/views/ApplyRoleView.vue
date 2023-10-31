@@ -147,6 +147,7 @@ export default {
       return listingName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
     },
     fetchData() {
+      this.$store.commit('setLoading', true);
       this.loading_listings = true;
       axios.get("http://127.0.0.1:5002/listing_skill")
         .then((response) => {
@@ -164,6 +165,7 @@ export default {
                 return skill ? skill.name : "Unknown Skill";
             });
           this.loading_listings = false;
+          this.$store.commit('setLoading', false);
           });
         })
         .catch((error) => {
@@ -206,44 +208,45 @@ export default {
     },
 
     applyForListing(listingId) {
-  // Example data format - adjust as per your backend's expectations
-  const applicationData = {
-    staff_id: this.$store.state.logged_in_staff["staff_id"], 
-     // Assuming you store userId in your Vuex store
-     listing_id: listingId
-  };
+      const applicationData = {
+        staff_id: this.$store.state.logged_in_staff["staff_id"],
+        staff_name: this.$store.state.logged_in_staff["staff_fname"],
+        listing_id: listingId
+      };
 
-  axios.post("http://127.0.0.1:5006/apply", applicationData)
-    .then(response => {
-      if (response.status === 201) {
-        this.$swal({
-        title: 'Suceess!',
-        text: 'Your Job Application is Successful',
-        icon: 'success',
-        confirmButtonText: 'Okay'
-      });
-        
-      } else {
-        console.log(applicationData);
-        this.$swal({
-            title: 'Oops!',
-            text: 'There was an issue submitting your application.',
-            icon: 'error',
-            confirmButtonText: 'Try Again'
+      console.log(applicationData);
+
+      axios.post("http://127.0.0.1:5006/apply", applicationData)
+        .then(response => {
+          if (response.status === 201) {
+            this.$swal({
+            title: 'Suceess!',
+            text: 'Your Job Application is Successful',
+            icon: 'success',
+            confirmButtonText: 'Okay'
+          });
+            
+          } else {
+            console.log(applicationData);
+            this.$swal({
+                title: 'Oops!',
+                text: 'There was an issue submitting your application.',
+                icon: 'error',
+                confirmButtonText: 'Try Again'
+            });
+          }
+        })
+        .catch(error => {
+          if (error.response){
+            console.log(error.response.data.message);
+            this.$swal({
+                title: 'Error!',
+                text: error.response.data.message,
+                icon: 'error',
+                confirmButtonText: 'Try Again'
+            });
+          }
         });
-      }
-    })
-    .catch(error => {
-      if (error.response){
-        console.log(error.response.data.message);
-        this.$swal({
-            title: 'Error!',
-            text: error.response.data.message,
-            icon: 'error',
-            confirmButtonText: 'Try Again'
-        });
-      }
-    });
     },
 
   },
@@ -255,9 +258,7 @@ export default {
     if (this.$store.state.logged_in_staff.role != "User") {
       this.$router.push("/posting")
     }
-    this.$store.commit('setLoading', true);
     this.fetchData();
-    this.$store.commit('setLoading', false);
   }
 };
 </script>

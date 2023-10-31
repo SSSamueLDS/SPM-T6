@@ -48,7 +48,7 @@ def main():
         staff_name = data.get('staff_name')
 
         # Check if an application with the same staff_id and listing_id already exist
-        existing_application = Application.query.filter_by(staff_id=staff_id, listing_id=listing_id).first()
+        existing_application = Application.query.filter_by(staff_id=staff_id, listing_id=listing_id, staff_name=staff_name).first()
         if existing_application:
             return jsonify({"message": "You've already applied for this listing.", "error": True}), 400  # Directly return the error message
 
