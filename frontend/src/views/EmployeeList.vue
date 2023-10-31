@@ -30,30 +30,7 @@
             </div>
           </div>
         </div>
-        <div class="col-10">
-          <div class="row">
-            <div
-              class="col-5 d-flex align-items-center col-sm-10 col-md-12 col-lg-12 col-xl-12"
-            >
-              <form class="form-inline d-flex w-100">
-                <div class="input-group">
-                  <input
-                    class="form-control mr-2 flex-grow-1"
-                    type="search"
-                    placeholder="Search"
-                    aria-label="Search"
-                  />
-                  <button
-                    class="btn btn-outline-success my-2 my-sm-0 p-2"
-                    type="submit"
-                  >
-                    Search
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        
+        <div class="col-10">       
           <!-- APPLICANTS -->
           <div class="row mt-3">
             <!-- Vue.js role listings go here -->
