@@ -65,7 +65,8 @@
           <!-- APPLICANTS -->
           <div class="row mt-3">
             <!-- Vue.js listing listings go here -->
-            <div v-if="listings.length == 0">No available listings</div>
+            <div v-if="loading_listings==true">Loading...</div>
+            <div v-else-if="listings.length == 0 && loading_listings == false">No listings found</div>
             <div v-else v-for="(listing, id) in grouped_listings[current_page-1]" :key="id" class="row mt-3">
               <div class="mx-2 justify-content-center align-items-center">
                 <!-- Card for each listing -->
@@ -175,7 +176,8 @@
                         {{ listing.listing_name }} position.
                       </p>
                       <div class="row">
-                        <p v-if="filteredApplications.length == 0">No applicants yet</p>
+                        <p v-if="loading_applications == true">Loading...</p>
+                        <p v-else-if="filteredApplications.length == 0 && loading_applications == false">No applicants yet</p>
                         <table v-else class="table">
                           <thead>
                             <tr>
@@ -189,9 +191,9 @@
                           <tbody class="text-center align-middle">
                             <!-- Applicants table rows go here -->
                             <!-- {{ listing.listing_name }} -->
-                            <tr v-for="application in filteredApplications" :key="application.application_id" :currentListing="listing">
+                            <tr v-for="(application, index) in filteredApplications" :key="application.application_id" :currentListing="listing">
                               
-                                <th scope="row" class="col-1  fw-bold" >{{ application.application_id }}</th>
+                                <th scope="row" class="col-1">{{ index + 1 }}</th>
                                 <td class="col-3">{{ application.staff_id }}</td>
                                 <td class="col-3">{{ application.staff_name }}</td>
                                 <td class="col-3">{{ application.date_applied }}</td>
@@ -213,7 +215,7 @@
               </div>
             </div>                      
           </div>
-          <nav aria-label="Skill page navigation">
+          <nav aria-label="Skill page navigation" v-if="grouped_listings.length>0">
             <ul class="pagination">
               <li class="page-item">
                 <a class="page-link text-black" @click="go_previous_page()"
@@ -252,7 +254,8 @@ export default {
       selected_departments: [],
       search_term: "",
       applications: [],
-
+      loading_listings: false,
+      loading_applications: false
     };
   },
   computed: {
@@ -334,7 +337,7 @@ export default {
       return listingName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
     },
     fetchData() {
-      this.$store.commit('setLoading', true);
+      this.loading_listings = true;
       axios.get("http://127.0.0.1:5002/listing_skill")
         .then((response) => {
           this.listing_skills = response.data.data;
@@ -352,6 +355,7 @@ export default {
                 const skill = this.all_skills.find(skill => skill.value === id);
                 return skill ? skill.name : "Unknown Skill";
             });
+          this.loading_listings = false;
           });
           //show all listings by default
           this.shown_listings = this.listings
@@ -381,10 +385,12 @@ export default {
           });
     },
     fetchApplications(listingId){
-      this.$store.commit('setLoading', true);
+      this.loading_applications = true;
+      this.applications = [];
       axios.get(`http://127.0.0.1:5006/listings/${listingId}/applications`)
       .then(appResponse => {
         this.applications = appResponse.data.data;
+        this.loading_applications = false;
       })
       .catch(error => {
         console.error("Error fetching applications:", error);
