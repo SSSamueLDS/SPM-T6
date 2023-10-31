@@ -31,8 +31,6 @@ Start Backend (Make sure you are on project root folder)
  start_all.bat
 ```
 
-The [`start_all.bat`](start_all.bat) script is used to run all backend services.
-
 ### On OSX/WSL/Linux (Unix-based)
 
 Start Frontend (Make sure you are on project root folder)
