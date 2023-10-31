@@ -212,11 +212,12 @@ export default {
                 hr_id: this.logged_in_staff.staff_id
               }
             );
-
             if (response.data.code === 201) {
+              this.$store.commit('setLoading', false);
               alert("Role added successfully!");
               this.$router.push({ name: 'CreatedPostings' });
             } else {
+              this.$store.commit('setLoading', false);
               alert(response.data.message);
             }
           } catch (error) {

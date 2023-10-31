@@ -349,6 +349,7 @@ export default {
     },
     fetchData() {
       this.loading_listings = true;
+      this.$store.commit('setLoading', true);
       axios.get("http://127.0.0.1:5002/listing_skill")
         .then((response) => {
           this.listing_skills = response.data.data;
@@ -366,9 +367,10 @@ export default {
                 const skill = this.all_skills.find(skill => skill.value === id);
                 return skill ? skill.name : "Unknown Skill";
             });
-          this.loading_listings = false;
           });
           //show all listings by default
+          this.loading_listings = false;
+          this.$store.commit('setLoading', false);
           this.shown_listings = this.listings
           console.log(this.shown_listings.length)
           
@@ -386,7 +388,7 @@ export default {
           //group listings in groups of 5, for display purposes
           this.grouped_listings = this.group_listings();
           console.log(this.grouped_listings.length)
-
+          
         })
         .catch((error) => {
           console.error("Error fetching data:", error);

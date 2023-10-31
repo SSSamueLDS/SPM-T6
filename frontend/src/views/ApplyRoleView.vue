@@ -152,21 +152,26 @@ export default {
       axios.get("http://127.0.0.1:5002/listing_skill")
         .then((response) => {
           this.listing_skills = response.data.data;
+          console.log("got listing_skill", this.listing_skills);
           return axios.get("http://127.0.0.1:5002/listings");
         })
         .then((response) => {
           this.listings = response.data.data;
-          this.listings.forEach((listing) => {
+          console.log("got listings", this.listings);
+          if (this.listings != []) {
+            this.listings.forEach((listing) => {
             listing.listing_tag = this.processListingName(listing.listing_name);
             let skillIdsForListing = this.listing_skills?.[listing.listing_id] || [];
             listing.skill_ids = skillIdsForListing;
             listing.skill_names = skillIdsForListing.map(id => {
                 const skill = this.all_skills.find(skill => skill.value === id);
                 return skill ? skill.name : "Unknown Skill";
+              });
             });
+          }
+          console.log("I am here", this.listings);
           this.loading_listings = false;
           this.$store.commit('setLoading', false);
-          });
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -214,10 +219,10 @@ export default {
         listing_id: listingId
       };
 
-      console.log(applicationData);
-
+      this.$store.commit('setLoading', true);
       axios.post("http://127.0.0.1:5006/apply", applicationData)
         .then(response => {
+          this.$store.commit('setLoading', false);
           if (response.status === 201) {
             this.$swal({
             title: 'Suceess!',
