@@ -1,6 +1,6 @@
 cd app
-python role.py -prod &
-python skill.py -prod &
-python application.py -prod &
-python listing.py -prod &
-python staff.py -prod &
+python3 role.py -prod &
+python3 skill.py -prod &
+python3 application.py -prod &
+python3 listing.py -prod &
+python3 staff.py -prod &
