@@ -18,6 +18,7 @@ def main():
     parser = argparse.ArgumentParser(description="select env")
     parser.add_argument("-test", action="store_true", help="Enable the test env")
     parser.add_argument("-prod", action="store_true", help="Enable the prod env")
+    parser.add_argument("-dev", action="store_true", help="Enable the development env")
     args = parser.parse_args()
 
     
@@ -25,14 +26,18 @@ def main():
         print("test env")
         dbURL = os.getenv("testdbURL")
         
-        
     elif args.prod:
         
         print("prod env")
         dbURL = os.getenv("proddbURL")
+    
+    elif args.dev:
+        print("dev env")
+        dbURL = os.getenv("devdbURL")
         
     else:
         print("Please Specify the environment.")
+        return
     
     app.config['SQLALCHEMY_DATABASE_URI'] = dbURL
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
