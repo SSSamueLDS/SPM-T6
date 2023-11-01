@@ -147,25 +147,31 @@ export default {
       return listingName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
     },
     fetchData() {
-      //setLoadingstate
       this.$store.commit('setLoading', true);
+      this.loading_listings = true;
       axios.get("http://127.0.0.1:5002/listing_skill")
         .then((response) => {
           this.listing_skills = response.data.data;
+          console.log("got listing_skill", this.listing_skills);
           return axios.get("http://127.0.0.1:5002/listings");
         })
         .then((response) => {
           this.listings = response.data.data;
-          this.listings.forEach((listing) => {
+          console.log("got listings", this.listings);
+          if (this.listings != []) {
+            this.listings.forEach((listing) => {
             listing.listing_tag = this.processListingName(listing.listing_name);
             let skillIdsForListing = this.listing_skills?.[listing.listing_id] || [];
             listing.skill_ids = skillIdsForListing;
             listing.skill_names = skillIdsForListing.map(id => {
                 const skill = this.all_skills.find(skill => skill.value === id);
                 return skill ? skill.name : "Unknown Skill";
+              });
             });
+          }
+          console.log("I am here", this.listings);
           this.loading_listings = false;
-          });
+          this.$store.commit('setLoading', false);
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -216,9 +222,8 @@ export default {
      // Assuming you store userId in your Vuex store
      listing_id: listingId
   };
-    this.$store.commit('setLoading', true);
+
   axios.post("http://127.0.0.1:5006/apply", applicationData)
-  
     .then(response => {
       if (response.status === 201) {
         this.$swal({
@@ -248,10 +253,7 @@ export default {
             confirmButtonText: 'Try Again'
         });
       }
-    })
-    .finally(()=>{
-              this.$store.commit('setLoading', false);
-          });
+    });
     },
 
   },
@@ -263,9 +265,9 @@ export default {
     if (this.$store.state.logged_in_staff.role != "User") {
       this.$router.push("/posting")
     }
-    
+    this.$store.commit('setLoading', true);
     this.fetchData();
-    
+    this.$store.commit('setLoading', false);
   }
 };
 </script>
