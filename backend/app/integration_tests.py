@@ -16,7 +16,7 @@ class TestRole(unittest.TestCase):
         cls.app = Flask(__name__)
         cls.app.config['TESTING'] = True
 
-        DATABASE_URI = os.environ.get('testdbURL', 'mysql+mysqlconnector://admin:HelloWorld@db-spm.czpo8yl1nyay.us-east-1.rds.amazonaws.com:3306/spm_unit_test')
+        DATABASE_URI = os.environ.get('devdbURL', 'mysql+mysqlconnector://admin:HelloWorld@db-spm.czpo8yl1nyay.us-east-1.rds.amazonaws.com:3306/spm_unit_test')
         cls.app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
         # print("DATABASE_URI in populate_data.py:", DATABASE_URI)
         

@@ -1,113 +1,62 @@
-import os
-from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
-from models import db, Staff, StaffSkill, AccessControl, Skill, RoleSkill, Role
-import argparse
-from datetime import datetime
-import json
-from os import environ
-from dotenv import load_dotenv
+from flask import jsonify, Blueprint
+from .models import Role, RoleSkill
 
+# Create a blueprint for role-related routes
+role = Blueprint('role', __name__)
 
-app = Flask(__name__)
+@role.route("/roles", methods=['GET'])
+def get_all_roles():
+    # Fetch all roles from the database
+    roles = Role.query.all()
+    if roles:
+        return jsonify({
+            "code": 200,
+            "data": [role.json() for role in roles]
+        })
+    return jsonify({
+        "code": 404,
+        "message": "No roles found.",
+        "data": []
+    })
 
-load_dotenv()
+@role.route("/role_skill/<int:role_id>", methods=['GET'])
+def get_skills_by_role(role_id):
+    try:
+        role_skills = RoleSkill.query.filter_by(role_id=role_id).all()
+        print(f"Queried role_skills: {role_skills}")  # Debug print
 
-def main():
-    parser = argparse.ArgumentParser(description="select env")
-    parser.add_argument("-test", action="store_true", help="Enable the test env")
-    parser.add_argument("-prod", action="store_true", help="Enable the prod env")
-    parser.add_argument("-dev", action="store_true", help="Enable the development env")
-    args = parser.parse_args()
-
-    
-    if args.test:
-        print("test env")
-        dbURL = os.getenv("testdbURL")
-        
-    elif args.prod:
-        
-        print("prod env")
-        dbURL = os.getenv("proddbURL")
-    
-    elif args.dev:
-        print("dev env")
-        dbURL = os.getenv("devdbURL")
-        
-    else:
-        print("Please Specify the environment.")
-        return
-    
-    app.config['SQLALCHEMY_DATABASE_URI'] = dbURL
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-    db.init_app(app)
-
-    CORS(app)
-
-
-    @app.route("/roles", methods=['GET'])
-    def get_all_roles():
-        # fetch all roles from the database
-        roles = Role.query.all()
-        if roles:
+        skills = [role_skill.skill_id for role_skill in role_skills]
+        if role_skills:
             return jsonify({
                 "code": 200,
-                "data": [role.json() for role in roles]
+                "data": {
+                    "role_id": role_id,
+                    "skill_ids": skills
+                }
             })
         return jsonify({
             "code": 404,
-            "message": "No roles found.",
-            "data": []
-        })
+            "message": "No skills found for the given role id."
+        }), 404
 
-    # This is to find all the skills given specific role id
-    @app.route("/role_skill/<int:role_id>", methods=['GET'])
-    def get_skills_by_role(role_id):
-        try:
-            role_skills = RoleSkill.query.filter_by(role_id=role_id).all()
-            skills = [role_skill.skill_id for role_skill in role_skills]
-            if role_skills:
-                return jsonify({
-                    "code": 200,
-                    "data": {
-                        "role_id": role_id,
-                        "skill_ids": skills
-                    }
-                })
-            return jsonify({
-                "code": 404,
-                "message": "No skills found for the given role id."
-            }), 404
+    except Exception as e:
+        print(f"Error occurred: {e}")  # Logger isn't available here, using print instead
+        return jsonify({
+            "code": 500,
+            "message": "Internal Server Error"
+        }), 500
 
-        except Exception as e:
-            app.logger.error(f"Error occurred: {e}")
-            return jsonify({
-                "code": 500,
-                "message": "Internal Server Error"
-            }), 500
+@role.route('/role_skill', methods=['GET'])
+def get_all_role_skill():
+    role_skills = RoleSkill.query.all()
+    role_skill_map = {}
 
-    @app.route('/role_skill', methods =['GET'])
-    def get_all_role_skill():
-        role_skills = RoleSkill.query.all()
-        role_skill_map = {}
-        
-        for rs in role_skills:
-            if rs.role_id not in role_skill_map:
-                role_skill_map[rs.role_id] = []
-            role_skill_map[rs.role_id].append(rs.skill_id)
-        
-        return jsonify(
-            {
-                "code": 201,
-                "data": role_skill_map
-            }
-        ), 201
+    for rs in role_skills:
+        if rs.role_id not in role_skill_map:
+            role_skill_map[rs.role_id] = []
+        role_skill_map[rs.role_id].append(rs.skill_id)
 
-if __name__ == '__main__':
-    main()
-    with app.app_context():
-        db.create_all()
-    print("This is flask for " + os.path.basename(__file__) + "staff")
-    app.run(host='0.0.0.0', port=5005, debug=True)
+    return jsonify({
+        "code": 201,
+        "data": role_skill_map
+    }), 201
