@@ -1,84 +1,33 @@
 import unittest
 import json
-from main import app
+from main import app, db, Application, Staff, Skill, Role, RoleSkill, StaffSkill, AccessControl, Listing, ListingSkill
+from datetime import date
 
-class TestMainRoutes(unittest.TestCase):
-
+class TestApplication(unittest.TestCase):
     def setUp(self):
         self.app = app.test_client()
         self.app.testing = True
-    def test_get_all_staff_skill(self):
-        response = self.app.get('/staff_skill')
+        self.staff_id = 140002
+        self.listing_id = 5
+        self.staff_name = "susan goh"
+
+    def tearDown(self):
+        db.session.query(Application).delete()
+        db.session.commit()
+
+    def test_apply_for_listing(self):
+        data = {
+            "staff_id": self.staff_id,
+            "listing_id": self.listing_id,
+            "staff_name": self.staff_name
+        }
+        response = self.app.post('/apply', json=data)
         data = json.loads(response.data)
-        self.assertEqual(response.status_code, 201)
-        self.assertIn('data', data)
-        self.assertIsInstance(data['data'], dict)
-
-    def test_get_staff_by_id(self):
-        response = self.app.get('/staffs/140002')
-        data = json.loads(response.data)
-        if response.status_code == 200:
-            self.assertIn('data', data)
-            self.assertIsInstance(data['data'], dict)
-        elif response.status_code == 404:
-            self.assertIn('message', data)
-            self.assertEqual(data['code'], 404)
-
-    def test_get_all_depts(self):
-        response = self.app.get('/staffs/dept')
-        data = json.loads(response.data)
-        if response.status_code == 200:
-            self.assertIn('data', data)
-            self.assertIsInstance(data['data'], list)
-        elif response.status_code == 404:
-            self.assertIn('message', data)
-            self.assertEqual(data['code'], 404)
-
-    def test_get_staff_skills(self):
-        response = self.app.get('/staffs/skills/17')
-        data = json.loads(response.data)
-        if response.status_code == 200:
-            self.assertIn('data', data)
-            self.assertIsInstance(data['data'], list)
-        elif response.status_code == 404:
-            self.assertIn('message', data)
-            self.assertEqual(data['code'], 404)
-
-    def test_get_staff_skilldisplay(self):
-        response = self.app.get('/staffs/display_skills/140002')
-        data = json.loads(response.data)
-        if response.status_code == 200:
-            self.assertIn('data', data)
-            self.assertIsInstance(data['data'], dict)
-        elif response.status_code == 404:
-            self.assertIn('message', data)
-            self.assertEqual(data['code'], 404)
-            
-    def test_get_all_staffs(self):
-        response = self.app.get('/staffs')
-        data = json.loads(response.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('data', data)
-        self.assertTrue(isinstance(data['data'], list))
-
-    def test_get_all_skills(self):
-        response = self.app.get('/skills')
-        data = json.loads(response.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('data', data)
-        self.assertTrue(isinstance(data['data'], list))
-
-    def test_get_all_roles(self):
-        response = self.app.get('/roles')
-        data = json.loads(response.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('data', data)
-        self.assertTrue(isinstance(data['data'], list))
-
-
-
-
-
-
+        self.assertIsInstance(data, dict)
+        self.assertTrue(data['staff_id'] == self.staff_id)
+        self.assertTrue(data['listing_id'] == self.listing_id)
+        self.assertTrue(data['staff_name'] == self.staff_name)
+        
 if __name__ == '__main__':
-    unittest.main()
+    with app.app_context():
+        unittest.main()

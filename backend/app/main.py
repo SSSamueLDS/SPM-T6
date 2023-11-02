@@ -28,7 +28,7 @@ elif args.prod:
         dbURL = os.getenv("proddbURL")
         
 else:
-        print("please specify environment. Currently running test environment by default")
+        print("running test environment by default")
         dbURL = os.getenv("testdbURL")
     
 app.config['SQLALCHEMY_DATABASE_URI'] = dbURL
