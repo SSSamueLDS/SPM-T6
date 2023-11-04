@@ -232,6 +232,7 @@ export default {
           });
             
           } else {
+            this.$store.commit('setLoading', false);
             console.log(applicationData);
             this.$swal({
                 title: 'Oops!',
@@ -243,6 +244,7 @@ export default {
         })
         .catch(error => {
           if (error.response){
+            this.$store.commit('setLoading', false);
             console.log(error.response.data.message);
             this.$swal({
                 title: 'Error!',
