@@ -62,7 +62,7 @@
           <div class="row mt-3">
             <!-- Vue.js listing listings go here -->
             <div v-if="loading_listings">Loading...</div>
-            <div v-else-if="listings.length == 0">No listings found</div>
+            <div v-else-if="grouped_listings.length == 0">No listings found</div>
             <div v-else v-for="(listing, id) in grouped_listings[current_page-1]" :key="id" class="row mt-3">
               <div class="mx-2 justify-content-center align-items-center">
                 <!-- Card for each listing -->
