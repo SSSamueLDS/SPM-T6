@@ -582,7 +582,51 @@ def get_application_by_id(application_id):
         "message": "Application not found.",
         "data": []
     })
-    
+
+
+
+
+
+def SkillMatchPercentage(skillsForListing, employee_skills):
+    matchCount = len([skill for skill in skillsForListing if skill in employee_skills])
+    percentage = (matchCount / len(skillsForListing)) * 100
+    return round(percentage)
+
+def isListingExpired(deadline):
+    today = date.today()
+    listingDeadline = datetime.strptime(deadline, "%Y-%m-%d").date()
+    return today > listingDeadline
+
+def userHasSkill(skill, user_skills):
+    return skill in user_skills
+
+def truncateDescription(description):
+    words = description.split(' ')
+    if len(words) > 100:
+        return ' '.join(words[:100]) + '...'
+    return description
+
+def sort_by_ID(skills):
+    return sorted(skills, key=lambda x: x["id"])
+
+def sort_alphabetically(skills):
+    return sorted(skills, key=lambda x: x["skill_name"])
+
+import re
+def process_listing_name(listing_name):
+    # Replace characters that are not alphanumeric or whitespace with an empty string
+    cleaned_name = re.sub(r'[^a-zA-Z0-9\s]', '', listing_name)
+    # Replace spaces with underscores
+    cleaned_name = cleaned_name.replace(' ', '_')
+    return cleaned_name
+
+'''
+processListingName(listingName) {
+      // Remove all occurrences of '#' from listingName
+      return listingName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
+    },
+'''
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
