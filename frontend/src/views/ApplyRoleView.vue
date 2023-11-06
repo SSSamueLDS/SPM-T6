@@ -210,12 +210,13 @@ export default {
     },
 
     applyForListing(listingId) {
-  // Example data format - adjust as per your backend's expectations
-  const applicationData = {
-    staff_id: this.$store.state.logged_in_staff["staff_id"], 
-     // Assuming you store userId in your Vuex store
-     listing_id: listingId
-  };
+      // Example data format - adjust as per your backend's expectations
+      const applicationData = {
+        staff_id: this.$store.state.logged_in_staff["staff_id"], 
+        staff_name: this.$store.state.logged_in_staff["staff_fname"],
+        // Assuming you store userId in your Vuex store
+        listing_id: listingId
+      };
 
       this.$store.commit('setLoading', true);
       axios.post("http://127.0.0.1:5005/apply", applicationData)

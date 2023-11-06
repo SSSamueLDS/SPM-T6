@@ -82,7 +82,7 @@
                       <button
                         href="#"
                         class="btn btn-dark"
-                        v-if="!logged_in_staff.role=='Manager'"
+                        v-if="logged_in_staff.role=='HR'||logged_in_staff.role=='Admin'"
                         @click="toEditPage(listing.listing_id)"
                         style="color: greenyellow; font-weight: bold"
                         >Edit</button

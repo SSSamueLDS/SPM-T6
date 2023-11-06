@@ -184,7 +184,7 @@ export default {
   },
   methods: {
     fetchRoleData() {
-       this.$store.commit('setLoading', true);
+      this.$store.commit('setLoading', true);
       axios.get(`http://127.0.0.1:5005/listings/${this.role_ID}`)
         .then(response => {
           console.log(response.data.data);
@@ -220,6 +220,8 @@ export default {
       this.v$.$validate();
 
       if (!this.v$.$pending && !this.v$.$error) {
+        this.$store.commit('setLoading', true);
+
         try {
           axios.put(`http://127.0.0.1:5005/update_listing/${this.role_ID}`, 
             {
@@ -235,6 +237,7 @@ export default {
             })
             .catch(error => {
                 alert('Failed to update the role. Please try again.');
+                this.$store.commit('setLoading', false);
                 console.log(error)
             });
         } catch (error) {
