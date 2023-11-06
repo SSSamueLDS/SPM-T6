@@ -202,7 +202,7 @@ export default {
           // If there's no validation error and no validation is pending
           try {
             const response = await axios.post(
-              "http://localhost:5002/create_listing",
+              "http://localhost:5005/create_listing",
               {
                 listing_name: this.listing_name,
                 listing_description: this.listing_description,

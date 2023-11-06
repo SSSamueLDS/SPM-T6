@@ -57,11 +57,11 @@ export default createStore({
         )],
     actions: {
         async fetchAllSkills({ commit }) {
-            const response = await axios.get('http://127.0.0.1:5003/skills');
+            const response = await axios.get('http://127.0.0.1:5005/skills');
             commit('setAllSkills', response.data.data);
         },
         async fetchAllDept({ commit }) {
-            const response = await axios.get('http://127.0.0.1:5004/staffs/dept');
+            const response = await axios.get('http://127.0.0.1:5005/staffs/dept');
             commit('setAllDept', response.data.data);
         },
         async fetchAllRoles({ commit }) {
@@ -69,20 +69,20 @@ export default createStore({
             commit('setAllRoles', response.data.data);
         },
         async fetchAllListing({ commit }) {
-            const response = await axios.get('http://127.0.0.1:5002/listings');
+            const response = await axios.get('http://127.0.0.1:5005/listings');
             commit('setAllListing', response.data.data);
         },
         async fetchSkillsForUser({ commit }, userID) {
-            const response = await axios.get(`http://127.0.0.1:5004/staffs/skills/${userID}`);
+            const response = await axios.get(`http://127.0.0.1:5005/staffs/skills/${userID}`);
             commit('setUserSkills', response.data.data);
         },
         async fetchAccessControls({ commit }) {
-            const response = await axios.get(`http://127.0.0.1:5004/access_control`);
+            const response = await axios.get(`http://127.0.0.1:5005/access_control`);
             commit('setAccessControls', response.data.data);
         },
         async login({ commit, dispatch, state }, userID) {
             try {
-              const response = await axios.get(`http://127.0.0.1:5004/staffs/${userID}`);
+              const response = await axios.get(`http://127.0.0.1:5005/staffs/${userID}`);
               if (response.data) {
                 const user = response.data.data;
                 if (!state.all_access_controls.length) {

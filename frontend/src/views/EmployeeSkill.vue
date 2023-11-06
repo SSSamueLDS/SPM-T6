@@ -94,21 +94,28 @@
        
       fetchStaffInfo(staffId) {
         console.log("staffId", staffId);
+        //setLoadingstate
+        this.$store.commit('setLoading', true);
         axios
-          .get(`http://127.0.0.1:5004/staffs/${staffId}`)
+          .get(`http://127.0.0.1:5005/staffs/${staffId}`)
           .then((response) => {
             this.staffInfo = response.data.data;
           })
           .catch((error) => {
             console.error("Error fetching staff info:", error);
+          })
+          .finally(()=>{
+              this.$store.commit('setLoading', false);
           });
       },
   
       fetchEmployeeSkills(staffId) {
         console.log("employeefetchingskill", staffId);
+        //setLoadingstate
+          this.$store.commit('setLoading', true);
         axios
         
-          .get(`http://127.0.0.1:5004/staffs/skills/${staffId}`)
+          .get(`http://127.0.0.1:5005/staffs/skills/${staffId}`)
           .then((response) => {
             console.log(response.data)
             if (response.data.data.length === 0) {
@@ -120,6 +127,9 @@
           })
           .catch((error) => {
             console.error("Error fetching employee skill:", error);
+          })
+          .finally(()=>{
+              this.$store.commit('setLoading', false);
           });
       },
   

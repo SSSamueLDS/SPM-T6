@@ -35,12 +35,6 @@
                     aria-label="Search"
                     v-model="search_term"
                   />
-                  <button
-                    class="btn btn-outline-success my-2 my-sm-0 p-2"
-                    type="submit"
-                  >
-                    Search
-                  </button>
                 </div>
               </form>
             </div>
@@ -149,11 +143,11 @@ export default {
     fetchData() {
       this.$store.commit('setLoading', true);
       this.loading_listings = true;
-      axios.get("http://127.0.0.1:5002/listing_skill")
+      axios.get("http://127.0.0.1:5005/listing_skill")
         .then((response) => {
           this.listing_skills = response.data.data;
           console.log("got listing_skill", this.listing_skills);
-          return axios.get("http://127.0.0.1:5002/listings");
+          return axios.get("http://127.0.0.1:5005/listings");
         })
         .then((response) => {
           this.listings = response.data.data;
@@ -175,6 +169,9 @@ export default {
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
+        })
+        .finally(()=>{
+              this.$store.commit('setLoading', false);
         });
         
     },
@@ -213,14 +210,15 @@ export default {
     },
 
     applyForListing(listingId) {
-      const applicationData = {
-        staff_id: this.$store.state.logged_in_staff["staff_id"],
-        staff_name: this.$store.state.logged_in_staff["staff_fname"],
-        listing_id: listingId
-      };
+  // Example data format - adjust as per your backend's expectations
+  const applicationData = {
+    staff_id: this.$store.state.logged_in_staff["staff_id"], 
+     // Assuming you store userId in your Vuex store
+     listing_id: listingId
+  };
 
       this.$store.commit('setLoading', true);
-      axios.post("http://127.0.0.1:5006/apply", applicationData)
+      axios.post("http://127.0.0.1:5005/apply", applicationData)
         .then(response => {
           this.$store.commit('setLoading', false);
           if (response.status === 201) {
@@ -265,7 +263,9 @@ export default {
     if (this.$store.state.logged_in_staff.role != "User") {
       this.$router.push("/posting")
     }
+    this.$store.commit('setLoading', true);
     this.fetchData();
+    this.$store.commit('setLoading', false);
   }
 };
 </script>

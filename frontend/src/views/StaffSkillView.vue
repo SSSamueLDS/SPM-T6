@@ -98,7 +98,7 @@ export default {
   methods: {
     fetchEmployeeSkills(staffId) {
       axios
-        .get(`http://127.0.0.1:5004/staffs/display_skills/${staffId}`)
+        .get(`http://127.0.0.1:5005/staffs/display_skills/${staffId}`)
         .then((response) => {
           // Assuming the API response has a property named "skillName"
           this.employee_skills = response.data.data;
@@ -110,7 +110,7 @@ export default {
     },
     fetchStaffInfo(staffId) {
       axios
-        .get(`http://127.0.0.1:5004/staffs/${staffId}`)
+        .get(`http://127.0.0.1:5005/staffs/${staffId}`)
         .then((response) => {
           this.staffInfo = response.data.data;
           console.log("Applicant Info:", this.staffInfo);

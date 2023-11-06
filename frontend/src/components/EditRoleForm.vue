@@ -184,7 +184,8 @@ export default {
   },
   methods: {
     fetchRoleData() {
-      axios.get(`http://127.0.0.1:5002/listings/${this.role_ID}`)
+       this.$store.commit('setLoading', true);
+      axios.get(`http://127.0.0.1:5005/listings/${this.role_ID}`)
         .then(response => {
           console.log(response.data.data);
           if (response.data && response.data.code === 200) {
@@ -194,6 +195,7 @@ export default {
             this.listing_department = response.data.data.dept;
             this.selected_skills = response.data.data.skill_ids;
             this.selected_role = this.all_roles.find(role => role.role_name === this.listing_name);
+            this.$store.commit('setLoading', false);
           } else {
             console.error("Error fetching role data:", response.data.message);
           }
@@ -219,7 +221,7 @@ export default {
 
       if (!this.v$.$pending && !this.v$.$error) {
         try {
-          axios.put(`http://127.0.0.1:5002/update_listing/${this.role_ID}`, 
+          axios.put(`http://127.0.0.1:5005/update_listing/${this.role_ID}`, 
             {
               listing_name: this.listing_name,
               listing_description: this.listing_description,

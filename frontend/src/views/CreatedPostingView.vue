@@ -24,9 +24,9 @@
         </div>
         <div class="col-10">
           <div class="row">
-            <div class="col-5 m-0 col-sm-5 col-md-6 col-lg-3 col-xl-2">
+            <div class="col-5 m-0 col-sm-5 col-md-6 col-lg-3 col-xl-2"  v-if="logged_in_staff.role=='HR'||logged_in_staff.role=='Admin'">
               <a
-                v-if="logged_in_staff.role=='HR'||logged_in_staff.role=='Admin'"
+
                 href="/create-posting"
                 class="btn btn-dark w-100 m-2"
                 style="color: rgb(252, 254, 254); font-weight: bold"
@@ -45,10 +45,7 @@
                     aria-label="Search"
                     v-model="search_term"
                   />
-                  <select v-model="search_by">
-                    <option value="ID">By Listing ID</option>
-                    <option value="Role Name">By Role Name</option>
-                  </select>
+
                 </div>                
               </form>
               <button class="btn btn-outline-success my-2 my-sm-0 p-2"
@@ -78,17 +75,14 @@
                     <p class="card-text">
                       <small class="text-muted">
                         Department: {{ listing.dept }}<br>
-                        Deadline: {{ listing.deadline }} <br>
-                        Listing ID: {{ listing.listing_id }}
-                      </small>
-                        
+                        Deadline: {{ listing.deadline }} <br></small>
                     </p>
 
                     <div class="col" style="text-align: right">
                       <button
                         href="#"
                         class="btn btn-dark"
-                        v-if="logged_in_staff.role=='HR'||logged_in_staff.role=='Admin'"
+                        v-if="!logged_in_staff.role=='Manager'"
                         @click="toEditPage(listing.listing_id)"
                         style="color: greenyellow; font-weight: bold"
                         >Edit</button
@@ -201,7 +195,8 @@
                                     <button type="button"
                                       data-bs-dismiss="modal"
                                       aria-label="Close"
-                                    class="btn btn-sm btn-primary" @click="viewApplicant(application.application_id, listing.listing_name)">View</button>
+                                      style="backgroundColor: greenyellow; fontWeight: 600"
+                                    class="btn btn-sm" @click="viewApplicant(application.application_id, listing.listing_name)">View</button>
                                 </td>
                             </tr>
                           </tbody>
@@ -245,7 +240,7 @@ export default {
       listings: [],
       shown_listings: [],
       listing_skills: null,
-      search_by: "ID",
+
       grouped_listings: [],
       current_page: 1,
       departments: [],
@@ -289,23 +284,13 @@ export default {
       else{
         result = this.listings.filter(listing => this.selected_departments.includes(listing.dept))
       }
-
-      //if search term is not empty
+      //if search term is not empty, filter listings by search term
       if (this.search_term != ""){
-        //if search by is ID, filter listings by ID
-        if (this.search_by == "ID"){
-          result = result.filter(listing => listing.listing_id == this.search_term)
-        }
-        // else if search by is Role Name, filter listings by Role Name
-        else if (this.search_by == "Role Name"){
-          result = result.filter(listing => listing.listing_name.toLowerCase().includes(this.search_term.toLowerCase()))
-        }
+        result = result.filter(listing => listing.listing_name.toLowerCase().includes(this.search_term.toLowerCase()))
       }
-      
 
       this.shown_listings = result
       this.grouped_listings = this.group_listings();
-      this.current_page = 1;
 
     },
     go_page(i) {
@@ -325,9 +310,6 @@ export default {
       var grouped_listings = [];
       var group = [];
       var i = 0;
-      if (this.shown_listings.length == 0){
-        return []
-      }
       for (i = 0; i < this.shown_listings.length; i++) {
         if (i % 5 == 0 && i != 0) {
           grouped_listings.push(group);
@@ -350,10 +332,10 @@ export default {
     fetchData() {
       this.loading_listings = true;
       this.$store.commit('setLoading', true);
-      axios.get("http://127.0.0.1:5002/listing_skill")
+      axios.get("http://127.0.0.1:5005/listing_skill")
         .then((response) => {
           this.listing_skills = response.data.data;
-          return axios.get("http://127.0.0.1:5002/listings");
+          return axios.get("http://127.0.0.1:5005/listings");
         })
         .then((response) => {
           this.listings = response.data.data;
@@ -392,19 +374,25 @@ export default {
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
-        });
+        })
+        .finally(()=>{
+              this.$store.commit('setLoading', false);
+          });
     },
     fetchApplications(listingId){
       this.loading_applications = true;
       this.applications = [];
-      axios.get(`http://127.0.0.1:5006/listings/${listingId}/applications`)
+      axios.get(`http://127.0.0.1:5005/listings/${listingId}/applications`)
       .then(appResponse => {
         this.applications = appResponse.data.data;
         this.loading_applications = false;
       })
       .catch(error => {
         console.error("Error fetching applications:", error);
-      });
+      })
+      .finally(()=>{
+              this.$store.commit('setLoading', false);
+          });
     },
     viewApplicant(applicantionId, listingName){
       console.log("listingName before route push:", listingName);
