@@ -150,9 +150,9 @@ export default {
     fetchData() {
       this.employee_loading = true;
       Promise.all([
-        axios.get("http://127.0.0.1:5004/staffs"),
+        axios.get("http://127.0.0.1:5005/staffs"),
       
-        axios.get("http://127.0.0.1:5004/staff_skill")
+        axios.get("http://127.0.0.1:5005/staff_skill")
       ])
       .then((responses) => {
         this.employee_loading = false;

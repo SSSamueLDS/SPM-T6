@@ -143,7 +143,7 @@ export default {
   methods: {
     fetchApplicationDetails() {
       this.$store.commit('setLoading', true);
-      axios.get(`http://127.0.0.1:5006/applications/${this.applicationId}`)
+      axios.get(`http://127.0.0.1:5005/applications/${this.applicationId}`)
         .then(response => {
           this.application = response.data.data;
           return Promise.all([
@@ -166,7 +166,7 @@ export default {
     fetchEmployeeSkills(staffId) {
       this.$store.commit('setLoading', true);
       axios
-        .get(`http://127.0.0.1:5004/staffs/skills/${staffId}`)
+        .get(`http://127.0.0.1:5005/staffs/skills/${staffId}`)
         .then((response) => {
           // Assuming the API response has a property named "skillName"
           this.employee_skills = response.data.data;
@@ -181,7 +181,7 @@ export default {
     },
     fetchListingskill(listingId) {
       axios
-        .get(`http://127.0.0.1:5002/listing_skill/${listingId}`)
+        .get(`http://127.0.0.1:5005/listing_skill/${listingId}`)
         .then((response) => {
           this.listing_skills = response.data.data.skill_ids;
           console.log("listing skills="+this.listing_skills);
@@ -190,7 +190,7 @@ export default {
     fetchApplicantInfo(staffId) {
       this.$store.commit('setLoading', true);
       axios
-        .get(`http://127.0.0.1:5004/staffs/${staffId}`)
+        .get(`http://127.0.0.1:5005/staffs/${staffId}`)
         .then((response) => {
           this.applicantInfo = response.data.data;
           console.log("Applicant Info:", this.applicantInfo);

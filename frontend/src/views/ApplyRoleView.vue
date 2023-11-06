@@ -149,11 +149,11 @@ export default {
     fetchData() {
       this.$store.commit('setLoading', true);
       this.loading_listings = true;
-      axios.get("http://127.0.0.1:5002/listing_skill")
+      axios.get("http://127.0.0.1:5005/listing_skill")
         .then((response) => {
           this.listing_skills = response.data.data;
           console.log("got listing_skill", this.listing_skills);
-          return axios.get("http://127.0.0.1:5002/listings");
+          return axios.get("http://127.0.0.1:5005/listings");
         })
         .then((response) => {
           this.listings = response.data.data;
@@ -224,7 +224,7 @@ export default {
   };
 
       this.$store.commit('setLoading', true);
-      axios.post("http://127.0.0.1:5006/apply", applicationData)
+      axios.post("http://127.0.0.1:5005/apply", applicationData)
         .then(response => {
           this.$store.commit('setLoading', false);
           if (response.status === 201) {

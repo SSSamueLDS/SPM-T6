@@ -97,7 +97,7 @@
         //setLoadingstate
         this.$store.commit('setLoading', true);
         axios
-          .get(`http://127.0.0.1:5004/staffs/${staffId}`)
+          .get(`http://127.0.0.1:5005/staffs/${staffId}`)
           .then((response) => {
             this.staffInfo = response.data.data;
           })
@@ -115,7 +115,7 @@
           this.$store.commit('setLoading', true);
         axios
         
-          .get(`http://127.0.0.1:5004/staffs/skills/${staffId}`)
+          .get(`http://127.0.0.1:5005/staffs/skills/${staffId}`)
           .then((response) => {
             console.log(response.data)
             if (response.data.data.length === 0) {

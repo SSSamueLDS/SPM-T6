@@ -307,10 +307,10 @@
         //setLoadingstate
         this.$store.commit('setLoading', true);
 
-        axios.get("http://127.0.0.1:5002/listing_skill")
+        axios.get("http://127.0.0.1:5005/listing_skill")
           .then((response) => {
             this.listing_skills = response.data.data;
-            return axios.get("http://127.0.0.1:5002/listings");
+            return axios.get("http://127.0.0.1:5005/listings");
           })
           .then((response) => {
             this.listings = response.data.data;

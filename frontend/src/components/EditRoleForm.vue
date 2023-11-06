@@ -184,7 +184,7 @@ export default {
   },
   methods: {
     fetchRoleData() {
-      axios.get(`http://127.0.0.1:5002/listings/${this.role_ID}`)
+      axios.get(`http://127.0.0.1:5005/listings/${this.role_ID}`)
         .then(response => {
           console.log(response.data.data);
           if (response.data && response.data.code === 200) {
@@ -219,7 +219,7 @@ export default {
 
       if (!this.v$.$pending && !this.v$.$error) {
         try {
-          axios.put(`http://127.0.0.1:5002/update_listing/${this.role_ID}`, 
+          axios.put(`http://127.0.0.1:5005/update_listing/${this.role_ID}`, 
             {
               listing_name: this.listing_name,
               listing_description: this.listing_description,

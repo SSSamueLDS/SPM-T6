@@ -76,7 +76,7 @@ export default {
     //setLoadingstate
       this.$store.commit('setLoading', true);
     axios
-      .get("http://localhost:5003/skills")
+      .get("http://localhost:5005/skills")
       .then((response) => {
         if (response.data.code === 200) {
           this.skills = response.data.data;

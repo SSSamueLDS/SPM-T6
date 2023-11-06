@@ -339,10 +339,10 @@ export default {
     fetchData() {
       this.loading_listings = true;
       this.$store.commit('setLoading', true);
-      axios.get("http://127.0.0.1:5002/listing_skill")
+      axios.get("http://127.0.0.1:5005/listing_skill")
         .then((response) => {
           this.listing_skills = response.data.data;
-          return axios.get("http://127.0.0.1:5002/listings");
+          return axios.get("http://127.0.0.1:5005/listings");
         })
         .then((response) => {
           this.listings = response.data.data;
@@ -389,7 +389,7 @@ export default {
     fetchApplications(listingId){
       this.loading_applications = true;
       this.applications = [];
-      axios.get(`http://127.0.0.1:5006/listings/${listingId}/applications`)
+      axios.get(`http://127.0.0.1:5005/listings/${listingId}/applications`)
       .then(appResponse => {
         this.applications = appResponse.data.data;
         this.loading_applications = false;

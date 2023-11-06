@@ -165,7 +165,7 @@ export default {
       this.$store.commit('setLoading', true);
     $(async () => {
       // Change serviceURL to your own
-      var serviceURL = "http://localhost:5003/skills";
+      var serviceURL = "http://localhost:5005/skills";
 
       try {
         const response = await fetch(serviceURL, { method: "GET" });
