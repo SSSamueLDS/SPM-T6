@@ -223,37 +223,41 @@ export default {
      listing_id: listingId
   };
 
-  axios.post("http://127.0.0.1:5006/apply", applicationData)
-    .then(response => {
-      if (response.status === 201) {
-        this.$swal({
-        title: 'Suceess!',
-        text: 'Your Job Application is Successful',
-        icon: 'success',
-        confirmButtonText: 'Okay'
-      });
-        
-      } else {
-        console.log(applicationData);
-        this.$swal({
-            title: 'Oops!',
-            text: 'There was an issue submitting your application.',
-            icon: 'error',
-            confirmButtonText: 'Try Again'
+      this.$store.commit('setLoading', true);
+      axios.post("http://127.0.0.1:5006/apply", applicationData)
+        .then(response => {
+          this.$store.commit('setLoading', false);
+          if (response.status === 201) {
+            this.$swal({
+            title: 'Suceess!',
+            text: 'Your Job Application is Successful',
+            icon: 'success',
+            confirmButtonText: 'Okay'
+          });
+            
+          } else {
+            this.$store.commit('setLoading', false);
+            console.log(applicationData);
+            this.$swal({
+                title: 'Oops!',
+                text: 'There was an issue submitting your application.',
+                icon: 'error',
+                confirmButtonText: 'Try Again'
+            });
+          }
+        })
+        .catch(error => {
+          if (error.response){
+            this.$store.commit('setLoading', false);
+            console.log(error.response.data.message);
+            this.$swal({
+                title: 'Error!',
+                text: error.response.data.message,
+                icon: 'error',
+                confirmButtonText: 'Try Again'
+            });
+          }
         });
-      }
-    })
-    .catch(error => {
-      if (error.response){
-        console.log(error.response.data.message);
-        this.$swal({
-            title: 'Error!',
-            text: error.response.data.message,
-            icon: 'error',
-            confirmButtonText: 'Try Again'
-        });
-      }
-    });
     },
 
   },
