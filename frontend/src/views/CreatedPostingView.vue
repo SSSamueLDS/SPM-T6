@@ -55,13 +55,6 @@
             </div>
           </div>
 
-          <div
-            class="row mx-2 mt-3 w-100"
-            style="background-color: grey; color: white; border-radius: 10px"
-          >
-            <h5 class="title m-3" style="text-align: left">Sort By</h5>
-          </div>
-
           <!-- APPLICANTS -->
           <div class="row mt-3">
             <!-- Vue.js listing listings go here -->

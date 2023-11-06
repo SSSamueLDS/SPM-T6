@@ -184,6 +184,7 @@ export default {
   },
   methods: {
     fetchRoleData() {
+       this.$store.commit('setLoading', true);
       axios.get(`http://127.0.0.1:5005/listings/${this.role_ID}`)
         .then(response => {
           console.log(response.data.data);
@@ -194,6 +195,7 @@ export default {
             this.listing_department = response.data.data.dept;
             this.selected_skills = response.data.data.skill_ids;
             this.selected_role = this.all_roles.find(role => role.role_name === this.listing_name);
+            this.$store.commit('setLoading', false);
           } else {
             console.error("Error fetching role data:", response.data.message);
           }

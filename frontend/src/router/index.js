@@ -105,15 +105,6 @@ const routes = [
     name: "skills",
   },
   {
-    path: "/employee_view",
-    name: "employee_view",
-    component: function () {
-      return import(
-        /* webpackChunkName: "about" */ "../views/EmployeeView.vue"
-      );
-    },
-  },
-  {
     path: "/logout",
     name: "logout",
     component: function () {

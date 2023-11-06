@@ -35,12 +35,6 @@
                     aria-label="Search"
                     v-model="search_term"
                   />
-                  <button
-                    class="btn btn-outline-success my-2 my-sm-0 p-2"
-                    type="submit"
-                  >
-                    Search
-                  </button>
                 </div>
               </form>
             </div>

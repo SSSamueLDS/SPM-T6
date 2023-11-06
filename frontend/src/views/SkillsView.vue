@@ -33,27 +33,6 @@
       </div>
     </div>
 
-    <!-- Sort By Bar -->
-    <div class="row justify-content-start">
-      <div class="dropdown col-12">
-        <button
-          class="btn btn-secondary dropdown-toggle btn-lg"
-          type="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          Sort By
-        </button>
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-item" @click="sort_by_ID">ID</a></li>
-          <li>
-            <a class="dropdown-item" @click="sort_alphabetically"
-              >Alphabetically (A to Z)</a
-            >
-          </li>
-        </ul>
-      </div>
-    </div>
 
     <!-- Table of skills -->
     <div v-if="database_error == false">
