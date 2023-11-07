@@ -282,10 +282,10 @@ def get_all_role_skill():
     
     return jsonify(
         {
-            "code": 201,
+            "code": 200,
             "data": role_skill_map
         }
-    ), 201
+    ), 200
     
 #listing.py
 @app.route("/create_listing", methods=['POST'])
