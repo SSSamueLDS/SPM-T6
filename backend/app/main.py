@@ -179,8 +179,7 @@ def get_all_skills():
 
 @app.route("/skills/<int:skill_id>", methods=['GET'])
 def get_all_name(skill_id):
-    # fetch all skills from the database
-    skill = Skill.query.get(skill_id)
+    skill = Skill.query.filter_by(skill_id=skill_id).first()
 
     if not skill:
         return jsonify({
@@ -414,7 +413,7 @@ def update_listing(listing_id):
     try:
         ListingSkill.query.filter_by(listing_id=listing_id).delete()
 
-        new_listing_skills = [ListingSkill(listing_id=listing_id, skill_id=skill_id) for skill_id in data.get('listing_skill')]
+        new_listing_skills = [ListingSkill(listing_id=listing_id, skill_id=skill_id) for skill_id in listing_skill]
         db.session.bulk_save_objects(new_listing_skills)
         
         db.session.commit()
@@ -597,8 +596,7 @@ def get_applications_by_listing(listing_id):
 
 @app.route("/applications/<int:application_id>", methods=['GET'])
 def get_application_by_id(application_id):
-    # fetch the application with the specific application_id from the database
-    application = Application.query.get(application_id)
+    application = Application.query.filter_by(application_id=application_id).first()
     if application:
         return jsonify({
             "code": 200,
