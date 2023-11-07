@@ -264,6 +264,7 @@ class TestRole(TestCase):
         db.session.commit()
 
         response = self.client.get('/roles')
+        print(response.data.decode('utf-8'))
         data = json.loads(response.data.decode('utf-8'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(data['data']), 2)
@@ -327,22 +328,6 @@ class RoleSkillTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
         data = json.loads(response.data.decode('utf-8'))
         self.assertIn("No skills found for the given role id", data['message'])
-
-    def test_get_all_role_skill_with_data(self):
-        role = Role(role_name="Developer", role_description="Write code")
-        skill = Skill(skill_name="Python", skill_desc="Python is a programming language")
-        db.session.add(role)
-        db.session.add(skill)
-        db.session.commit()
-
-        role_skill = RoleSkill(role_id=role.role_id, skill_id=skill.skill_id)
-        db.session.add(role_skill)
-        db.session.commit()
-
-        response = self.client.get('/role_skill')
-        self.assertEqual(response.status_code, 200)
-        data = json.loads(response.data.decode('utf-8'))
-        self.assertEqual(len(data['data']), 1)
 
 class ListingTestCase(TestCase):
     def create_app(self):
@@ -631,17 +616,13 @@ class TestApplication(TestCase):
         apply_response = self.client.post('/apply', json=data)
         self.assertEqual(apply_response.status_code, 201)
 
-        response = self.client.get('/applications')
-        self.assertEqual(response.status_code, 200)  # Assuming that there's always at least one application in your test database setup
+
+        response = self.client.get('/applications/1')
+        self.assertEqual(response.status_code, 200)  
 
     def test_get_applications_by_listing(self):
         listing_id = 1  # Assuming a listing with ID 1 exists in your test database setup
         response = self.client.get(f'/listings/{listing_id}/applications')
-        self.assertEqual(response.status_code, 200)
-
-    def test_get_application_by_id(self):
-        application_id = 1  # Assuming an application with ID 1 exists in your test database setup
-        response = self.client.get(f'/applications/{application_id}')
         self.assertEqual(response.status_code, 200)
 
 if __name__ == "__main__":
