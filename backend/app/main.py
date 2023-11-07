@@ -1,14 +1,17 @@
 import os
+import re
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from models import db, Application, Staff, Skill, Role, RoleSkill, StaffSkill, AccessControl, Listing, ListingSkill
+import re
 
 from datetime import date, datetime
 import json
 from os import environ
 import argparse
 from dotenv import load_dotenv
+
 
 app = Flask(__name__)
 load_dotenv()
@@ -193,41 +196,6 @@ def get_all_name(skill_id):
         }
     }),200
 
-@app.route("/add_skill", methods=['POST'])
-def add_skill():
-    #find if skill exists in database
-    try:
-        data = request.get_json()
-        print(data)
-        skill_name = data['skill_name']
-        # capitalise first letter of every word in skill name
-        skill_name = skill_name.title()
-        skill = Skill.query.filter_by(skill_name=skill_name).first()
-        if skill:
-            return jsonify({
-                "code": 201,
-                "data": {
-                    "skill_name": skill_name
-                },
-                "message": "Skill already exists."
-            }), 201
-        else:
-            skill = Skill(skill_name=skill_name)
-            db.session.add(skill)
-            db.session.commit()
-            return jsonify({
-                "code": 200,
-                "data": {
-                "skill_name": skill_name
-                },
-                "message": "Skill added successfully."
-            }), 200
-    except:
-        return jsonify({
-            "code": 500,
-            "message": "Connection failure with the database."
-        }), 500
-
 #role.py
 @app.route("/roles", methods=['GET'])
 def get_all_roles():
@@ -269,23 +237,6 @@ def get_skills_by_role(role_id):
             "code": 500,
             "message": "Internal Server Error"
         }), 500
-
-@app.route('/role_skill', methods =['GET'])
-def get_all_role_skill():
-    role_skills = RoleSkill.query.all()
-    role_skill_map = {}
-    
-    for rs in role_skills:
-        if rs.role_id not in role_skill_map:
-            role_skill_map[rs.role_id] = []
-        role_skill_map[rs.role_id].append(rs.skill_id)
-    
-    return jsonify(
-        {
-            "code": 200,
-            "data": role_skill_map
-        }
-    ), 200
     
 #listing.py
 @app.route("/create_listing", methods=['POST'])
@@ -618,21 +569,6 @@ def apply_for_listing():
 
     return jsonify(application.json()), 201
 
-@app.route("/applications", methods=['GET'])
-def get_all_applications():
-    # fetch all roles from the database
-    applications = Application.query.all()
-    if applications:
-        return jsonify({
-            "code": 200,
-            "data": [application.json() for application in applications]
-        })
-    return jsonify({
-        "code": 404,
-        "message": "No applications found.",
-        "data": []
-    })
-
 @app.route("/listings/<int:listing_id>/applications", methods=['GET'])
 def get_applications_by_listing(listing_id):
     # fetch all applications for a specific listing from the database
@@ -664,9 +600,6 @@ def get_application_by_id(application_id):
     })
 
 
-
-
-
 def SkillMatchPercentage(skillsForListing, employee_skills):
     matchCount = len([skill for skill in skillsForListing if skill in employee_skills])
     percentage = (matchCount / len(skillsForListing)) * 100
@@ -692,20 +625,10 @@ def sort_by_ID(skills):
 def sort_alphabetically(skills):
     return sorted(skills, key=lambda x: x["skill_name"])
 
-import re
 def process_listing_name(listing_name):
-    # Replace characters that are not alphanumeric or whitespace with an empty string
     cleaned_name = re.sub(r'[^a-zA-Z0-9\s]', '', listing_name)
-    # Replace spaces with underscores
     cleaned_name = cleaned_name.replace(' ', '_')
     return cleaned_name
-
-'''
-processListingName(listingName) {
-      // Remove all occurrences of '#' from listingName
-      return listingName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
-    },
-'''
 
 if __name__ == '__main__':
     configure_app()
