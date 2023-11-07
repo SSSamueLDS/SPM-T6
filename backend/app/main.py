@@ -292,20 +292,47 @@ def get_all_role_skill():
 def create_listing():
         
         data = request.get_json()
-        print(data)
 
         listing_name = data.get('listing_name')
         listing_description = data.get('listing_description')
         deadline = data.get('deadline')
         dept = data.get('dept')
         hr_id = data.get('hr_id')
+        listing_skill = data.get('listing_skill')
+        errors = []
+
+        if not data:
+            errors.append("No input data provided")
+
+        if not isinstance(listing_skill, list) or not listing_skill or len(listing_skill) == 0:
+            errors.append("Please select at least one skill for the role")
+            
+        if not deadline:
+            errors.append("Please select a deadline for the role")
+            
+        deadline_date = datetime.strptime(deadline, "%Y-%m-%d")
+        
+        if deadline and deadline_date < datetime.now():
+            errors.append("Deadline should not be in the past")
+        
+        if not listing_name or len(listing_name) == 0:
+            errors.append("Listing name is required")
+        
+        if not listing_description or len(listing_description) == 0:
+            errors.append("Listing decription is required")
+        
+        if not dept or len(dept) == 0:
+            errors.append("Department name is required")
+        
+        if len(errors) > 0:
+            return jsonify({"code": 400, "errors": errors}), 400
 
         new_listing = Listing(listing_name=listing_name, listing_description=listing_description, dept=dept, deadline=deadline, hr_id=hr_id)
 
         try:
             db.session.add(new_listing)
             db.session.commit()
-            create_listing_skill(data.get('listing_skill'), new_listing.listing_id)
+            create_listing_skill(listing_skill, new_listing.listing_id)
         except Exception as e:
             return jsonify(
                 {
@@ -369,10 +396,43 @@ def update_listing(listing_id):
         ), 404
 
     data = request.get_json()
-    listing.listing_name = data.get('listing_name')
-    listing.listing_description = data.get('listing_description')
-    listing.dept = data.get('dept')
-    listing.deadline = data.get('deadline')
+    listing_name = data.get('listing_name')
+    listing_description = data.get('listing_description')
+    dept = data.get('dept')
+    listing_skill = data.get('listing_skill')
+    deadline = data.get('deadline')
+    errors = []
+
+    if not data:
+        errors.append("No input data provided")
+
+    if not isinstance(listing_skill, list) or not listing_skill or len(listing_skill) == 0:
+        errors.append("Please select at least one skill for the role")
+        
+    if not deadline:
+        errors.append("Please select a deadline for the role")
+        
+    deadline_date = datetime.strptime(deadline, "%Y-%m-%d")
+    
+    if deadline and deadline_date < datetime.now():
+        errors.append("Deadline should not be in the past")
+    
+    if not listing_name or len(listing_name) == 0:
+        errors.append("Listing name is required")
+    
+    if not listing_description or len(listing_description) == 0:
+        errors.append("Listing decription is required")
+    
+    if not dept or len(dept) == 0:
+        errors.append("Department name is required")
+    
+    if len(errors) > 0:
+        return jsonify({"code": 400, "errors": errors}), 400
+    
+    listing.listing_name = listing_name
+    listing.listing_description = listing_description
+    listing.dept = dept
+    listing.deadline = deadline
 
     try:
         ListingSkill.query.filter_by(listing_id=listing_id).delete()
@@ -586,7 +646,51 @@ def get_application_by_id(application_id):
         "message": "Application not found.",
         "data": []
     })
-    
+
+
+
+
+
+def SkillMatchPercentage(skillsForListing, employee_skills):
+    matchCount = len([skill for skill in skillsForListing if skill in employee_skills])
+    percentage = (matchCount / len(skillsForListing)) * 100
+    return round(percentage)
+
+def isListingExpired(deadline):
+    today = date.today()
+    listingDeadline = datetime.strptime(deadline, "%Y-%m-%d").date()
+    return today > listingDeadline
+
+def userHasSkill(skill, user_skills):
+    return skill in user_skills
+
+def truncateDescription(description):
+    words = description.split(' ')
+    if len(words) > 100:
+        return ' '.join(words[:100]) + '...'
+    return description
+
+def sort_by_ID(skills):
+    return sorted(skills, key=lambda x: x["id"])
+
+def sort_alphabetically(skills):
+    return sorted(skills, key=lambda x: x["skill_name"])
+
+import re
+def process_listing_name(listing_name):
+    # Replace characters that are not alphanumeric or whitespace with an empty string
+    cleaned_name = re.sub(r'[^a-zA-Z0-9\s]', '', listing_name)
+    # Replace spaces with underscores
+    cleaned_name = cleaned_name.replace(' ', '_')
+    return cleaned_name
+
+'''
+processListingName(listingName) {
+      // Remove all occurrences of '#' from listingName
+      return listingName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
+    },
+'''
+
 if __name__ == '__main__':
     configure_app()
     with app.app_context():
