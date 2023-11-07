@@ -13,29 +13,31 @@ from dotenv import load_dotenv
 app = Flask(__name__)
 load_dotenv()
 
-parser = argparse.ArgumentParser(description="select env")
-parser.add_argument("-test", action="store_true", help="Enable the test env")
-parser.add_argument("-prod", action="store_true", help="Enable the prod env")
-args = parser.parse_args()
+def configure_app(args=None):
+    # Configuring the app...
+    if args is None:
+        parser = argparse.ArgumentParser(description="select env")
+        parser.add_argument("--test", action="store_true", help="Enable the test env")
+        parser.add_argument("--prod", action="store_true", help="Enable the prod env")
+        args = parser.parse_args()
 
-if args.test:
-        print("test env")
-        dbURL = os.getenv("testdbURL")
+    if args.test:
+            print("test env")
+            dbURL = os.getenv("testdbURL")
            
-elif args.prod:
-        
-        print("prod env")
-        dbURL = os.getenv("proddbURL")
-        
-else:
-        print("running test environment by default")
-        dbURL = os.getenv("testdbURL")
-    
-app.config['SQLALCHEMY_DATABASE_URI'] = dbURL
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    elif args.prod:
+            print("prod env")
+            dbURL = os.getenv("proddbURL")
 
-db.init_app(app)
-CORS(app)
+    else:
+            print("running test environment by default")
+            dbURL = os.getenv("testdbURL")
+    
+    app.config['SQLALCHEMY_DATABASE_URI'] = dbURL
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    db.init_app(app)
+    CORS(app)
 
 
 #staff.py
@@ -160,34 +162,36 @@ def get_all_access_control():
 def get_all_skills():
     # fetch all skills from the database
     skills = Skill.query.all()
-    if skills:
+    if not skills:
         return jsonify({
-            "code": 200,
-            "data": [skill.json() for skill in skills]
+            "code": 404,
+            "message": "No skills found.",
+            "data": []
         })
+    
     return jsonify({
-        "code": 404,
-        "message": "No skills found.",
-        "data": []
-    })
+        "code": 200,
+        "data": [skill.json() for skill in skills]
+    }), 200
 
 @app.route("/skills/<int:skill_id>", methods=['GET'])
 def get_all_name(skill_id):
     # fetch all skills from the database
     skill = Skill.query.get(skill_id)
-    if skill:
-        return jsonify({
-            "code": 200,
-            "data": {
-                "skill_id": skill_id,
-                "skill_name": skill.skill_name
-            }
-        })
-    return jsonify({
-        "code": 404,
-        "message": "No skill found for id {skill_id}"
-    })
 
+    if not skill:
+        return jsonify({
+            "code": 404,
+            "message": f"No skill found for id {skill_id}"
+        }), 404
+    
+    return jsonify({
+        "code": 200,
+        "data": {
+            "skill_id": skill_id,
+            "skill_name": skill.skill_name
+        }
+    }),200
 
 @app.route("/add_skill", methods=['POST'])
 def add_skill():
@@ -584,6 +588,7 @@ def get_application_by_id(application_id):
     })
     
 if __name__ == '__main__':
+    configure_app()
     with app.app_context():
         db.create_all()
     print("This is flask for " + os.path.basename(__file__) + "spm team 6")
