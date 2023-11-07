@@ -5,7 +5,7 @@
 </template>
 
 <script>
-// @ is an alias to /src
+
 import EditRoleForm from "@/components/EditRoleForm.vue";
 
 export default {

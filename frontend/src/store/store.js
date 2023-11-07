@@ -105,6 +105,4 @@ export default createStore({
             
           },
     }
-
-    // We can set Vuex also to only fetch role listings everytime there is an update or post in it, otherwise use caching
 });

@@ -31,18 +31,12 @@
                 <div v-if="errorMessage" class="error-message">
                     {{ errorMessage }}
                 </div>
-                <!-- <input type="password" id="form3Example4" class="form-control" />
-                <label class="form-label" for="form3Example4">Password</label> -->
               </div>
 
               <!-- Submit button -->
               <button type="button" @click="handleLogin" class="btn btn-primary btn-block mb-4">Sign In</button>
 
             </form>
-
-            <!-- <h3>Hello {{ $store.state.logged_in_staff?.staff_fname }} {{ $store.state.logged_in_staff?.staff_lname }}</h3> -->
-              <!-- <p>{{ $store.state.logged_in_staff }}</p>
-              <p>{{ $store.state.user_skills }}</p> -->
           </div>
         </div>
       </div>
@@ -66,7 +60,7 @@ export default {
   },
   methods: {
     async handleLogin() {
-    this.errorMessage = ''; // Reset the error message each time the method runs
+    this.errorMessage = ''; 
     
     if (!this.userID) {
         this.errorMessage = 'Please enter a User ID';
@@ -97,7 +91,7 @@ export default {
         if (error.message.includes('Role not assigned')) {
             this.errorMessage = 'Your account does not have an assigned role. Please contact the system administrator.';
         } else {
-            // Handle the case where StaffID is not in the database
+            
             this.errorMessage = 'Invalid StaffID, please re-enter and try again.';
         }
     }

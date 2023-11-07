@@ -107,8 +107,7 @@ export default {
       this.grouped_skills = this.group_skills();
       this.current_page = 1;
     },
-    //group skills in groups of 10, for display purposes
-    //remainder in the last group
+
     group_skills() {
       var grouped_skills = [];
       var group = [];
@@ -139,22 +138,19 @@ export default {
     },
   },
   created() {
-    //Call to fetch skill data from API
-    //setLoadingstate
+
       this.$store.commit('setLoading', true);
     $(async () => {
-      // Change serviceURL to your own
       var serviceURL = "http://localhost:5005/skills";
 
       try {
         const response = await fetch(serviceURL, { method: "GET" });
         const result = await response.json();
         if (response.status === 200) {
-          // success case
-          var skills = result.data; //array of skill objects
+          
+          var skills = result.data; 
           this.skills = skills;
 
-          //group skills in groups of 10, for display purposes
           var grouped_skills = [];
           var group = [];
           var i = 0;

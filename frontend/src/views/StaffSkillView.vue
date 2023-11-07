@@ -29,10 +29,6 @@
         </div>
 
       </div>
-                   
-      
-
-      <!-- OTHER SKILLS POSSESSED BY THE staff -->
       
       <span class="text-start"><h5>Skills Possessed by staff</h5></span>
       <div class="row">

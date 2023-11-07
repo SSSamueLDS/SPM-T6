@@ -224,17 +224,15 @@ export default {
             console.error("Error adding role:", error);
           }
           finally {
-            this.$store.commit('setLoading', false);  // Hide loading
+            this.$store.commit('setLoading', false);
           }
           this.$router.push('/posting');
         }
-      } else if (this.mode === "edit") {
-        // Logic for editing an existing role
       }
     },
     prefillForm() {
       console.log(this.selected_role)
-      this.$store.commit('setLoading', true);  // Show loading
+      this.$store.commit('setLoading', true);  
       var selectedRole = this.all_roles[this.selected_role - 1];
       this.listing_name = selectedRole.role_name;
       this.listing_description = selectedRole.role_description;
@@ -244,7 +242,7 @@ export default {
       }).catch((error) => {
         console.error("Error fetching data:", error);
       }).finally(() => {
-      this.$store.commit('setLoading', false);  // Hide loading
+      this.$store.commit('setLoading', false);
     });
     }
   },
@@ -270,7 +268,7 @@ export default {
       required: required,
     },
     selected_skills: {
-      required: value => !!value.length  // This checks if the array has any items
+      required: value => !!value.length 
     },
   },
 };

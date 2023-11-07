@@ -1,17 +1,5 @@
 <template>
   <div class="w-50 mt-5 mx-auto">
-    <!-- <div>
-      <label for="search"
-        ><h4 style="font-weight: bold" class="mb-3">SEARCH SKILLS</h4></label
-      >
-      <input
-        v-model="searchTerm"
-        id="search"
-        type="text"
-        class="form-control mb-3"
-        placeholder="Search skills..."
-      />
-    </div> -->
 
     <form @submit.prevent="submitForm">
       <label for="skills"
@@ -66,14 +54,10 @@ export default {
   },
   methods: {
     submitForm() {
-      // Handle the form submission
-      // For instance, emit the selected skills or perform an API call
       this.$emit("skills-selected", this.selectedSkills);
     },
   },
   mounted() {
-    // Fetch the skills when the component is mounted
-    //setLoadingstate
       this.$store.commit('setLoading', true);
     axios
       .get("http://localhost:5005/skills")

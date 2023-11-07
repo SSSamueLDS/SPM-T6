@@ -36,12 +36,6 @@
             </router-link>
           </li>
 
-          <!-- <li class="nav-item">
-            <router-link to="/skills">
-              <a class="nav-link" aria-current="page" href="#">SKILLS</a>
-            </router-link>
-          </li> -->
-
           <li v-if="userRole === 'Manager'" class="nav-item">
             <router-link to="/employees">
               <a class="nav-link" aria-current="page" href="#">EMPLOYEES</a>
@@ -77,7 +71,3 @@ export default {
 
 </script>
 
-<!-- You can also add styles here if needed -->
-<style scoped>
-/* Your styles here if any */
-</style>

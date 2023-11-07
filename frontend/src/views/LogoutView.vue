@@ -11,7 +11,7 @@
     methods: {
       logout() {
         this.$store.commit('logout');
-        this.$router.push('/login'); // Redirect to the login page after logging out
+        this.$router.push('/login'); 
       },
     },
   };

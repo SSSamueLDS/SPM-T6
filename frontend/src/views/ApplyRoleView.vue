@@ -41,7 +41,7 @@
           </div>
               <p v-if="loading_listings">Loading...</p>
               <div v-else-if="listings.length == 0">No available listings</div>
-              <!-- Use the child component with v-for and pass necessary props -->
+              
               <div v-else>
                 <p v-if="groupedListings.length == 0">No matching listings with current filter</p>
                 <div v-else>
@@ -137,7 +137,6 @@ export default {
 
   methods: {
     processListingName(listingName) {
-      // Remove all occurrences of '#' from listingName
       return listingName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
     },
     fetchData() {
@@ -192,7 +191,7 @@ export default {
       });
 
       let percentage = (matchCount / skillsForListing.length) * 100;
-      return Math.round(percentage);  // <-- Use Math.round() here
+      return Math.round(percentage); 
     }, 
 
     truncateDescription(description) {
@@ -210,11 +209,10 @@ export default {
     },
 
     applyForListing(listingId) {
-      // Example data format - adjust as per your backend's expectations
+      
       const applicationData = {
         staff_id: this.$store.state.logged_in_staff["staff_id"], 
         staff_name: this.$store.state.logged_in_staff["staff_fname"],
-        // Assuming you store userId in your Vuex store
         listing_id: listingId
       };
 

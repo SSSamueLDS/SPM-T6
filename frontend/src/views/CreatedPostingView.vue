@@ -276,15 +276,15 @@ export default {
 
     update_listings(){
       var result = this.listings
-      //if no departments are selected, show all listings
+
       if (this.selected_departments.length == 0){
         result = this.listings
       }
-      //else, show only listings from selected departments
+      
       else{
         result = this.listings.filter(listing => this.selected_departments.includes(listing.dept))
       }
-      //if search term is not empty, filter listings by search term
+      
       if (this.search_term != ""){
         result = result.filter(listing => listing.listing_name.toLowerCase().includes(this.search_term.toLowerCase()))
       }
@@ -326,7 +326,7 @@ export default {
       this.$router.push(`/edit-posting/${listingId}`)
     },
     processListingName(listingName) {
-      // Remove all occurrences of '#' from listingName
+      
       return listingName.replace(/[^a-zA-Z0-9\s]/g, "").replace(/\s/g, "_");
     },
     fetchData() {
@@ -339,7 +339,7 @@ export default {
         })
         .then((response) => {
           this.listings = response.data.data;
-          //remove listings which have expired
+          
           this.listings = this.listings.filter(listing => new Date(listing.deadline) > new Date())
 
           this.listings.forEach((listing) => {
@@ -350,24 +350,21 @@ export default {
                 return skill ? skill.name : "Unknown Skill";
             });
           });
-          //show all listings by default
+          
           this.loading_listings = false;
           this.$store.commit('setLoading', false);
           this.shown_listings = this.listings
           console.log(this.shown_listings.length)
           
-                
-          //find out all the departments from all listings
           for (var i = 0; i<this.shown_listings.length; i++){
             if (!this.departments.includes(this.shown_listings[i].dept)){
               this.departments.push(this.shown_listings[i].dept)
             }
           }
-          //arrange departments array alphabetically
+          
           this.departments.sort()
           console.log(this.departments.length)
 
-          //group listings in groups of 5, for display purposes
           this.grouped_listings = this.group_listings();
           console.log(this.grouped_listings.length)
           
@@ -416,7 +413,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-/* Add your component-specific styles here */
-</style>

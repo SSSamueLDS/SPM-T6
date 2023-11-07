@@ -62,9 +62,6 @@
                     <option selected disabled>Select Department</option>
                     <option v-for="dept of all_dept" :key="dept" :value="dept">{{dept}}</option>
                   </select>
-                  <!-- <div v-if="v$.listing_department.$error" class="text-danger">
-                    Role department is required
-                  </div> -->
                 </div>
               </div>
 
@@ -136,6 +133,7 @@ import axios from "axios";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import Multiselect from '@vueform/multiselect';
+import Swal from 'sweetalert2';
 
 const isFutureDate = (value) => {
   if (!value) return true;
@@ -148,7 +146,6 @@ export default {
   name: "RoleForm",
   props: {
     role_ID: {
-      // Added prop for role_ID
       type: Number,
       required: true,
     },
@@ -187,7 +184,6 @@ export default {
       this.$store.commit('setLoading', true);
       axios.get(`http://127.0.0.1:5005/listings/${this.role_ID}`)
         .then(response => {
-          console.log(response.data.data);
           if (response.data && response.data.code === 200) {
             this.listing_name = response.data.data.listing_name;
             this.listing_description = response.data.data.listing_description;
@@ -223,27 +219,33 @@ export default {
         this.$store.commit('setLoading', true);
 
         try {
-          axios.put(`http://127.0.0.1:5005/update_listing/${this.role_ID}`, 
-            {
+          const response = await axios.put(`http://127.0.0.1:5005/update_listing/${this.role_ID}`,{
               listing_name: this.listing_name,
               listing_description: this.listing_description,
               deadline: this.deadline,
               dept: this.listing_department,
               listing_skill: this.selected_skills
-            }).then(response => {
-                alert('Role updated successfully!');
-                this.$router.push('/posting');
-                console.log(response)
             })
-            .catch(error => {
-                alert('Failed to update the role. Please try again.');
-                this.$store.commit('setLoading', false);
-                console.log(error)
+
+            Swal.fire({
+              icon: 'success',
+              title: 'Success!',
+              text: 'Role updated successfully!',
+            }).then(() => {
+              this.$router.push('/posting');
             });
-        } catch (error) {
-          console.error("Error updating role:", error);
-          alert("There was an error updating the role. Please try again.");
-        }
+
+            console.log(response);
+            
+            } catch (error) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Failed to update the role. Please try again.',
+              });
+
+              this.$store.commit('setLoading', false);
+            }
       }
     },
   },
@@ -269,7 +271,7 @@ export default {
       required: required,
     },
     selected_skills: {
-      required: value => !!value.length  // This checks if the array has any items
+      required: value => !!value.length
     },
   },
 };
