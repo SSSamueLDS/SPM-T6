@@ -5,14 +5,11 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
 
-DATABASE_URI = os.environ.get('testdbURL', 'mysql+mysqlconnector://admin:HelloWorld@db-spm.czpo8yl1nyay.us-east-1.rds.amazonaws.com:3306/spm3')
-# print("DATABASE_URI in populate_data.py:", DATABASE_URI)
-
 def load_data_into_db(DATABASE_URI):
     engine = create_engine(DATABASE_URI)
     connection = engine.connect()
 
-    csv_directory = "../Sample_Data/"
+    csv_directory = "Sample_Data/"
     access_control_df = pd.read_csv(f"{csv_directory}Access_Control.csv", encoding='ISO-8859-1')
     staff_df = pd.read_csv(f"{csv_directory}staff.csv", encoding='ISO-8859-1')
     skill_df = pd.read_csv(f"{csv_directory}skill.csv", encoding='ISO-8859-1')
@@ -43,5 +40,5 @@ def load_data_into_db(DATABASE_URI):
 
     connection.close()
 
-# load_data_into_db(DATABASE_URI)
+load_data_into_db('mysql+mysqlconnector://team6:spmg5team6@spmprodenv.ct0afokppdry.us-east-2.rds.amazonaws.com:3306/spm3')
 
