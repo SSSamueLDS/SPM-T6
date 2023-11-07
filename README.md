@@ -19,15 +19,16 @@ cd frontend
 npm install
 npm run serve
 ```
-Before running the backend app, you need to install the required Python packages. Navigate to the project root directory and run:
+Before running the backend app, you need to install the required Python packages. Navigate to the backend directory and run:
 ```shell
+ cd backend
  pip install -r requirements.txt
 ```
 
 Start Backend (Make sure you are on project root folder)
 
 ```shell
- cd backend/app
+ cd app
  python main.py
 ```
 
@@ -43,6 +44,7 @@ npm run serve
 Before running the backend app, you need to install the required Python packages. Navigate to the project root directory and run:
 
 ```shell
+ cd backend
  pip install -r requirements.txt
 ```
 
