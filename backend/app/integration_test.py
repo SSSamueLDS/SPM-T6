@@ -264,7 +264,6 @@ class TestRole(TestCase):
         db.session.commit()
 
         response = self.client.get('/roles')
-        print(response.data.decode('utf-8'))
         data = json.loads(response.data.decode('utf-8'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(data['data']), 2)
@@ -451,7 +450,7 @@ class ListingTestCase(TestCase):
                                    content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
-        updated_listing = Listing.query.get(listing_id)
+        updated_listing = Listing.query.filter_by(listing_id=listing_id).first()
         self.assertEqual(updated_listing.listing_name, 'Data Analyst')
 
     def test_update_listing_no_data(self):
