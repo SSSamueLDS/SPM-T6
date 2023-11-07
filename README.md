@@ -29,7 +29,7 @@ Start Backend. From backend/ directory, run:
 
 ```shell
  cd app
- python main.py
+ python main.py -prod
 ```
 
 ### On OSX/WSL/Linux (Unix-based)
@@ -51,6 +51,6 @@ Before running the backend app, you need to install the required Python packages
 Start Backend From backend/ directory, run:
 
 ```shell
-cd backend\app
-python main.py
+cd app
+python main.py -prod
 ```
