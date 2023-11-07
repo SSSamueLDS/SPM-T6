@@ -439,6 +439,108 @@ class ListingTestCase(TestCase):
         self.assertIsInstance(response.json['data'], list)
         self.assertTrue(len(response.json['data']) > 0)
 
+    def test_update_listing(self):
+        listing_data = {
+            "listing_name": "Software Engineer",
+            "listing_description": "Write code",
+            "deadline": "2023-12-12",
+            "dept": "IT",
+            "hr_id": 1,
+            "listing_skill": [1,2]
+        }
+
+        create_response = self.client.post('/create_listing', data=json.dumps(listing_data),
+                                        content_type='application/json')
+        self.assertEqual(create_response.status_code, 201)
+
+        listing_id = 1
+        update_data = {
+            "listing_name": "Data Analyst",
+            "listing_description": "clean up data",
+            "deadline": "2023-12-12",
+            "dept": "IT",
+            "listing_skill": [1,2]
+        }
+
+        response = self.client.put(f'/update_listing/{listing_id}', data=json.dumps(update_data),
+                                   content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+        updated_listing = Listing.query.get(listing_id)
+        self.assertEqual(updated_listing.listing_name, 'Data Analyst')
+
+    def test_update_listing_no_data(self):
+        listing_data = {
+            "listing_name": "Software Engineer",
+            "listing_description": "Write code",
+            "deadline": "2023-12-12",
+            "dept": "IT",
+            "hr_id": 1,
+            "listing_skill": [1,2]
+        }
+
+        create_response = self.client.post('/create_listing', data=json.dumps(listing_data),
+                                        content_type='application/json')
+        self.assertEqual(create_response.status_code, 201)
+
+        response = self.client.put('/update_listing/1', data=json.dumps({}),
+                                   content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_update_listing_invalid_deadline(self):
+        listing_data = {
+            "listing_name": "Software Engineer",
+            "listing_description": "Write code",
+            "deadline": "2023-12-12",
+            "dept": "IT",
+            "hr_id": 1,
+            "listing_skill": [1,2]
+        }
+
+        create_response = self.client.post('/create_listing', data=json.dumps(listing_data),
+                                        content_type='application/json')
+        self.assertEqual(create_response.status_code, 201)
+
+        listing_id = 1
+        update_data = {
+            "listing_name": "Data Analyst",
+            "listing_description": "clean up data",
+            "deadline": "2023-02-02",
+            "dept": "IT",
+            "listing_skill": [1,2]
+        }
+
+        response = self.client.put('/update_listing/1', data=json.dumps(update_data),
+                                   content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json['errors'], ['Deadline should not be in the past'])
+        
+def test_update_listing_missing_fields(self):
+        listing_data = {
+            "listing_name": "Software Engineer",
+            "listing_description": "Write code",
+            "deadline": "2023-12-12",
+            "dept": "IT",
+            "hr_id": 1,
+            "listing_skill": [1,2]
+        }
+
+        create_response = self.client.post('/create_listing', data=json.dumps(listing_data),
+                                        content_type='application/json')
+        self.assertEqual(create_response.status_code, 201)
+
+        update_data = {
+            "listing_name": "Incomplete Data Analyst",
+            "listing_description": "",
+            "deadline": "2023-12-12",
+            "dept": "",
+            "listing_skill": ""
+        }
+
+        response = self.client.put('/update_listing/1', data=json.dumps(update_data),
+                                   content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+
 
 if __name__ == "__main__":
     unittest.main()
