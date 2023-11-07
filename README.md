@@ -27,8 +27,8 @@ Before running the backend app, you need to install the required Python packages
 Start Backend (Make sure you are on project root folder)
 
 ```shell
- cd backend
- start_all.bat
+ cd backend/app
+ python main.py
 ```
 
 ### On OSX/WSL/Linux (Unix-based)
@@ -49,22 +49,6 @@ Before running the backend app, you need to install the required Python packages
 Start Backend (Make sure you are on project root folder)
 
 ```shell
-cd backend
-./start_all.sh
-```
-
-## Repository Structure
-
-```
-~/spm-t6 main*
-❯ tree .
-.
-├── README.md
-├── frontend
-│   ├── ...
-│   └── README.md
-├── requirements.txt
-└── backend
-    ├── ...
-    └── README.md
+cd backend\app
+python main.py
 ```
