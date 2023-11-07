@@ -239,7 +239,45 @@ class TestSkill(TestCase):
                 data = json.loads(response.data.decode('utf-8'))
                 # self.assertEqual(response.status_code, 404)
                 self.assertIn("No skill found for id 100", data['message'])
+
+
+class TestRole(TestCase):
+    def create_app(self):
+        app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite://"
+        app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {}
+        app.config['TESTING'] = True
         
-                                                
+        # This is the potential fix
+        if not hasattr(app, 'extensions') or 'sqlalchemy' not in app.extensions:
+            db.init_app(app)
+        return app
+    
+    def setUp(self):
+        with self.app.app_context():
+            db.create_all()
+
+    def test_get_all_roles_with_data(self):
+        r1 = Role(role_name="Developer", role_description="Write code")
+        r2 = Role(role_name="Tester", role_description="Test code")
+        db.session.add(r1)
+        db.session.add(r2)
+        db.session.commit()
+
+        response = self.client.get('/roles')
+        data = json.loads(response.data.decode('utf-8'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(data['data']), 2)
+        self.assertEqual(data['data'][0]['role_name'], "Developer")
+        self.assertEqual(data['data'][1]['role_name'], "Tester")
+
+    def test_get_all_roles_no_data(self):
+        response = self.client.get('/roles')
+        data = json.loads(response.data.decode('utf-8'))
+        print(data)
+        
+        self.assertEqual(response.status_code, 404)
+        self.assertIn("No roles found", data['message'])
+
+                                             
 if __name__ == "__main__":
     unittest.main()

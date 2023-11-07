@@ -237,12 +237,12 @@ def get_all_roles():
         return jsonify({
             "code": 200,
             "data": [role.json() for role in roles]
-        })
+        }),200
     return jsonify({
         "code": 404,
         "message": "No roles found.",
         "data": []
-    })
+    }),404
 
 # This is to find all the skills given specific role id
 @app.route("/role_skill/<int:role_id>", methods=['GET'])
