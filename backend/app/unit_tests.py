@@ -18,7 +18,7 @@ class TestRole(unittest.TestCase):
         cls.app.config['TESTING'] = True
         
         # Set up database URL from environment variable
-        DATABASE_URI = os.environ.get('devdbURL')
+        DATABASE_URI = os.getenv("testdbURL")
         cls.app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
         # cls.client = cls.app.test_client()
 
