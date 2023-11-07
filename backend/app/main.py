@@ -292,13 +292,28 @@ def get_all_role_skill():
 def create_listing():
         
         data = request.get_json()
+        print("Received data: ", data)
 
         listing_name = data.get('listing_name')
         listing_description = data.get('listing_description')
         deadline = data.get('deadline')
+
+        if not deadline:
+        # Handle the error case where no deadline is provided
+            return jsonify({'message': 'No deadline provided'}), 400
+
+        try:
+            deadline_date = datetime.strptime(deadline, "%Y-%m-%d")
+        except ValueError:
+            errors.append("Deadline format should be YYYY-MM-DD")
+
         dept = data.get('dept')
         hr_id = data.get('hr_id')
         listing_skill = data.get('listing_skill')
+        if not listing_skill:
+            # Handle the error case where no skills are provided
+            return jsonify({'message': 'Please select at least one skill for the listing'}), 400
+        
         errors = []
 
         if not data:
@@ -310,7 +325,6 @@ def create_listing():
         if not deadline:
             errors.append("Please select a deadline for the role")
             
-        deadline_date = datetime.strptime(deadline, "%Y-%m-%d")
         
         if deadline and deadline_date < datetime.now():
             errors.append("Deadline should not be in the past")
@@ -327,13 +341,15 @@ def create_listing():
         if len(errors) > 0:
             return jsonify({"code": 400, "errors": errors}), 400
 
-        new_listing = Listing(listing_name=listing_name, listing_description=listing_description, dept=dept, deadline=deadline, hr_id=hr_id)
+        new_listing = Listing(listing_name=listing_name, listing_description=listing_description, dept=dept, deadline=deadline_date, hr_id=hr_id)
 
         try:
             db.session.add(new_listing)
             db.session.commit()
+            print("New listied added with ID:", new_listing.listing_id)
             create_listing_skill(listing_skill, new_listing.listing_id)
         except Exception as e:
+            print("Error while adding new listing: ", str(e))
             return jsonify(
                 {
                     "code": 500,

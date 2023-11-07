@@ -273,11 +273,172 @@ class TestRole(TestCase):
     def test_get_all_roles_no_data(self):
         response = self.client.get('/roles')
         data = json.loads(response.data.decode('utf-8'))
-        print(data)
 
         self.assertEqual(response.status_code, 404)
         self.assertIn("No roles found", data['message'])
 
-                                             
+class RoleSkillTestCase(TestCase):
+    def create_app(self):
+        app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite://"
+        app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {}
+        app.config['TESTING'] = True
+        
+        # This is the potential fix
+        if not hasattr(app, 'extensions') or 'sqlalchemy' not in app.extensions:
+            db.init_app(app)
+        return app
+
+    def setUp(self):
+        with self.app.app_context():
+            db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+    
+    def test_get_skills_by_role_with_data(self):
+        role = Role(role_name="Developer", role_description="Write code")
+        s1 = Skill(skill_id=1, skill_name="Python", skill_desc="Python is a programming language")
+        s2 = Skill(skill_id=2, skill_name="Java", skill_desc="Java is a programming language")
+        db.session.add(role)
+        db.session.add(s1)
+        db.session.add(s2)
+        db.session.commit()
+
+        role_skill1 = RoleSkill(role_id=role.role_id, skill_id=s1.skill_id)
+        role_skill2 = RoleSkill(role_id=role.role_id, skill_id=s2.skill_id)
+        db.session.add(role_skill1)
+        db.session.add(role_skill2)
+        db.session.commit()
+
+        response = self.client.get('/role_skill/1')
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data.decode('utf-8'))
+        self.assertEqual(len(data['data']), 2)
+        self.assertEqual(data['data']['role_id'], 1)
+        self.assertEqual(data['data']['skill_ids'], [1,2])
+
+    def test_get_skills_by_role_empty(self):
+        role = Role(role_name="Developer", role_description="Write code")
+        db.session.add(role)
+        db.session.commit()
+
+        response = self.client.get('/role_skill/1')
+        self.assertEqual(response.status_code, 404)
+        data = json.loads(response.data.decode('utf-8'))
+        self.assertIn("No skills found for the given role id", data['message'])
+
+    def test_get_all_role_skill_with_data(self):
+        role = Role(role_name="Developer", role_description="Write code")
+        skill = Skill(skill_name="Python", skill_desc="Python is a programming language")
+        db.session.add(role)
+        db.session.add(skill)
+        db.session.commit()
+
+        role_skill = RoleSkill(role_id=role.role_id, skill_id=skill.skill_id)
+        db.session.add(role_skill)
+        db.session.commit()
+
+        response = self.client.get('/role_skill')
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data.decode('utf-8'))
+        self.assertEqual(len(data['data']), 1)
+
+class ListingTestCase(TestCase):
+    def create_app(self):
+        app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite://"
+        app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {}
+        app.config['TESTING'] = True
+        
+        # This is the potential fix
+        if not hasattr(app, 'extensions') or 'sqlalchemy' not in app.extensions:
+            db.init_app(app)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+        role = Role(role_name="HR", role_description="create listing")
+
+        hr = Staff(
+            staff_id=1001,
+            staff_fname='John',
+            staff_lname='Doe',
+            dept='IT',
+            country='USA',
+            email='john.doe@example.com',
+            role=1)
+
+        s1 = Skill(skill_name='Python', skill_desc='Python programming language')
+        s2 = Skill(skill_name='JavaScript', skill_desc='JavaScript programming language')
+
+        db.session.add(role)
+        db.session.add(hr)
+        db.session.add(s1)
+        db.session.add(s2)
+        db.session.commit()
+
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_create_listing_success(self):
+        
+        listing_data = {
+            "listing_name": "Software Engineer",
+            "listing_description": "Write code",
+            "deadline": "2023-12-12",
+            "dept": "IT",
+            "hr_id": 1001,
+            "listing_skill": [1,2]
+        }
+
+        response = self.client.post('/create_listing', data=json.dumps(listing_data),
+                                 content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+
+    def test_create_listing_no_skills(self):
+        listing_data = {
+            "listing_name": "Software Engineer",
+            "listing_description": "Write code",
+            "deadline": "2023-12-12",
+            "dept": "IT",
+            "hr_id": 1,
+            "listing_skill": []  # Empty skill list should trigger the error
+        }
+        
+        response = self.client.post('/create_listing', data=json.dumps(listing_data),
+                                content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("Please select at least one skill for the listing", response.json['message'])
+
+    def test_create_listing_no_data(self):
+        # Assuming the application returns a specific message when no data is provided
+        response = self.client.post('/create_listing', data=json.dumps({}),
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("No deadline provided", response.json['message'])
+
+    def test_get_all_listings(self):
+        listing_data = {
+            "listing_name": "Software Engineer",
+            "listing_description": "Write code",
+            "deadline": "2023-12-12",
+            "dept": "IT",
+            "hr_id": 1,
+            "listing_skill": [1,2]
+        }
+        
+        create_response = self.client.post('/create_listing', data=json.dumps(listing_data),
+                                content_type='application/json')
+        self.assertEqual(create_response.status_code, 201)
+        
+        response = self.client.get('/listings')
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.json['data'], list)
+        self.assertTrue(len(response.json['data']) > 0)
+
+
 if __name__ == "__main__":
     unittest.main()
