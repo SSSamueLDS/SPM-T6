@@ -541,6 +541,108 @@ def test_update_listing_missing_fields(self):
                                    content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
+class TestApplication(TestCase):
+    def create_app(self):
+        app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite://"
+        app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {}
+        app.config['TESTING'] = True
+        
+        # This is the potential fix
+        if not hasattr(app, 'extensions') or 'sqlalchemy' not in app.extensions:
+            db.init_app(app)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+        role = Role(role_name="HR", role_description="create listing")
+        role = Role(role_name="User", role_description="employee in the place")
+
+        hr = Staff(
+            staff_id=1001,
+            staff_fname='John',
+            staff_lname='Doe',
+            dept='IT',
+            country='USA',
+            email='john.doe@example.com',
+            role=1)
+        
+        staff = Staff(
+            staff_id=1002,
+            staff_fname='Angie',
+            staff_lname='Tan',
+            dept='IT',
+            country='USA',
+            email='angie.tan@example.com',
+            role=2)
+
+        s1 = Skill(skill_name='Python', skill_desc='Python programming language')
+        s2 = Skill(skill_name='JavaScript', skill_desc='JavaScript programming language')
+
+        db.session.add(role)
+        db.session.add(hr)
+        db.session.add(s1)
+        db.session.add(s2)
+        db.session.commit()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_apply_for_listing(self):
+        listing_data = {
+            "listing_name": "Software Engineer",
+            "listing_description": "Write code",
+            "deadline": "2023-12-12",
+            "dept": "IT",
+            "hr_id": 1001,
+            "listing_skill": [1,2]
+        }
+
+        post_response = self.client.post('/create_listing', data=json.dumps(listing_data),
+                                 content_type='application/json')
+        
+        data = {
+            "staff_id": 1002,
+            "listing_id": 1,
+            "staff_name": "Angie Tan"
+        }
+        response = self.client.post('/apply', json=data)
+        self.assertEqual(response.status_code, 201)
+
+    def test_get_all_applications(self):
+        listing_data = {
+            "listing_name": "Software Engineer",
+            "listing_description": "Write code",
+            "deadline": "2023-12-12",
+            "dept": "IT",
+            "hr_id": 1001,
+            "listing_skill": [1,2]
+        }
+
+        post_response = self.client.post('/create_listing', data=json.dumps(listing_data),
+                                 content_type='application/json')
+        
+        data = {
+            "staff_id": 1002,
+            "listing_id": 1,
+            "staff_name": "Angie Tan"
+        }
+        apply_response = self.client.post('/apply', json=data)
+        self.assertEqual(apply_response.status_code, 201)
+
+        response = self.client.get('/applications')
+        self.assertEqual(response.status_code, 200)  # Assuming that there's always at least one application in your test database setup
+
+    def test_get_applications_by_listing(self):
+        listing_id = 1  # Assuming a listing with ID 1 exists in your test database setup
+        response = self.client.get(f'/listings/{listing_id}/applications')
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_application_by_id(self):
+        application_id = 1  # Assuming an application with ID 1 exists in your test database setup
+        response = self.client.get(f'/applications/{application_id}')
+        self.assertEqual(response.status_code, 200)
 
 if __name__ == "__main__":
     unittest.main()
