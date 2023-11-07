@@ -244,29 +244,28 @@ def create_listing():
         
         data = request.get_json()
         # print("Received data: ", data)
+        
 
         listing_name = data.get('listing_name')
         listing_description = data.get('listing_description')
         deadline = data.get('deadline')
+        dept = data.get('dept')
+        hr_id = data.get('hr_id')
+        listing_skill = data.get('listing_skill')
+
+        errors = []
 
         if not deadline:
-        # Handle the error case where no deadline is provided
             return jsonify({'message': 'No deadline provided'}), 400
 
         try:
             deadline_date = datetime.strptime(deadline, "%Y-%m-%d")
         except ValueError:
             errors.append("Deadline format should be YYYY-MM-DD")
-
-        dept = data.get('dept')
-        hr_id = data.get('hr_id')
-        listing_skill = data.get('listing_skill')
+        
         if not listing_skill:
-            # Handle the error case where no skills are provided
             return jsonify({'message': 'Please select at least one skill for the listing'}), 400
         
-        errors = []
-
         if not data:
             errors.append("No input data provided")
 
@@ -276,7 +275,6 @@ def create_listing():
         if not deadline:
             errors.append("Please select a deadline for the role")
             
-        
         if deadline and deadline_date < datetime.now():
             errors.append("Deadline should not be in the past")
         
