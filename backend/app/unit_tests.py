@@ -224,40 +224,40 @@ class TestRole(unittest.TestCase):
 #                 self.assertEqual(data['message'], "No skills found for the given staff id.")
 
 
-# class TestApplication(unittest.TestCase):
-#     def setUp(self):
-#         self.app = create_app(config_name='testing')
-#         DATABASE_URI = os.environ.get('testdbURL', 'mysql+mysqlconnector://admin:HelloWorld@db-spm.czpo8yl1nyay.us-east-1.rds.amazonaws.com:3306/spm_unit_test')
-#         self.app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
-#         db.init_app(self.app)
-#         self.client = self.app.test_client()
+class TestApplication(unittest.TestCase):
+    def setUp(self):
+        self.app = create_app(config_name='testing')
+        DATABASE_URI = os.environ.get('testdbURL', 'mysql+mysqlconnector://admin:HelloWorld@db-spm.czpo8yl1nyay.us-east-1.rds.amazonaws.com:3306/spm_unit_test')
+        self.app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
+        db.init_app(self.app)
+        self.client = self.app.test_client()
 
-#     def tearDown(self):
-#         pass
+    def tearDown(self):
+        pass
 
-#     def test_apply_for_listing(self):
-#         # Sample data for testing the POST method
-#         data = {
-#             "staff_id": 140002,
-#             "listing_id": 1,
-#             "staff_name": "Susan Goh"
-#         }
-#         response = self.client.post('/apply', json=data)
-#         self.assertEqual(response.status_code, 201)
+    def test_apply_for_listing(self):
+        # Sample data for testing the POST method
+        data = {
+            "staff_id": 140002,
+            "listing_id": 1,
+            "staff_name": "Susan Goh"
+        }
+        response = self.client.post('/apply', json=data)
+        self.assertEqual(response.status_code, 201)
 
-#     def test_get_all_applications(self):
-#         response = self.client.get('/applications')
-#         self.assertEqual(response.status_code, 200)  # Assuming that there's always at least one application in your test database setup
+    def test_get_all_applications(self):
+        response = self.client.get('/applications')
+        self.assertEqual(response.status_code, 200)  # Assuming that there's always at least one application in your test database setup
 
-#     def test_get_applications_by_listing(self):
-#         listing_id = 1  # Assuming a listing with ID 1 exists in your test database setup
-#         response = self.client.get(f'/listings/{listing_id}/applications')
-#         self.assertEqual(response.status_code, 200)
+    def test_get_applications_by_listing(self):
+        listing_id = 1  # Assuming a listing with ID 1 exists in your test database setup
+        response = self.client.get(f'/listings/{listing_id}/applications')
+        self.assertEqual(response.status_code, 200)
 
-#     def test_get_application_by_id(self):
-#         application_id = 1  # Assuming an application with ID 1 exists in your test database setup
-#         response = self.client.get(f'/applications/{application_id}')
-#         self.assertEqual(response.status_code, 200)
+    def test_get_application_by_id(self):
+        application_id = 1  # Assuming an application with ID 1 exists in your test database setup
+        response = self.client.get(f'/applications/{application_id}')
+        self.assertEqual(response.status_code, 200)
 
 
 # class TestStaff(unittest.TestCase):
