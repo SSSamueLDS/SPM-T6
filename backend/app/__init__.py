@@ -16,7 +16,6 @@ def create_app():
     parser = argparse.ArgumentParser(description="select env")
     parser.add_argument("-test", action="store_true", help="Enable the test env")
     parser.add_argument("-prod", action="store_true", help="Enable the prod env")
-    parser.add_argument("-dev", action="store_true", help="Enable the development env")
     args, unknown = parser.parse_known_args()  # Changed from parse_args()
 
     if args.test:
