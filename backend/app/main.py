@@ -292,7 +292,7 @@ def get_all_role_skill():
 def create_listing():
         
         data = request.get_json()
-        print("Received data: ", data)
+        # print("Received data: ", data)
 
         listing_name = data.get('listing_name')
         listing_description = data.get('listing_description')
@@ -346,7 +346,7 @@ def create_listing():
         try:
             db.session.add(new_listing)
             db.session.commit()
-            print("New listied added with ID:", new_listing.listing_id)
+            
             create_listing_skill(listing_skill, new_listing.listing_id)
         except Exception as e:
             print("Error while adding new listing: ", str(e))
@@ -412,12 +412,29 @@ def update_listing(listing_id):
         ), 404
 
     data = request.get_json()
+    if not data:
+        return jsonify(
+            {
+                "code": 400,
+                "data": {"listing_id": listing_id},
+                "message": "No input data provided"
+            }
+        ), 400
+    
     listing_name = data.get('listing_name')
     listing_description = data.get('listing_description')
     dept = data.get('dept')
     listing_skill = data.get('listing_skill')
     deadline = data.get('deadline')
     errors = []
+
+    try: 
+        deadline_date = datetime.strptime(deadline, "%Y-%m-%d")
+    except ValueError:
+        errors.append("Deadline format should be YYYY-MM-DD")
+
+    if deadline_date < datetime.now():
+        errors.append("Deadline should not be in the past")
 
     if not data:
         errors.append("No input data provided")
@@ -427,11 +444,6 @@ def update_listing(listing_id):
         
     if not deadline:
         errors.append("Please select a deadline for the role")
-        
-    deadline_date = datetime.strptime(deadline, "%Y-%m-%d")
-    
-    if deadline and deadline_date < datetime.now():
-        errors.append("Deadline should not be in the past")
     
     if not listing_name or len(listing_name) == 0:
         errors.append("Listing name is required")
@@ -448,7 +460,7 @@ def update_listing(listing_id):
     listing.listing_name = listing_name
     listing.listing_description = listing_description
     listing.dept = dept
-    listing.deadline = deadline
+    listing.deadline = deadline_date
 
     try:
         ListingSkill.query.filter_by(listing_id=listing_id).delete()
@@ -459,6 +471,7 @@ def update_listing(listing_id):
         db.session.commit()
 
     except Exception as e:
+        print(e)
         db.session.rollback()
         return jsonify(
             {
