@@ -1,6 +1,9 @@
 # SPM-T6
 Software Project Management T6
 
+# GitHub Repo link 
+https://github.com/SSSamueLDS/SPM-T6
+
 # Development
 
 ## Running the Project
